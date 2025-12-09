@@ -4,10 +4,10 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Database {
+public class DBConnection {
     public static Connection getConnection() {
         try {
-            // Ensure folder exists
+
             File folder = new File("database");
             if (!folder.exists()) {
                 folder.mkdirs();
