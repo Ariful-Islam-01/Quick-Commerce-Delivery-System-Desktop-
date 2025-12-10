@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.auth.RegisterController"
+            prefWidth="460" prefHeight="520" styleClass="root-pane">
+
+    <VBox alignment="CENTER" spacing="14" layoutX="60" layoutY="30" prefWidth="340">
+
+        <Label text="Create Account" styleClass="app-title"/>
+
+        <VBox spacing="8" styleClass="card">
+            <TextField fx:id="nameField" promptText="Full name" />
+            <TextField fx:id="emailField" promptText="Email" />
+            <TextField fx:id="phoneField" promptText="Phone (optional)" />
+            <PasswordField fx:id="passwordField" promptText="Password" />
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" />
+            <Button text="Sign Up" onAction="#handleRegister" styleClass="btn-primary"/>
+            <Label fx:id="messageLabel" styleClass="message"/>
+            <HBox alignment="CENTER">
+                <Label text="Already have an account?" style="-fx-font-size:11px; -fx-text-fill:#666;"/>
+                <Hyperlink text="Login" onAction="#goToLogin"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

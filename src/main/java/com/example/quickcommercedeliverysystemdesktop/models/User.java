@@ -1,0 +1,20 @@
+package com.example.quickcommercedeliverysystemdesktop.models;
+
+public class User {
+    private int userId;
+    private String name;
+    private String email;
+    private String phone;
+
+    public User(int id, String name, String email, String phone) {
+        this.userId = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public int getUserId() { return userId; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
+}

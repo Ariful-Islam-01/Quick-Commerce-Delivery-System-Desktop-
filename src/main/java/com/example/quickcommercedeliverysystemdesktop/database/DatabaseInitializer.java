@@ -5,7 +5,7 @@ import java.sql.Statement;
 
 public class DatabaseInitializer {
     public static void initialize() {
-        try(Connection conn = DBConnection.getConnection();
+        try(Connection conn = Database.getConnection();
             Statement stmt = conn.createStatement()) {
 
             // USERS table

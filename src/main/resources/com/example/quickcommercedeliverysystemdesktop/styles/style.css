@@ -1,0 +1,63 @@
+/* Root background */
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom right, #f7f9fb, #eef6f4);
+}
+
+/* App title */
+.app-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #05445E;
+    -fx-padding: 8 0 12 0;
+}
+
+/* Card style */
+.card {
+    -fx-background-color: white;
+    -fx-padding: 18;
+    -fx-spacing: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0.2, 0, 2);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+/* Inputs */
+.text-field, .password-field, .combo-box {
+    -fx-min-width: 260px;
+    -fx-pref-width: 260px;
+    -fx-padding: 8 10;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+/* Primary button */
+.btn-primary {
+    -fx-background-color: #2b7a78;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-padding: 8 14;
+    -fx-background-radius: 8;
+}
+
+/* Ghost button style (for logout) */
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: #05445E;
+    -fx-border-color: transparent;
+}
+
+/* Message label */
+.message {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b00020; /* error color default */
+    -fx-padding: 4 0 0 0;
+}
+
+/* Topbar style in dashboard */
+.topbar {
+    -fx-background-color: linear-gradient(to right, #2b7a78, #05445E);
+    -fx-text-fill: white;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0.2, 0, 2);
+}
+
