@@ -16,17 +16,21 @@ public class MainDashboardController {
         try {
             Stage stage = (Stage) logoutButton.getScene().getWindow();
 
-            Parent root = FXMLLoader.load(
+            FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/auth/Login.fxml")
             );
+            Parent root = loader.load();
 
             Scene scene = new Scene(root);
+
             scene.getStylesheets().add(
                     getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/styles/style.css")
                             .toExternalForm()
             );
 
             stage.setScene(scene);
+            stage.show(); // optional but recommended
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
