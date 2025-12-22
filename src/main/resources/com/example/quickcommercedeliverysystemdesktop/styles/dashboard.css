@@ -1,0 +1,52 @@
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 20px;
+    -fx-pref-width: 200px;
+}
+
+.logo {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 0 0 20px 0;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-padding: 12px 15px;
+    -fx-cursor: hand;
+    -fx-background-radius: 5px;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #34495e;
+}
+
+.nav-btn:pressed {
+    -fx-background-color: #1abc9c;
+}
+
+/* Logout Button */
+.logout-btn {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;
+    -fx-cursor: hand;
+    -fx-background-radius: 5px;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 20px;
+}

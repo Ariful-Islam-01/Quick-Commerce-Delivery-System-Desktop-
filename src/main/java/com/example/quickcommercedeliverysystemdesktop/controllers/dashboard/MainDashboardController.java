@@ -4,12 +4,50 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
 public class MainDashboardController {
 
+    @FXML private StackPane contentArea;
     @FXML private Button logoutButton;
+
+    @FXML
+    public void initialize() {
+        loadPage("Home.fxml");
+    }
+
+    @FXML
+    public void loadHome() {
+        loadPage("Home.fxml");
+    }
+
+    @FXML
+    public void loadOrders() {
+        loadPage("Orders.fxml");
+    }
+
+    @FXML
+    public void loadDeliveries() {
+        loadPage("Deliveries.fxml");
+    }
+
+    @FXML
+    public void loadEarnings() {
+        loadPage("Earnings.fxml");
+    }
+
+    private void loadPage(String page) {
+        try {
+            Parent root = FXMLLoader.load(
+                    getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/" + page)
+            );
+            contentArea.getChildren().setAll(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     public void handleLogout() {
@@ -31,8 +69,8 @@ public class MainDashboardController {
             stage.setScene(scene);
             stage.show(); // optional but recommended
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
