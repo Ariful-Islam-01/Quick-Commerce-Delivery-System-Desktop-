@@ -1,5 +1,6 @@
 package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 
+import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -38,6 +39,11 @@ public class MainDashboardController {
         loadPage("Earnings.fxml");
     }
 
+    @FXML
+    public void loadProfile() {
+        loadPage("Profile.fxml");
+    }
+
     private void loadPage(String page) {
         try {
             Parent root = FXMLLoader.load(
@@ -52,6 +58,9 @@ public class MainDashboardController {
     @FXML
     public void handleLogout() {
         try {
+            // Clear user session
+            UserSession.getInstance().clearSession();
+
             Stage stage = (Stage) logoutButton.getScene().getWindow();
 
             FXMLLoader loader = new FXMLLoader(

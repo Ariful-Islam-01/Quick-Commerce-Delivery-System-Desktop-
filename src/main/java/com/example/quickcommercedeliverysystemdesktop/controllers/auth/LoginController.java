@@ -2,6 +2,7 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.auth;
 
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.User;
+import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -34,6 +35,9 @@ public class LoginController {
         if (user == null) {
             messageLabel.setText("Invalid email or password.");
         } else {
+            // Save user to session
+            UserSession.getInstance().setCurrentUser(user);
+
             messageLabel.setStyle("-fx-text-fill: #2b7a78;");
             messageLabel.setText("Login successful. Loading...");
             loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/MainDashboard.fxml");

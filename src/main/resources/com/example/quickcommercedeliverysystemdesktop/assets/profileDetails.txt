@@ -1,0 +1,14 @@
+This directory stores user profile images.
+
+To add a default avatar image:
+1. Create or download a default avatar image (120x120px recommended)
+2. Save it as "default-avatar.png" in the assets folder
+   (D:\Quick-Commerce-Delivery-System-Desktop\src\main\resources\com\example\quickcommercedeliverysystemdesktop\assets\)
+
+User uploaded profile images will be stored in this "profiles" subdirectory.
+
+The ProfileController will handle:
+- Copying user-selected images to this directory
+- Saving the file path to the database
+- Loading and displaying profile images
+

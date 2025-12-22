@@ -33,7 +33,7 @@ public class UserDAO {
 
     // Login (returns User if success)
     public static User login(String email, String passwordPlain) {
-        String sql = "SELECT user_id, name, email, phone FROM Users WHERE email = ? AND password = ?";
+        String sql = "SELECT user_id, name, email, phone, default_address, profile_image FROM Users WHERE email = ? AND password = ?";
         String hashed = PasswordUtil.hash(passwordPlain);
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,7 +47,9 @@ public class UserDAO {
                             rs.getInt("user_id"),
                             rs.getString("name"),
                             rs.getString("email"),
-                            rs.getString("phone")
+                            rs.getString("phone"),
+                            rs.getString("default_address"),
+                            rs.getString("profile_image")
                     );
                 }
             }
@@ -55,5 +57,119 @@ public class UserDAO {
             System.err.println("Login error: " + ex.getMessage());
         }
         return null;
+    }
+
+    // Get user by ID (returns full User object)
+    public static User getUserById(int userId) {
+        String sql = "SELECT user_id, name, email, phone, default_address, profile_image FROM Users WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new User(
+                            rs.getInt("user_id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("default_address"),
+                            rs.getString("profile_image")
+                    );
+                }
+            }
+        } catch (Exception ex) {
+            System.err.println("Get user error: " + ex.getMessage());
+        }
+        return null;
+    }
+
+    // Update user profile (name, email, phone)
+    public static boolean updateProfile(int userId, String name, String email, String phone) {
+        String sql = "UPDATE Users SET name = ?, email = ?, phone = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.setString(3, phone);
+            ps.setInt(4, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Update profile error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    // Update default address
+    public static boolean updateAddress(int userId, String address) {
+        String sql = "UPDATE Users SET default_address = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, address);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Update address error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    // Update profile image path
+    public static boolean updateProfileImage(int userId, String imagePath) {
+        String sql = "UPDATE Users SET profile_image = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, imagePath);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Update profile image error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    // Update password
+    public static boolean updatePassword(int userId, String currentPassword, String newPassword) {
+        // First verify current password
+        String checkSql = "SELECT user_id FROM Users WHERE user_id = ? AND password = ?";
+        String hashedCurrent = PasswordUtil.hash(currentPassword);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
+
+            checkPs.setInt(1, userId);
+            checkPs.setString(2, hashedCurrent);
+
+            try (ResultSet rs = checkPs.executeQuery()) {
+                if (!rs.next()) {
+                    return false; // Current password incorrect
+                }
+            }
+
+            // Update to new password
+            String updateSql = "UPDATE Users SET password = ? WHERE user_id = ?";
+            String hashedNew = PasswordUtil.hash(newPassword);
+
+            try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                updatePs.setString(1, hashedNew);
+                updatePs.setInt(2, userId);
+
+                int rowsAffected = updatePs.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (Exception ex) {
+            System.err.println("Update password error: " + ex.getMessage());
+            return false;
+        }
     }
 }

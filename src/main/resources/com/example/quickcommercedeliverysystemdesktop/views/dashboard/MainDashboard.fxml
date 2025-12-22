@@ -19,6 +19,7 @@
             <Button text="📦 Orders" onAction="#loadOrders" styleClass="nav-btn"/>
             <Button text="🚚 Deliveries" onAction="#loadDeliveries" styleClass="nav-btn"/>
             <Button text="💰 Earnings" onAction="#loadEarnings" styleClass="nav-btn"/>
+            <Button text="👤 Profile" onAction="#loadProfile" styleClass="nav-btn"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
