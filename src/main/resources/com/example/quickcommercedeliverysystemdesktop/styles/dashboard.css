@@ -117,3 +117,390 @@
     -fx-background-color: transparent;
 }
 
+/* ==================== ORDERS PAGE STYLES ==================== */
+
+/* Orders Container */
+.orders-container {
+    -fx-background-color: #f5f7fa;
+    -fx-padding: 25px;
+}
+
+/* Page Title */
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+/* Info Label */
+.info-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 8px 15px;
+    -fx-background-radius: 20px;
+}
+
+/* Filter Section */
+.filter-section {
+    -fx-background-color: white;
+    -fx-padding: 15px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
+}
+
+/* Search Field */
+.search-field {
+    -fx-font-size: 14px;
+    -fx-padding: 10px 15px;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-background-color: #f8f9fa;
+}
+
+.search-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+}
+
+/* Filter ComboBox */
+.filter-combo {
+    -fx-font-size: 14px;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.filter-combo:hover {
+    -fx-border-color: #3498db;
+}
+
+/* Buttons */
+.primary-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #21618c;
+}
+
+.secondary-button {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+.action-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Orders Table */
+.orders-table {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
+}
+
+.orders-table .column-header-background {
+    -fx-background-color: #f8f9fa;
+}
+
+.orders-table .column-header {
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 15px 10px;
+}
+
+.orders-table .table-cell {
+    -fx-padding: 12px 10px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #34495e;
+}
+
+.orders-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #ecf0f1 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.orders-table .table-row-cell:odd {
+    -fx-background-color: #fafbfc;
+}
+
+.orders-table .table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #2c3e50;
+}
+
+.orders-table .table-row-cell:hover {
+    -fx-background-color: #f5f9fc;
+}
+
+.placeholder-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #95a5a6;
+    -fx-padding: 50px;
+}
+
+/* Statistics Section */
+.stats-section {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
+}
+
+.stat-card {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 20px 30px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 150px;
+}
+
+.stat-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3498db;
+}
+
+.stat-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-weight: 600;
+}
+
+/* ==================== ORDER DETAILS DIALOG STYLES ==================== */
+
+.order-details-dialog {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);
+}
+
+.dialog-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #95a5a6;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 5px 10px;
+}
+
+.close-button:hover {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5px;
+}
+
+.order-summary {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 15px;
+    -fx-background-radius: 6px;
+}
+
+.label-bold {
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+    -fx-font-size: 13px;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.items-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+}
+
+.items-table .column-header-background {
+    -fx-background-color: #f8f9fa;
+}
+
+.items-table .column-header {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.items-table .table-cell {
+    -fx-padding: 10px;
+}
+
+.total-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.total-value {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+.status-badge {
+    -fx-padding: 8px 15px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* Status Colors */
+.status-pending {
+    -fx-background-color: #e2e3e5;
+    -fx-text-fill: #383d41;
+}
+
+.status-confirmed {
+    -fx-background-color: #cce5ff;
+    -fx-text-fill: #004085;
+}
+
+.status-preparing {
+    -fx-background-color: #d1ecf1;
+    -fx-text-fill: #0c5460;
+}
+
+.status-out-for-delivery {
+    -fx-background-color: #fff3cd;
+    -fx-text-fill: #856404;
+}
+
+.status-delivered {
+    -fx-background-color: #d4edda;
+    -fx-text-fill: #155724;
+}
+
+.status-cancelled {
+    -fx-background-color: #f8d7da;
+    -fx-text-fill: #721c24;
+}
+
+/* ==================== CREATE ORDER PAGE STYLES ==================== */
+
+.create-order-container {
+    -fx-background-color: #f5f7fa;
+}
+
+.form-container {
+    -fx-background-color: white;
+    -fx-padding: 30px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.form-input {
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.form-input:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+}
+
+.image-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.message-label {
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5px;
+    -fx-min-height: 40px;
+}
+
+/* ==================== MY ORDERS PAGE STYLES ==================== */
+
+.my-orders-container {
+    -fx-background-color: #f5f7fa;
+}
+
+.filter-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.action-button-danger {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.action-button-danger:hover {
+    -fx-background-color: #c0392b;
+}
+
+/* New status styles for peer-to-peer delivery */
+.status-accepted {
+    -fx-background-color: #cce5ff;
+    -fx-text-fill: #004085;
+}
+
+.status-picked-up {
+    -fx-background-color: #d1ecf1;
+    -fx-text-fill: #0c5460;
+}
+
+.status-on-the-way {
+    -fx-background-color: #fff3cd;
+    -fx-text-fill: #856404;
+}

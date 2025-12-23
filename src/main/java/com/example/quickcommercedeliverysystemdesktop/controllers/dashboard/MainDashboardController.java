@@ -25,8 +25,19 @@ public class MainDashboardController {
     }
 
     @FXML
+    public void loadCreateOrder() {
+        loadPage("CreateOrder.fxml");
+    }
+
+    @FXML
+    public void loadMyOrders() {
+        loadPage("MyOrders.fxml");
+    }
+
+    @FXML
     public void loadOrders() {
-        loadPage("Orders.fxml");
+        // Redirect to MyOrders for customer view
+        loadPage("MyOrders.fxml");
     }
 
     @FXML

@@ -1,23 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.OrdersController"
+      spacing="20" styleClass="orders-container">
 
-    <VBox xmlns="http://javafx.com/javafx"
-          alignment="CENTER"
-          spacing="15">
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
 
-        <Label text="Orders Management" style="-fx-font-size:18px;"/>
-        <Label text="Create, view, and track orders here."/>
-    </VBox>
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="Orders Management" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="totalOrdersLabel" text="Total Orders: 0" styleClass="info-label"/>
+    </HBox>
 
+    <!-- Search and Filter Section -->
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="filter-section">
+        <TextField fx:id="searchField" promptText="Search by Order ID or Customer Name"
+                   prefWidth="300" styleClass="search-field"/>
 
-</AnchorPane>
+        <ComboBox fx:id="statusFilterComboBox" promptText="Filter by Status"
+                  prefWidth="180" styleClass="filter-combo"/>
+
+        <Button text="Clear Filters" onAction="#handleClearFilters" styleClass="secondary-button"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="primary-button"/>
+    </HBox>
+
+    <!-- Orders Table -->
+    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table">
+        <columns>
+            <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="100"/>
+            <TableColumn fx:id="customerNameColumn" text="Customer" prefWidth="150"/>
+            <TableColumn fx:id="customerPhoneColumn" text="Phone" prefWidth="120"/>
+            <TableColumn fx:id="itemsCountColumn" text="Items" prefWidth="80"/>
+            <TableColumn fx:id="totalAmountColumn" text="Total" prefWidth="100"/>
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="150"/>
+            <TableColumn fx:id="orderDateColumn" text="Order Date" prefWidth="180"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150"/>
+        </columns>
+        <placeholder>
+            <Label text="No orders found" styleClass="placeholder-label"/>
+        </placeholder>
+    </TableView>
+
+    <!-- Statistics Section -->
+    <HBox spacing="20" alignment="CENTER" styleClass="stats-section">
+        <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+            <Label fx:id="pendingCountLabel" text="0" styleClass="stat-value"/>
+            <Label text="Pending" styleClass="stat-label"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+            <Label fx:id="confirmedCountLabel" text="0" styleClass="stat-value"/>
+            <Label text="Confirmed" styleClass="stat-label"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+            <Label fx:id="outForDeliveryCountLabel" text="0" styleClass="stat-value"/>
+            <Label text="Out for Delivery" styleClass="stat-label"/>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="5" styleClass="stat-card">
+            <Label fx:id="deliveredCountLabel" text="0" styleClass="stat-value"/>
+            <Label text="Delivered" styleClass="stat-label"/>
+        </VBox>
+    </HBox>
+
+</VBox>

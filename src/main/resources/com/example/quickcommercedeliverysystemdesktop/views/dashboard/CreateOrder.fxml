@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.CreateOrderController"
+            fitToWidth="true" styleClass="scroll-pane">
+
+    <VBox spacing="25" styleClass="create-order-container">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT">
+            <Text text="Create New Delivery Order" styleClass="page-title"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Form Container -->
+        <VBox spacing="20" styleClass="form-container">
+
+            <!-- Product Name -->
+            <VBox spacing="8">
+                <Label text="Product Name *" styleClass="form-label"/>
+                <TextField fx:id="productNameField" promptText="e.g., Laptop, Books, Groceries"
+                          styleClass="form-input"/>
+            </VBox>
+
+            <!-- Description -->
+            <VBox spacing="8">
+                <Label text="Description *" styleClass="form-label"/>
+                <TextArea fx:id="descriptionArea" promptText="Describe the item to be delivered..."
+                         prefRowCount="4" wrapText="true" styleClass="form-input"/>
+            </VBox>
+
+            <!-- Delivery Location -->
+            <VBox spacing="8">
+                <Label text="Delivery Location *" styleClass="form-label"/>
+                <TextField fx:id="deliveryLocationField"
+                          promptText="Full address (Street, City, ZIP)"
+                          styleClass="form-input"/>
+            </VBox>
+
+            <!-- Time Range -->
+            <HBox spacing="15">
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Delivery Time From *" styleClass="form-label"/>
+                    <TextField fx:id="timeFromField" promptText="e.g., 8 PM"
+                              styleClass="form-input"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Delivery Time To *" styleClass="form-label"/>
+                    <TextField fx:id="timeToField" promptText="e.g., 9 PM"
+                              styleClass="form-input"/>
+                </VBox>
+            </HBox>
+
+            <!-- Delivery Fee -->
+            <VBox spacing="8">
+                <Label text="Delivery Fee (USD) *" styleClass="form-label"/>
+                <TextField fx:id="deliveryFeeField" promptText="e.g., 5.00"
+                          styleClass="form-input"/>
+            </VBox>
+
+            <!-- Notes (Optional) -->
+            <VBox spacing="8">
+                <Label text="Notes for Delivery Person (Optional)" styleClass="form-label"/>
+                <TextArea fx:id="notesArea" promptText="Any special instructions..."
+                         prefRowCount="3" wrapText="true" styleClass="form-input"/>
+            </VBox>
+
+            <!-- Product Photo (Optional) -->
+            <VBox spacing="8">
+                <Label text="Product Photo (Optional)" styleClass="form-label"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button text="Choose Image" onAction="#handleChooseImage"
+                           styleClass="secondary-button"/>
+                    <Label fx:id="imageLabel" text="No image selected"
+                          styleClass="image-label"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+
+        <Separator/>
+
+        <!-- Action Buttons -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="Create Order" onAction="#handleCreateOrder"
+                   styleClass="primary-button" prefWidth="150"/>
+            <Button text="Clear Form" onAction="#handleClearForm"
+                   styleClass="secondary-button" prefWidth="150"/>
+        </HBox>
+
+        <!-- Message Label -->
+        <Label fx:id="messageLabel" styleClass="message-label" wrapText="true"/>
+
+    </VBox>
+
+</ScrollPane>
+

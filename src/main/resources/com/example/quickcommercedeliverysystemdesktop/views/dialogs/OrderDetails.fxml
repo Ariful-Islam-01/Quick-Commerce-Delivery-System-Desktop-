@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.OrderDetailsController"
+      spacing="20" styleClass="order-details-dialog" prefWidth="600" prefHeight="500">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Dialog Header -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Text text="Order Details" styleClass="dialog-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="✕" onAction="#handleClose" styleClass="close-button"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Order Summary Section -->
+    <GridPane hgap="15" vgap="10" styleClass="order-summary">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="30"/>
+            <ColumnConstraints percentWidth="70"/>
+        </columnConstraints>
+
+        <!-- Row 0 -->
+        <Label text="Order ID:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <Label fx:id="orderIdLabel" text="#12345" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <!-- Row 1 -->
+        <Label text="Customer:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label fx:id="customerNameLabel" text="John Doe" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <!-- Row 2 -->
+        <Label text="Phone:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <Label fx:id="customerPhoneLabel" text="+1234567890" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <!-- Row 3 -->
+        <Label text="Delivery Address:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <Label fx:id="deliveryAddressLabel" text="123 Main St, City" wrapText="true"
+               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <!-- Row 4 -->
+        <Label text="Order Date:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <Label fx:id="orderDateLabel" text="Dec 23, 2025 10:30 AM" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <!-- Row 5 -->
+        <Label text="Delivery Date:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <Label fx:id="deliveryDateLabel" text="Not Delivered" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <!-- Row 6 -->
+        <Label text="Current Status:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <Label fx:id="currentStatusLabel" text="Pending" styleClass="status-badge"
+               GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+    </GridPane>
+
+    <Separator/>
+
+    <!-- Items Section -->
+    <VBox spacing="10" VBox.vgrow="ALWAYS">
+        <Label text="Order Items" styleClass="section-title"/>
+
+        <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS" styleClass="items-table">
+            <columns>
+                <TableColumn fx:id="productNameColumn" text="Product" prefWidth="250"/>
+                <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
+                <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
+                <TableColumn fx:id="subtotalColumn" text="Subtotal" prefWidth="120"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Total Section -->
+    <HBox alignment="CENTER_RIGHT" spacing="15">
+        <Label text="Total Amount:" styleClass="total-label"/>
+        <Label fx:id="totalAmountLabel" text="$0.00" styleClass="total-value"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Update Status Section -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Label text="Update Status:" styleClass="label-bold"/>
+        <ComboBox fx:id="statusComboBox" prefWidth="200"/>
+        <Button text="Update Status" onAction="#handleUpdateStatus" styleClass="primary-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Close" onAction="#handleClose" styleClass="secondary-button"/>
+    </HBox>
+
+</VBox>
+

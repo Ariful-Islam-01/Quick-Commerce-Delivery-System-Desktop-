@@ -35,5 +35,21 @@ public class UserSession {
     public void clearSession() {
         currentUser = null;
     }
-}
 
+    // Convenience methods
+    public int getUserId() {
+        return currentUser != null ? currentUser.getUserId() : -1;
+    }
+
+    public String getUserName() {
+        return currentUser != null ? currentUser.getName() : "";
+    }
+
+    public String getUserEmail() {
+        return currentUser != null ? currentUser.getEmail() : "";
+    }
+
+    public String getUserPhone() {
+        return currentUser != null ? currentUser.getPhone() : "";
+    }
+}

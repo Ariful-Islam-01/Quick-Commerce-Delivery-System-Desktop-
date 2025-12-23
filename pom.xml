@@ -142,7 +142,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example.quickcommercedeliverysystemdesktop/com.example.quickcommercedeliverysystemdesktop.HelloApplication
+                                com.example.quickcommercedeliverysystemdesktop/com.example.quickcommercedeliverysystemdesktop.Main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

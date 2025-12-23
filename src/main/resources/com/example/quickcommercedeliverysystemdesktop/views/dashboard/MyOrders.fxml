@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.MyOrdersController"
+      spacing="20" styleClass="my-orders-container">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="My Orders" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="totalOrdersLabel" text="Total: 0" styleClass="info-label"/>
+    </HBox>
+
+    <!-- Filter Section -->
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="filter-section">
+        <Label text="Filter by Status:" styleClass="filter-label"/>
+        <ComboBox fx:id="statusFilterComboBox" prefWidth="180" styleClass="filter-combo"/>
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
+    </HBox>
+
+    <!-- Orders Table -->
+    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table">
+        <columns>
+            <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="100"/>
+            <TableColumn fx:id="productNameColumn" text="Product" prefWidth="200"/>
+            <TableColumn fx:id="deliveryLocationColumn" text="Delivery Location" prefWidth="250"/>
+            <TableColumn fx:id="deliveryFeeColumn" text="Fee" prefWidth="80"/>
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="130"/>
+            <TableColumn fx:id="orderDateColumn" text="Created" prefWidth="160"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200"/>
+        </columns>
+        <placeholder>
+            <Label text="No orders found. Create your first order!"
+                   styleClass="placeholder-label"/>
+        </placeholder>
+    </TableView>
+
+</VBox>
+
