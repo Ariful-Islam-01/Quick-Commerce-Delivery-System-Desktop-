@@ -87,7 +87,7 @@ public class MainDashboardController {
             );
 
             stage.setScene(scene);
-            stage.show(); // optional but recommended
+            stage.show();
 
         } catch (Exception e) {
             e.printStackTrace();
