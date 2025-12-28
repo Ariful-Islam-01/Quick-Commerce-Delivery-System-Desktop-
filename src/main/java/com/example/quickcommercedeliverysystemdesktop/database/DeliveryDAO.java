@@ -307,6 +307,122 @@ public class DeliveryDAO {
     }
 
     /**
+     * Get earnings history for a delivery partner
+     */
+    public static List<EarningRecord> getEarningsHistory(int deliveryPersonId) {
+        List<EarningRecord> earnings = new ArrayList<>();
+        String sql = """
+                SELECT e.earning_id, e.order_id, e.amount, e.created_at,
+                       o.product_name, o.delivery_location
+                FROM Earnings e
+                INNER JOIN Orders o ON e.order_id = o.order_id
+                WHERE e.delivery_person_id = ?
+                ORDER BY e.created_at DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, deliveryPersonId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                EarningRecord record = new EarningRecord(
+                        rs.getInt("earning_id"),
+                        rs.getInt("order_id"),
+                        deliveryPersonId,
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
+                        rs.getString("product_name"),
+                        rs.getString("delivery_location")
+                );
+                earnings.add(record);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching earnings history: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return earnings;
+    }
+
+    /**
+     * Get earnings for a specific time period
+     */
+    public static double getEarningsForPeriod(int deliveryPersonId, String period) {
+        String dateFilter = switch (period) {
+            case "TODAY" -> "DATE(e.created_at) = DATE('now')";
+            case "WEEK" -> "DATE(e.created_at) >= DATE('now', '-7 days')";
+            case "MONTH" -> "DATE(e.created_at) >= DATE('now', '-30 days')";
+            default -> "1=1"; // All time
+        };
+
+        String sql = String.format("""
+                SELECT COALESCE(SUM(e.amount), 0) as total
+                FROM Earnings e
+                WHERE e.delivery_person_id = ? AND %s
+                """, dateFilter);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, deliveryPersonId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching period earnings: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Get daily earnings breakdown for the last N days
+     */
+    public static List<DailyEarning> getDailyEarnings(int deliveryPersonId, int days) {
+        List<DailyEarning> dailyEarnings = new ArrayList<>();
+        String sql = """
+                SELECT DATE(e.created_at) as earning_date,
+                       COALESCE(SUM(e.amount), 0) as daily_total,
+                       COUNT(*) as delivery_count
+                FROM Earnings e
+                WHERE e.delivery_person_id = ?
+                  AND DATE(e.created_at) >= DATE('now', '-' || ? || ' days')
+                GROUP BY DATE(e.created_at)
+                ORDER BY earning_date DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, deliveryPersonId);
+            ps.setInt(2, days);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                DailyEarning daily = new DailyEarning(
+                        rs.getString("earning_date"),
+                        rs.getDouble("daily_total"),
+                        rs.getInt("delivery_count")
+                );
+                dailyEarnings.add(daily);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching daily earnings: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return dailyEarnings;
+    }
+
+    /**
      * Inner class to hold delivery statistics
      */
     public static class DeliveryStats {
@@ -326,6 +442,73 @@ public class DeliveryDAO {
         public int getCompletedDeliveries() { return completedDeliveries; }
         public int getInProgressDeliveries() { return inProgressDeliveries; }
         public double getTotalEarnings() { return totalEarnings; }
+    }
+
+    /**
+     * Inner class to hold earning record details
+     */
+    public static class EarningRecord {
+        private final int earningId;
+        private final int orderId;
+        private final int deliveryPersonId;
+        private final double amount;
+        private final LocalDateTime earnedAt;
+        private final String productName;
+        private final String location;
+
+        public EarningRecord(int earningId, int orderId, int deliveryPersonId, double amount,
+                           LocalDateTime earnedAt, String productName, String location) {
+            this.earningId = earningId;
+            this.orderId = orderId;
+            this.deliveryPersonId = deliveryPersonId;
+            this.amount = amount;
+            this.earnedAt = earnedAt;
+            this.productName = productName;
+            this.location = location;
+        }
+
+        public int getEarningId() { return earningId; }
+        public int getOrderId() { return orderId; }
+        public int getDeliveryPersonId() { return deliveryPersonId; }
+        public double getAmount() { return amount; }
+        public LocalDateTime getEarnedAt() { return earnedAt; }
+        public String getProductName() { return productName; }
+        public String getLocation() { return location; }
+
+        public String getFormattedAmount() {
+            return String.format("$%.2f", amount);
+        }
+
+        public String getFormattedDate() {
+            return earnedAt.toLocalDate().toString();
+        }
+
+        public String getFormattedTime() {
+            return earnedAt.toLocalTime().toString().substring(0, 5);
+        }
+    }
+
+    /**
+     * Inner class to hold daily earning summary
+     */
+    public static class DailyEarning {
+        private final String date;
+        private final double totalAmount;
+        private final int deliveryCount;
+
+        public DailyEarning(String date, double totalAmount, int deliveryCount) {
+            this.date = date;
+            this.totalAmount = totalAmount;
+            this.deliveryCount = deliveryCount;
+        }
+
+        public String getDate() { return date; }
+        public double getTotalAmount() { return totalAmount; }
+        public int getDeliveryCount() { return deliveryCount; }
+
+        public String getFormattedAmount() {
+            return String.format("$%.2f", totalAmount);
+        }
     }
 }
 
