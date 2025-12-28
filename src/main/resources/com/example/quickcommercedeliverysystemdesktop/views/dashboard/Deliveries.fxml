@@ -1,23 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.DeliveriesController"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.DeliveriesController"
+      spacing="20" style="-fx-padding: 20;">
 
-    <VBox xmlns="http://javafx.com/javafx"
-          alignment="CENTER"
-          spacing="15">
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="Delivery Partner Dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="action-button"/>
+    </HBox>
 
-        <Label text="Deliveries" style="-fx-font-size:18px;"/>
-        <Label text="Accept and manage deliveries."/>
-    </VBox>
+    <!-- Statistics Cards -->
+    <GridPane hgap="15" vgap="15">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+            <ColumnConstraints percentWidth="25"/>
+        </columnConstraints>
 
+        <!-- Total Deliveries Card -->
+        <VBox GridPane.columnIndex="0" style="-fx-background-color: #e3f2fd; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Total Deliveries" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            <Label fx:id="totalDeliveriesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1976d2;">
+                <padding><Insets top="5"/></padding>
+            </Label>
+        </VBox>
 
-</AnchorPane>
+        <!-- Completed Card -->
+        <VBox GridPane.columnIndex="1" style="-fx-background-color: #e8f5e9; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Completed" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            <Label fx:id="completedDeliveriesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #388e3c;">
+                <padding><Insets top="5"/></padding>
+            </Label>
+        </VBox>
+
+        <!-- In Progress Card -->
+        <VBox GridPane.columnIndex="2" style="-fx-background-color: #fff3e0; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="In Progress" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            <Label fx:id="inProgressLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #f57c00;">
+                <padding><Insets top="5"/></padding>
+            </Label>
+        </VBox>
+
+        <!-- Total Earnings Card -->
+        <VBox GridPane.columnIndex="3" style="-fx-background-color: #f3e5f5; -fx-padding: 15; -fx-background-radius: 8;">
+            <Label text="Total Earnings" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            <Label fx:id="totalEarningsLabel" text="0.00" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #7b1fa2;">
+                <padding><Insets top="5"/></padding>
+            </Label>
+        </VBox>
+    </GridPane>
+
+    <!-- Tab Pane for Available Orders and My Deliveries -->
+    <TabPane fx:id="deliveryTabPane" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE">
+
+        <!-- Available Orders Tab -->
+        <Tab text="Available Orders">
+            <VBox spacing="15" style="-fx-padding: 15;">
+
+                <!-- Available Orders Header -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="availableCountLabel" text="Available: 0" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Orders waiting to be accepted" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                </HBox>
+
+                <!-- Available Orders Table -->
+                <TableView fx:id="availableOrdersTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="availOrderIdColumn" text="Order ID" prefWidth="80"/>
+                        <TableColumn fx:id="availProductColumn" text="Product" prefWidth="150"/>
+                        <TableColumn fx:id="availLocationColumn" text="Delivery Location" prefWidth="200"/>
+                        <TableColumn fx:id="availFeeColumn" text="Fee" prefWidth="100"/>
+                        <TableColumn fx:id="availTimeColumn" text="Time Range" prefWidth="150"/>
+                        <TableColumn fx:id="availActionsColumn" text="Actions" prefWidth="120"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No available orders at the moment"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </Tab>
+
+        <!-- My Deliveries Tab -->
+        <Tab text="My Deliveries">
+            <VBox spacing="15" style="-fx-padding: 15;">
+
+                <!-- My Deliveries Header with Filter -->
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label fx:id="myDeliveriesCountLabel" text="My Deliveries: 0" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Filter by Status:"/>
+                    <ComboBox fx:id="deliveryStatusFilter" prefWidth="150"/>
+                </HBox>
+
+                <!-- My Deliveries Table -->
+                <TableView fx:id="myDeliveriesTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="myOrderIdColumn" text="Order ID" prefWidth="80"/>
+                        <TableColumn fx:id="myProductColumn" text="Product" prefWidth="150"/>
+                        <TableColumn fx:id="myLocationColumn" text="Location" prefWidth="180"/>
+                        <TableColumn fx:id="myFeeColumn" text="Fee" prefWidth="100"/>
+                        <TableColumn fx:id="myStatusColumn" text="Status" prefWidth="120"/>
+                        <TableColumn fx:id="myActionsColumn" text="Actions" prefWidth="250"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="You haven't accepted any deliveries yet"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </Tab>
+    </TabPane>
+
+    <!-- Info Footer -->
+    <HBox style="-fx-padding: 10; -fx-background-color: #f5f5f5; -fx-background-radius: 5;">
+        <Label text="💡 Tip: Accept orders quickly to earn more! Update delivery status in real-time."
+               style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+    </HBox>
+
+</VBox>
