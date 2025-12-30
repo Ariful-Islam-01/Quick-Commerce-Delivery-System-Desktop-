@@ -60,6 +60,20 @@ public class DeliveryDAO {
                     psInsert.executeUpdate();
 
                     conn.commit();
+
+                    // Get customer ID for notification
+                    int customerId = getCustomerIdForOrder(orderId);
+                    if (customerId > 0) {
+                        // Notify customer
+                        NotificationDAO.createNotification(
+                            customerId,
+                            "Order Accepted",
+                            "A delivery partner has accepted your order #" + orderId,
+                            "ORDER_UPDATE",
+                            orderId
+                        );
+                    }
+
                     return true;
                 }
 
@@ -133,6 +147,20 @@ public class DeliveryDAO {
                     psDelivery.executeUpdate();
 
                     conn.commit();
+
+                    // Get customer ID for notification
+                    int customerId = getCustomerIdForOrder(orderId);
+                    if (customerId > 0) {
+                        // Notify customer
+                        NotificationDAO.createNotification(
+                            customerId,
+                            "Order Picked Up",
+                            "Your order #" + orderId + " has been picked up by the delivery partner",
+                            "DELIVERY_UPDATE",
+                            orderId
+                        );
+                    }
+
                     return true;
                 }
 
@@ -162,7 +190,24 @@ public class DeliveryDAO {
 
             ps.setInt(1, orderId);
             int updated = ps.executeUpdate();
-            return updated > 0;
+
+            if (updated > 0) {
+                // Get customer ID for notification
+                int customerId = getCustomerIdForOrder(orderId);
+                if (customerId > 0) {
+                    // Notify customer
+                    NotificationDAO.createNotification(
+                        customerId,
+                        "Order On The Way",
+                        "Your order #" + orderId + " is on the way to your location!",
+                        "DELIVERY_UPDATE",
+                        orderId
+                    );
+                }
+                return true;
+            }
+
+            return false;
 
         } catch (SQLException e) {
             System.err.println("Error marking order as on the way: " + e.getMessage());
@@ -207,6 +252,29 @@ public class DeliveryDAO {
                     psEarning.executeUpdate();
 
                     conn.commit();
+
+                    // Get customer ID for notification
+                    int customerId = getCustomerIdForOrder(orderId);
+                    if (customerId > 0) {
+                        // Notify customer
+                        NotificationDAO.createNotification(
+                            customerId,
+                            "Order Delivered",
+                            "Your order #" + orderId + " has been successfully delivered!",
+                            "SUCCESS",
+                            orderId
+                        );
+                    }
+
+                    // Notify delivery partner about earnings
+                    NotificationDAO.createNotification(
+                        deliveryPersonId,
+                        "Delivery Completed",
+                        String.format("You earned $%.2f from order #%d", deliveryFee, orderId),
+                        "EARNING",
+                        orderId
+                    );
+
                     return true;
                 }
 
@@ -420,6 +488,30 @@ public class DeliveryDAO {
         }
 
         return dailyEarnings;
+    }
+
+    /**
+     * Helper method to get customer ID for an order
+     */
+    private static int getCustomerIdForOrder(int orderId) {
+        String sql = "SELECT customer_id FROM Orders WHERE order_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("customer_id");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting customer ID for order: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return -1;
     }
 
     /**

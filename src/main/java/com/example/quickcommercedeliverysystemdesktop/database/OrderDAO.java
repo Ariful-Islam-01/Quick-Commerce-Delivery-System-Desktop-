@@ -17,7 +17,7 @@ public class OrderDAO {
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             // Split time range into from and to
             String[] times = order.getDeliveryTimeRange().split(" - ");
@@ -36,6 +36,22 @@ public class OrderDAO {
             ps.setString(10, Timestamp.valueOf(order.getOrderDate()).toString());
 
             ps.executeUpdate();
+
+            // Get generated order ID
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int orderId = generatedKeys.getInt(1);
+
+                // Create notification for the user
+                NotificationDAO.createNotification(
+                    order.getCreatedByUserId(),
+                    "Order Created",
+                    "Your order for '" + order.getProductName() + "' has been created and is waiting for a delivery partner.",
+                    "ORDER_UPDATE",
+                    orderId
+                );
+            }
+
             return true;
         } catch (Exception ex) {
             System.err.println("Error creating order: " + ex.getMessage());

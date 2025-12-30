@@ -103,10 +103,11 @@ public class CreateOrderController {
                                fee, notes, userName, userPhone);
         order.setProductPhoto(selectedImagePath);
 
-        // Save to database
+        // Save to database (notification will be created automatically in OrderDAO)
         boolean success = OrderDAO.createOrder(order);
 
         if (success) {
+
             showSuccess("Order created successfully! Waiting for a delivery person to accept.");
             handleClearForm();
         } else {

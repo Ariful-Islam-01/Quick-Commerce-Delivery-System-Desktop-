@@ -13,6 +13,7 @@ public class MainDashboardController {
 
     @FXML private StackPane contentArea;
     @FXML private Button logoutButton;
+    @FXML private Button notificationsBtn;
 
     @FXML
     public void initialize() {
@@ -48,6 +49,11 @@ public class MainDashboardController {
     @FXML
     public void loadEarnings() {
         loadPage("Earnings.fxml");
+    }
+
+    @FXML
+    public void loadNotifications() {
+        loadPage("Notifications.fxml");
     }
 
     @FXML

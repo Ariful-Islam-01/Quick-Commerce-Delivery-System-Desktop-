@@ -3,98 +3,167 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.OrderDetailsController"
-      spacing="20" styleClass="order-details-dialog" prefWidth="600" prefHeight="500">
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.OrderDetailsController"
+            fitToWidth="true" style="-fx-background-color: white;">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+    <VBox spacing="20" style="-fx-padding: 25; -fx-background-color: white;">
 
-    <!-- Dialog Header -->
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Text text="Order Details" styleClass="dialog-title"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="✕" onAction="#handleClose" styleClass="close-button"/>
-    </HBox>
+        <!-- Header Section -->
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 15; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label fx:id="orderIdLabel" text="Order #0" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Label fx:id="orderDateLabel" text="Created on: " style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+            </VBox>
+            <Label fx:id="statusBadge" text="PENDING"
+                   style="-fx-background-color: #ffc107; -fx-text-fill: white; -fx-padding: 8 16;
+                          -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+        </HBox>
 
-    <Separator/>
+        <!-- Product Information Card -->
+        <VBox spacing="12" style="-fx-padding: 20; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+            <Label text="📦 Product Information" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-    <!-- Order Summary Section -->
-    <GridPane hgap="15" vgap="10" styleClass="order-summary">
-        <columnConstraints>
-            <ColumnConstraints percentWidth="30"/>
-            <ColumnConstraints percentWidth="70"/>
-        </columnConstraints>
+            <HBox spacing="20">
+                <!-- Product Photo -->
+                <VBox alignment="CENTER" spacing="8">
+                    <ImageView fx:id="productImageView" fitWidth="150" fitHeight="150" preserveRatio="true"
+                               style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);"/>
+                    <Label fx:id="photoLabel" text="No photo" style="-fx-font-size: 10px; -fx-text-fill: #999;"/>
+                </VBox>
 
-        <!-- Row 0 -->
-        <Label text="Order ID:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <Label fx:id="orderIdLabel" text="#12345" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <!-- Product Details -->
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <HBox spacing="8">
+                        <Label text="Product:" style="-fx-font-weight: bold; -fx-min-width: 80px;"/>
+                        <Label fx:id="productNameLabel" text="" wrapText="true"/>
+                    </HBox>
+                    <VBox spacing="5">
+                        <Label text="Description:" style="-fx-font-weight: bold;"/>
+                        <TextArea fx:id="descriptionArea" editable="false" wrapText="true"
+                                  prefRowCount="4" style="-fx-background-color: white;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
 
-        <!-- Row 1 -->
-        <Label text="Customer:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <Label fx:id="customerNameLabel" text="John Doe" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <!-- Delivery Details Card -->
+        <VBox spacing="12" style="-fx-padding: 20; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+            <Label text="🚚 Delivery Details" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-        <!-- Row 2 -->
-        <Label text="Phone:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <Label fx:id="customerPhoneLabel" text="+1234567890" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <GridPane hgap="15" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="120"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
 
-        <!-- Row 3 -->
-        <Label text="Delivery Address:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <Label fx:id="deliveryAddressLabel" text="123 Main St, City" wrapText="true"
-               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="📍 Location:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="deliveryLocationLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" wrapText="true"/>
 
-        <!-- Row 4 -->
-        <Label text="Order Date:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <Label fx:id="orderDateLabel" text="Dec 23, 2025 10:30 AM" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="⏰ Time Range:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="timeRangeLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <!-- Row 5 -->
-        <Label text="Delivery Date:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <Label fx:id="deliveryDateLabel" text="Not Delivered" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <Label text="💰 Delivery Fee:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="deliveryFeeLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       style="-fx-font-size: 18px; -fx-text-fill: #27ae60; -fx-font-weight: bold;"/>
 
-        <!-- Row 6 -->
-        <Label text="Current Status:" styleClass="label-bold" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <Label fx:id="currentStatusLabel" text="Pending" styleClass="status-badge"
-               GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-    </GridPane>
+                <Label fx:id="notesLabelTitle" text="📝 Special Notes:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                       style="-fx-font-weight: bold;" visible="false" managed="false"/>
+                <TextArea fx:id="notesArea" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                          editable="false" wrapText="true" prefRowCount="2"
+                          style="-fx-background-color: white;" visible="false" managed="false"/>
+            </GridPane>
+        </VBox>
 
-    <Separator/>
+        <!-- Customer Information Card (For Delivery Partners) -->
+        <VBox fx:id="customerInfoCard" spacing="12"
+              style="-fx-padding: 20; -fx-background-color: #e3f2fd; -fx-background-radius: 8;"
+              visible="false" managed="false">
+            <Label text="👤 Customer Information" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-    <!-- Items Section -->
-    <VBox spacing="10" VBox.vgrow="ALWAYS">
-        <Label text="Order Items" styleClass="section-title"/>
+            <GridPane hgap="15" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="100" prefWidth="100"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
 
-        <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS" styleClass="items-table">
-            <columns>
-                <TableColumn fx:id="productNameColumn" text="Product" prefWidth="250"/>
-                <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
-                <TableColumn fx:id="priceColumn" text="Price" prefWidth="100"/>
-                <TableColumn fx:id="subtotalColumn" text="Subtotal" prefWidth="120"/>
-            </columns>
-        </TableView>
+                <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="customerNameLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Phone:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="customerPhoneLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Delivery Partner Information Card (For Customers) -->
+        <VBox fx:id="partnerInfoCard" spacing="12"
+              style="-fx-padding: 20; -fx-background-color: #e8f5e9; -fx-background-radius: 8;"
+              visible="false" managed="false">
+            <Label text="🚴 Delivery Partner Information" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <GridPane hgap="15" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="100" prefWidth="100"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="partnerNameLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Phone:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="partnerPhoneLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Status:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+                <Label fx:id="deliveryStatusLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Status Timeline -->
+        <VBox spacing="12" style="-fx-padding: 20; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+            <Label text="📋 Order Timeline" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <VBox fx:id="timelineContainer" spacing="8"/>
+        </VBox>
+
+        <!-- Action Buttons -->
+        <HBox spacing="12" alignment="CENTER">
+            <!-- Customer Actions -->
+            <Button fx:id="cancelOrderBtn" text="Cancel Order" onAction="#handleCancelOrder"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="contactPartnerBtn" text="Contact Partner" onAction="#handleContactPartner"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="rateDeliveryBtn" text="Rate &amp; Review" onAction="#handleRateDelivery"
+                    style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+
+            <!-- Delivery Partner Actions -->
+            <Button fx:id="acceptOrderBtn" text="Accept Order" onAction="#handleAcceptOrder"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="pickUpBtn" text="Mark as Picked Up" onAction="#handlePickUp"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="onTheWayBtn" text="On The Way" onAction="#handleOnTheWay"
+                    style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="completeBtn" text="Mark as Delivered" onAction="#handleComplete"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+            <Button fx:id="contactCustomerBtn" text="Contact Customer" onAction="#handleContactCustomer"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"
+                    visible="false" managed="false"/>
+
+            <!-- Common Actions -->
+            <Button text="Close" onAction="#handleClose"
+                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"/>
+        </HBox>
+
     </VBox>
 
-    <Separator/>
-
-    <!-- Total Section -->
-    <HBox alignment="CENTER_RIGHT" spacing="15">
-        <Label text="Total Amount:" styleClass="total-label"/>
-        <Label fx:id="totalAmountLabel" text="$0.00" styleClass="total-value"/>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Update Status Section -->
-    <HBox spacing="15" alignment="CENTER_LEFT">
-        <Label text="Update Status:" styleClass="label-bold"/>
-        <ComboBox fx:id="statusComboBox" prefWidth="200"/>
-        <Button text="Update Status" onAction="#handleUpdateStatus" styleClass="primary-button"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Close" onAction="#handleClose" styleClass="secondary-button"/>
-    </HBox>
-
-</VBox>
+</ScrollPane>
 

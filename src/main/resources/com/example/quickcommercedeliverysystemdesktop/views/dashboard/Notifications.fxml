@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.NotificationsController"
+            fitToWidth="true"
+            style="-fx-background-color: transparent;"
+            hbarPolicy="NEVER">
+
+    <VBox spacing="20" style="-fx-padding: 20;">
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <Label text="🔔 Notifications" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="unreadCountLabel" text="0 unread"
+                   style="-fx-font-size: 14px; -fx-text-fill: #e74c3c; -fx-font-weight: bold;"/>
+            <Button text="Mark All as Read" onAction="#handleMarkAllAsRead"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            <Button text="Clear All" onAction="#handleClearAll"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+        </HBox>
+
+        <!-- Filter Buttons -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Filter:" style="-fx-font-weight: bold;"/>
+            <fx:define>
+                <ToggleGroup fx:id="filterToggleGroup"/>
+            </fx:define>
+            <ToggleButton fx:id="allFilterBtn" text="All" toggleGroup="$filterToggleGroup" selected="true"
+                          style="-fx-background-color: #ecf0f1; -fx-padding: 6 12; -fx-background-radius: 5;"/>
+            <ToggleButton fx:id="unreadFilterBtn" text="Unread" toggleGroup="$filterToggleGroup"
+                          style="-fx-background-color: #ecf0f1; -fx-padding: 6 12; -fx-background-radius: 5;"/>
+            <ToggleButton fx:id="orderFilterBtn" text="Orders" toggleGroup="$filterToggleGroup"
+                          style="-fx-background-color: #ecf0f1; -fx-padding: 6 12; -fx-background-radius: 5;"/>
+            <ToggleButton fx:id="deliveryFilterBtn" text="Deliveries" toggleGroup="$filterToggleGroup"
+                          style="-fx-background-color: #ecf0f1; -fx-padding: 6 12; -fx-background-radius: 5;"/>
+            <ToggleButton fx:id="earningFilterBtn" text="Earnings" toggleGroup="$filterToggleGroup"
+                          style="-fx-background-color: #ecf0f1; -fx-padding: 6 12; -fx-background-radius: 5;"/>
+        </HBox>
+
+        <!-- Notifications List Container -->
+        <VBox fx:id="notificationsContainer" spacing="10" minHeight="400" visible="false" managed="false">
+            <!-- Notifications will be added here dynamically -->
+        </VBox>
+
+        <!-- Empty State -->
+        <VBox fx:id="emptyStateContainer" alignment="CENTER" spacing="15"
+              style="-fx-padding: 60;">
+            <Label text="🔕" style="-fx-font-size: 72px;"/>
+            <Label text="No Notifications" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #999;"/>
+            <Label text="You're all caught up! Notifications will appear here."
+                   style="-fx-font-size: 14px; -fx-text-fill: #666;" wrapText="true" textAlignment="CENTER"/>
+        </VBox>
+
+    </VBox>
+
+</ScrollPane>
+

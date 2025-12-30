@@ -8,8 +8,10 @@
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.EarningsController"
-            fitToWidth="true" fitToHeight="true"
-            style="-fx-background-color: transparent;">
+            fitToWidth="true"
+            style="-fx-background-color: transparent;"
+            vbarPolicy="ALWAYS"
+            hbarPolicy="NEVER">
 
 <VBox spacing="20" style="-fx-padding: 20;">
 
@@ -105,7 +107,7 @@
     <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
                               -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
         <Label text="Daily Earnings Trend" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        <BarChart fx:id="earningsChart" prefHeight="250" animated="true">
+        <BarChart fx:id="earningsChart" prefHeight="250">
             <xAxis>
                 <CategoryAxis fx:id="xAxis" side="BOTTOM"/>
             </xAxis>
@@ -116,7 +118,7 @@
     </VBox>
 
     <!-- Earnings History Section -->
-    <VBox spacing="15" VBox.vgrow="ALWAYS" minHeight="300" prefHeight="400"
+    <VBox spacing="15" minHeight="300"
           style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
 
@@ -131,7 +133,7 @@
         </HBox>
 
         <!-- Earnings History Table -->
-        <TableView fx:id="earningsTable" VBox.vgrow="ALWAYS" minHeight="200" prefHeight="300">
+        <TableView fx:id="earningsTable" minHeight="200" prefHeight="350">
             <columns>
                 <TableColumn fx:id="dateColumn" text="Date" prefWidth="100"/>
                 <TableColumn fx:id="timeColumn" text="Time" prefWidth="80"/>

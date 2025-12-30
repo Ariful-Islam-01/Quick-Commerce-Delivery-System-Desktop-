@@ -1,12 +1,16 @@
 package com.example.quickcommercedeliverysystemdesktop.database;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DatabaseInitializer {
     public static void initialize() {
         try(Connection conn = Database.getConnection();
             Statement stmt = conn.createStatement()) {
+
+            // First, check and fix Notifications table structure
+            verifyAndFixNotificationsTable(conn);
 
             // USERS table
             String createUsers = """
@@ -89,10 +93,28 @@ public class DatabaseInitializer {
                     CREATE TABLE IF NOT EXISTS Notifications (
                         notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
+                        title TEXT NOT NULL,
                         message TEXT NOT NULL,
+                        type TEXT DEFAULT 'INFO',
+                        order_id INTEGER,
                         is_read INTEGER DEFAULT 0,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (user_id) REFERENCES Users(user_id)
+                        FOREIGN KEY (user_id) REFERENCES Users(user_id),
+                        FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+                    );
+                    """;
+
+            // ORDER HISTORY table
+            String createOrderHistory = """
+                    CREATE TABLE IF NOT EXISTS OrderHistory (
+                        history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        order_id INTEGER NOT NULL,
+                        status TEXT NOT NULL,
+                        changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        changed_by INTEGER,
+                        notes TEXT,
+                        FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+                        FOREIGN KEY (changed_by) REFERENCES Users(user_id)
                     );
                     """;
 
@@ -103,12 +125,52 @@ public class DatabaseInitializer {
             stmt.execute(createEarnings);
             stmt.execute(createRatings);
             stmt.execute(createNotifications);
+            stmt.execute(createOrderHistory);
 
-            System.out.println("✔ Database tables created successfully (Users, Orders, Deliveries, Earnings, Ratings, Notifications).");
+            System.out.println("✔ Database tables created successfully (Users, Orders, Deliveries, Earnings, Ratings, Notifications, OrderHistory).");
 
         } catch (Exception ex) {
             System.err.println("Error initializing database: " + ex.getMessage());
             ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Verify and fix Notifications table structure
+     */
+    private static void verifyAndFixNotificationsTable(Connection conn) {
+        try {
+            // Check if Notifications table exists and has correct structure
+            String checkColumns = "PRAGMA table_info(Notifications)";
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(checkColumns)) {
+
+                boolean hasTitle = false;
+                boolean hasType = false;
+                boolean hasOrderId = false;
+
+                while (rs.next()) {
+                    String columnName = rs.getString("name");
+                    if ("title".equals(columnName)) hasTitle = true;
+                    if ("type".equals(columnName)) hasType = true;
+                    if ("order_id".equals(columnName)) hasOrderId = true;
+                }
+
+                // If missing required columns, drop and recreate
+                if (!hasTitle || !hasType || !hasOrderId) {
+                    System.out.println("⚠ Notifications table has incorrect structure - fixing...");
+
+                    // Drop old table
+                    stmt.execute("DROP TABLE IF EXISTS Notifications");
+                    System.out.println("✓ Dropped old Notifications table");
+
+                    // Table will be recreated below in the normal flow
+                    System.out.println("✓ Notifications table will be recreated with correct structure");
+                }
+            }
+        } catch (Exception e) {
+            // Table doesn't exist yet, which is fine - it will be created below
+            System.out.println("ℹ Notifications table will be created");
         }
     }
 }

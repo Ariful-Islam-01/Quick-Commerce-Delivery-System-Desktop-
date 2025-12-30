@@ -52,4 +52,10 @@ public class UserSession {
     public String getUserPhone() {
         return currentUser != null ? currentUser.getPhone() : "";
     }
+
+    public String getRole() {
+        // In this system, all users can be both customers and delivery partners
+        // Return "CUSTOMER" as default - can be enhanced later to track role preference
+        return currentUser != null ? "CUSTOMER" : "";
+    }
 }

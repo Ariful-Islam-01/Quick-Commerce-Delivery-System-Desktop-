@@ -18,6 +18,7 @@ module com.example.quickcommercedeliverysystemdesktop {
     opens com.example.quickcommercedeliverysystemdesktop to javafx.fxml;
     opens com.example.quickcommercedeliverysystemdesktop.controllers.auth to javafx.fxml;
     opens com.example.quickcommercedeliverysystemdesktop.controllers.dashboard to javafx.fxml;
+    opens com.example.quickcommercedeliverysystemdesktop.controllers.dialogs to javafx.fxml;
 
     // (optional) open model package for table bindings
     opens com.example.quickcommercedeliverysystemdesktop.models to javafx.fxml;
@@ -26,4 +27,5 @@ module com.example.quickcommercedeliverysystemdesktop {
     exports com.example.quickcommercedeliverysystemdesktop;
     exports com.example.quickcommercedeliverysystemdesktop.controllers.auth;
     exports com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
+    exports com.example.quickcommercedeliverysystemdesktop.controllers.dialogs;
 }

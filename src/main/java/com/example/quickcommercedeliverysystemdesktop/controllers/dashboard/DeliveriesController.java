@@ -347,40 +347,30 @@ public class DeliveriesController {
     }
 
     private void viewOrderDetails(Order order) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Order Details");
-        alert.setHeaderText("Order #" + order.getOrderId());
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/dialogs/OrderDetails.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
 
-        String details = String.format("""
-                Product: %s
-                Description: %s
-                
-                Customer: %s
-                Phone: %s
-                
-                Delivery Location: %s
-                Time: %s
-                Fee: %s
-                
-                Status: %s
-                Created: %s
-                
-                Notes: %s
-                """,
-                order.getProductName(),
-                order.getDescription() != null ? order.getDescription() : "N/A",
-                order.getCustomerName(),
-                order.getCustomerPhone() != null ? order.getCustomerPhone() : "N/A",
-                order.getDeliveryLocation(),
-                order.getDeliveryTimeRange(),
-                order.getFormattedDeliveryFee(),
-                order.getStatus().getDisplayName(),
-                order.getFormattedOrderDate(),
-                order.getNotesForDelivery() != null ? order.getNotesForDelivery() : "None"
-        );
+            com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.OrderDetailsController controller =
+                loader.getController();
+            controller.setOrder(order);
+            controller.setUserRole("DELIVERY_PARTNER");
 
-        alert.setContentText(details);
-        alert.showAndWait();
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setTitle("Order Details - #" + order.getOrderId());
+            stage.setScene(new javafx.scene.Scene(root, 650, 700));
+            stage.showAndWait();
+
+            // Refresh data after dialog closes
+            loadData();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Failed to load order details: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
 
     @FXML
