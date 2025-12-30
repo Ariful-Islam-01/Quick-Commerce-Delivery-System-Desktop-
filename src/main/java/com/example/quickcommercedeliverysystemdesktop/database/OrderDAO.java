@@ -203,5 +203,63 @@ public class OrderDAO {
 
         return order;
     }
+
+    // ===== ADMIN METHODS =====
+
+    /**
+     * Get total order count
+     */
+    public static int getTotalOrderCount() {
+        String sql = "SELECT COUNT(*) as count FROM Orders";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get order count error: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    /**
+     * Get orders created today
+     */
+    public static int getTodayOrderCount() {
+        String sql = "SELECT COUNT(*) as count FROM Orders WHERE DATE(created_at) = DATE('now')";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get today order count error: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    /**
+     * Get order count by status
+     */
+    public static int getOrderCountByStatus(String status) {
+        String sql = "SELECT COUNT(*) as count FROM Orders WHERE status = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get order count by status error: " + ex.getMessage());
+        }
+        return 0;
+    }
 }
 

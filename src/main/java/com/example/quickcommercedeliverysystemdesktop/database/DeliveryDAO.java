@@ -602,5 +602,79 @@ public class DeliveryDAO {
             return String.format("$%.2f", totalAmount);
         }
     }
+
+    // ===== ADMIN METHODS =====
+
+    /**
+     * Get total delivery count across all users
+     */
+    public static int getTotalDeliveryCount() {
+        String sql = "SELECT COUNT(*) as count FROM Deliveries";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get total delivery count error: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    /**
+     * Get deliveries completed today across all users
+     */
+    public static int getTodayDeliveryCount() {
+        String sql = "SELECT COUNT(*) as count FROM Deliveries WHERE DATE(delivered_time) = DATE('now')";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get today delivery count error: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    /**
+     * Get total earnings across all delivery partners
+     */
+    public static double getTotalEarnings() {
+        String sql = "SELECT COALESCE(SUM(amount), 0) as total FROM Earnings";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get total earnings error: " + ex.getMessage());
+        }
+        return 0.0;
+    }
+
+    /**
+     * Get today's earnings across all delivery partners
+     */
+    public static double getTodayEarnings() {
+        String sql = "SELECT COALESCE(SUM(amount), 0) as total FROM Earnings WHERE DATE(created_at) = DATE('now')";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get today earnings error: " + ex.getMessage());
+        }
+        return 0.0;
+    }
 }
 

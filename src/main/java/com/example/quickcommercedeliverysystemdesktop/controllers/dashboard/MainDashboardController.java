@@ -61,6 +61,11 @@ public class MainDashboardController {
         loadPage("Profile.fxml");
     }
 
+    @FXML
+    public void loadAdminDashboard() {
+        loadPage("AdminDashboard.fxml");
+    }
+
     private void loadPage(String page) {
         try {
             Parent root = FXMLLoader.load(

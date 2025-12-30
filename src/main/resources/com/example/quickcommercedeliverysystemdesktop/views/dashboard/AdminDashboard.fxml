@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.AdminDashboardController"
+            fitToWidth="true" styleClass="scroll-pane">
+
+    <VBox spacing="20" styleClass="admin-dashboard-container">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Text text="📊 Admin Dashboard" styleClass="page-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🔄 Refresh" onAction="#handleRefresh" styleClass="btn-primary"/>
+        </HBox>
+
+        <!-- Statistics Cards Row 1 -->
+        <HBox spacing="15" styleClass="stats-row">
+            <!-- Total Users Card -->
+            <VBox styleClass="stat-card stat-card-blue" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="👥 Total Users" styleClass="stat-card-title"/>
+                <Label fx:id="totalUsersLabel" text="0" styleClass="stat-card-value"/>
+                <Label fx:id="todayUsersLabel" text="+0 today" styleClass="stat-card-subtitle"/>
+            </VBox>
+
+            <!-- Total Orders Card -->
+            <VBox styleClass="stat-card stat-card-green" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="📦 Total Orders" styleClass="stat-card-title"/>
+                <Label fx:id="totalOrdersLabel" text="0" styleClass="stat-card-value"/>
+                <Label fx:id="todayOrdersLabel" text="+0 today" styleClass="stat-card-subtitle"/>
+            </VBox>
+
+            <!-- Total Deliveries Card -->
+            <VBox styleClass="stat-card stat-card-orange" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="🚚 Total Deliveries" styleClass="stat-card-title"/>
+                <Label fx:id="totalDeliveriesLabel" text="0" styleClass="stat-card-value"/>
+                <Label fx:id="todayDeliveriesLabel" text="+0 today" styleClass="stat-card-subtitle"/>
+            </VBox>
+
+            <!-- Total Earnings Card -->
+            <VBox styleClass="stat-card stat-card-purple" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <Label text="💰 Total Earnings" styleClass="stat-card-title"/>
+                <Label fx:id="totalEarningsLabel" text="0.00" styleClass="stat-card-value"/>
+                <Label fx:id="todayEarningsLabel" text="+$0.00 today" styleClass="stat-card-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Order Status Breakdown -->
+        <VBox styleClass="content-card">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="📋 Order Status Breakdown" styleClass="section-title"/>
+            <Separator/>
+
+            <GridPane hgap="20" vgap="15" styleClass="status-grid">
+                <padding>
+                    <Insets top="15"/>
+                </padding>
+
+                <!-- Row 1 -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="status-item">
+                    <Label text="⏳ Pending" styleClass="status-label"/>
+                    <Label fx:id="pendingOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="status-item">
+                    <Label text="✅ Accepted" styleClass="status-label"/>
+                    <Label fx:id="acceptedOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="status-item">
+                    <Label text="📦 Picked Up" styleClass="status-label"/>
+                    <Label fx:id="pickedUpOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+
+                <!-- Row 2 -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="status-item">
+                    <Label text="🚚 On the Way" styleClass="status-label"/>
+                    <Label fx:id="onTheWayOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="status-item">
+                    <Label text="✔️ Delivered" styleClass="status-label"/>
+                    <Label fx:id="deliveredOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="status-item">
+                    <Label text="❌ Cancelled" styleClass="status-label"/>
+                    <Label fx:id="cancelledOrdersLabel" text="0" styleClass="status-value"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Statistics Chart -->
+        <VBox styleClass="content-card">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="📊 System Overview Chart" styleClass="section-title"/>
+            <Separator/>
+
+            <BarChart fx:id="statsChart" legendVisible="false" prefHeight="300">
+                <xAxis>
+                    <CategoryAxis fx:id="xAxis" label="Category"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxis" label="Count"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+
+        <!-- Two Column Layout for Tables -->
+        <HBox spacing="15">
+            <!-- Recent Users -->
+            <VBox styleClass="content-card" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <Label text="👥 Recent Users" styleClass="section-title"/>
+                <Separator/>
+
+                <TableView fx:id="recentUsersTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="userIdColumn" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="userNameColumn" text="Name" prefWidth="120"/>
+                        <TableColumn fx:id="userEmailColumn" text="Email" prefWidth="150"/>
+                        <TableColumn fx:id="userPhoneColumn" text="Phone" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Recent Orders -->
+            <VBox styleClass="content-card" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <Label text="📦 Recent Orders" styleClass="section-title"/>
+                <Separator/>
+
+                <TableView fx:id="recentOrdersTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="orderIdColumn" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="productColumn" text="Product" prefWidth="120"/>
+                        <TableColumn fx:id="customerColumn" text="Customer" prefWidth="100"/>
+                        <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                        <TableColumn fx:id="feeColumn" text="Fee" prefWidth="70"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
+

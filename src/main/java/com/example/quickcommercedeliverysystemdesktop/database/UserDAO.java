@@ -172,4 +172,69 @@ public class UserDAO {
             return false;
         }
     }
+
+    // ===== ADMIN METHODS =====
+
+    /**
+     * Get all users (for admin dashboard)
+     */
+    public static java.util.List<User> getAllUsers() {
+        java.util.List<User> users = new java.util.ArrayList<>();
+        String sql = "SELECT user_id, name, email, phone, default_address, profile_image FROM Users ORDER BY created_at DESC";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(new User(
+                    rs.getInt("user_id"),
+                    rs.getString("name"),
+                    rs.getString("email"),
+                    rs.getString("phone"),
+                    rs.getString("default_address"),
+                    rs.getString("profile_image")
+                ));
+            }
+        } catch (Exception ex) {
+            System.err.println("Get all users error: " + ex.getMessage());
+        }
+        return users;
+    }
+
+    /**
+     * Get total user count
+     */
+    public static int getTotalUserCount() {
+        String sql = "SELECT COUNT(*) as count FROM Users";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get user count error: " + ex.getMessage());
+        }
+        return 0;
+    }
+
+    /**
+     * Get users registered today
+     */
+    public static int getTodayUserCount() {
+        String sql = "SELECT COUNT(*) as count FROM Users WHERE DATE(created_at) = DATE('now')";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get today user count error: " + ex.getMessage());
+        }
+        return 0;
+    }
 }
