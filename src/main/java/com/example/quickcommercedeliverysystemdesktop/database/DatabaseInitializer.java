@@ -12,6 +12,9 @@ public class DatabaseInitializer {
             // First, check and fix Notifications table structure
             verifyAndFixNotificationsTable(conn);
 
+            // Check and fix Users table structure
+            verifyAndFixUsersTable(conn);
+
             // USERS table
             String createUsers = """
                     CREATE TABLE IF NOT EXISTS users(
@@ -173,6 +176,59 @@ public class DatabaseInitializer {
         } catch (Exception e) {
             // Table doesn't exist yet, which is fine - it will be created below
             System.out.println("ℹ Notifications table will be created");
+        }
+    }
+
+    /**
+     * Verify and fix Users table structure by adding missing columns
+     */
+    private static void verifyAndFixUsersTable(Connection conn) {
+        try {
+            // Check if users table exists (case-insensitive search)
+            String checkTable = "SELECT name FROM sqlite_master WHERE type='table' AND (name='Users' OR name='users')";
+            String actualTableName = null;
+
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(checkTable)) {
+
+                if (!rs.next()) {
+                    // Table doesn't exist yet, it will be created
+                    System.out.println("ℹ Users table will be created");
+                    return;
+                }
+                actualTableName = rs.getString("name");
+            }
+
+            // Check existing columns using the actual table name
+            String checkColumns = "PRAGMA table_info(" + actualTableName + ")";
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(checkColumns)) {
+
+                boolean hasIsAdmin = false;
+                boolean hasIsBanned = false;
+
+                while (rs.next()) {
+                    String columnName = rs.getString("name");
+                    if ("is_admin".equals(columnName)) hasIsAdmin = true;
+                    if ("is_banned".equals(columnName)) hasIsBanned = true;
+                }
+
+                // Add missing columns
+                if (!hasIsAdmin) {
+                    System.out.println("⚠ Adding missing 'is_admin' column to " + actualTableName + " table...");
+                    stmt.execute("ALTER TABLE " + actualTableName + " ADD COLUMN is_admin INTEGER DEFAULT 0");
+                    System.out.println("✓ Added 'is_admin' column");
+                }
+
+                if (!hasIsBanned) {
+                    System.out.println("⚠ Adding missing 'is_banned' column to " + actualTableName + " table...");
+                    stmt.execute("ALTER TABLE " + actualTableName + " ADD COLUMN is_banned INTEGER DEFAULT 0");
+                    System.out.println("✓ Added 'is_banned' column");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error verifying Users table: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
