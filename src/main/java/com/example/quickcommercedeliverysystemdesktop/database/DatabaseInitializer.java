@@ -22,6 +22,8 @@ public class DatabaseInitializer {
                         password TEXT NOT NULL,
                         default_address TEXT,
                         profile_image TEXT,
+                        is_admin INTEGER DEFAULT 0,
+                        is_banned INTEGER DEFAULT 0,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     );
             """;

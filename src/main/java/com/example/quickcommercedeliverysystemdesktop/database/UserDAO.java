@@ -180,7 +180,9 @@ public class UserDAO {
      */
     public static java.util.List<User> getAllUsers() {
         java.util.List<User> users = new java.util.ArrayList<>();
-        String sql = "SELECT user_id, name, email, phone, default_address, profile_image FROM Users ORDER BY created_at DESC";
+        String sql = "SELECT user_id, name, email, phone, default_address, profile_image, " +
+                    "COALESCE(is_admin, 0) as is_admin, COALESCE(is_banned, 0) as is_banned " +
+                    "FROM Users ORDER BY created_at DESC";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -193,7 +195,9 @@ public class UserDAO {
                     rs.getString("email"),
                     rs.getString("phone"),
                     rs.getString("default_address"),
-                    rs.getString("profile_image")
+                    rs.getString("profile_image"),
+                    rs.getInt("is_admin") == 1,
+                    rs.getInt("is_banned") == 1
                 ));
             }
         } catch (Exception ex) {
@@ -236,5 +240,83 @@ public class UserDAO {
             System.err.println("Get today user count error: " + ex.getMessage());
         }
         return 0;
+    }
+
+    /**
+     * Ban/Unban a user (Admin only)
+     */
+    public static boolean setBanStatus(int userId, boolean banned) {
+        String sql = "UPDATE Users SET is_banned = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, banned ? 1 : 0);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Set ban status error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Set admin status for a user (Admin only)
+     */
+    public static boolean setAdminStatus(int userId, boolean isAdmin) {
+        String sql = "UPDATE Users SET is_admin = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, isAdmin ? 1 : 0);
+            ps.setInt(2, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Set admin status error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Delete a user (Admin only)
+     */
+    public static boolean deleteUser(int userId) {
+        String sql = "DELETE FROM Users WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Delete user error: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Admin update user info
+     */
+    public static boolean adminUpdateUser(int userId, String name, String email, String phone, String address) {
+        String sql = "UPDATE Users SET name = ?, email = ?, phone = ?, default_address = ? WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.setString(3, phone);
+            ps.setString(4, address);
+            ps.setInt(5, userId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            System.err.println("Admin update user error: " + ex.getMessage());
+            return false;
+        }
     }
 }
