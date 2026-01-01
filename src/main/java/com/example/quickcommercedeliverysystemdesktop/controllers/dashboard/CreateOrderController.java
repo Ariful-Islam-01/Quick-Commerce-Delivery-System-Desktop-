@@ -17,6 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -204,13 +206,26 @@ public class CreateOrderController {
         private TextField productNameField;
         private TextArea descriptionArea;
         private TextField deliveryLocationField;
-        private TextField timeFromField;
-        private TextField timeToField;
+        private DatePicker deliveryDatePicker;
+        private ComboBox<String> timeFromComboBox;
+        private ComboBox<String> timeToComboBox;
         private TextField deliveryFeeField;
         private TextArea notesArea;
         private Label imageLabel;
         private String selectedImagePath = null;
         private Label cardMessageLabel;
+
+        // Time options for combo boxes
+        private static final String[] TIME_OPTIONS = {
+            "12:00 AM", "12:30 AM", "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM",
+            "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM", "5:00 AM", "5:30 AM",
+            "6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM",
+            "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+            "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM",
+            "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM",
+            "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM",
+            "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM"
+        };
 
         public OrderCard(int cardId) {
             this.cardId = cardId;
@@ -294,24 +309,49 @@ public class CreateOrderController {
             deliveryLocationField.getStyleClass().add("form-input");
             locationBox.getChildren().addAll(locationLabel, deliveryLocationField);
 
-            // Time Range
+            // Delivery Date
+            VBox dateBox = new VBox(8);
+            Label dateLabel = new Label("Delivery Date *");
+            dateLabel.getStyleClass().add("form-label");
+            deliveryDatePicker = new DatePicker();
+            deliveryDatePicker.setPromptText("Select delivery date");
+            deliveryDatePicker.getStyleClass().add("form-input");
+            deliveryDatePicker.setMaxWidth(Double.MAX_VALUE);
+            // Set minimum date to today
+            deliveryDatePicker.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    setDisable(empty || date.isBefore(LocalDate.now()));
+                }
+            });
+            dateBox.getChildren().addAll(dateLabel, deliveryDatePicker);
+
+            // Time Range with ComboBoxes
             HBox timeBox = new HBox(15);
+
+            // Time From
             VBox timeFromBox = new VBox(8);
             Label timeFromLabel = new Label("Time From *");
             timeFromLabel.getStyleClass().add("form-label");
-            timeFromField = new TextField();
-            timeFromField.setPromptText("e.g., 8 PM");
-            timeFromField.getStyleClass().add("form-input");
-            timeFromBox.getChildren().addAll(timeFromLabel, timeFromField);
+            timeFromComboBox = new ComboBox<>();
+            timeFromComboBox.getItems().addAll(TIME_OPTIONS);
+            timeFromComboBox.setPromptText("Select start time");
+            timeFromComboBox.getStyleClass().add("form-input");
+            timeFromComboBox.setMaxWidth(Double.MAX_VALUE);
+            timeFromBox.getChildren().addAll(timeFromLabel, timeFromComboBox);
             HBox.setHgrow(timeFromBox, Priority.ALWAYS);
 
+            // Time To
             VBox timeToBox = new VBox(8);
             Label timeToLabel = new Label("Time To *");
             timeToLabel.getStyleClass().add("form-label");
-            timeToField = new TextField();
-            timeToField.setPromptText("e.g., 9 PM");
-            timeToField.getStyleClass().add("form-input");
-            timeToBox.getChildren().addAll(timeToLabel, timeToField);
+            timeToComboBox = new ComboBox<>();
+            timeToComboBox.getItems().addAll(TIME_OPTIONS);
+            timeToComboBox.setPromptText("Select end time");
+            timeToComboBox.getStyleClass().add("form-input");
+            timeToComboBox.setMaxWidth(Double.MAX_VALUE);
+            timeToBox.getChildren().addAll(timeToLabel, timeToComboBox);
             HBox.setHgrow(timeToBox, Priority.ALWAYS);
 
             timeBox.getChildren().addAll(timeFromBox, timeToBox);
@@ -371,6 +411,7 @@ public class CreateOrderController {
                 productBox,
                 descBox,
                 locationBox,
+                dateBox,
                 timeBox,
                 feeBox,
                 notesBox,
@@ -459,8 +500,9 @@ public class CreateOrderController {
             String productName = productNameField.getText().trim();
             String description = descriptionArea.getText().trim();
             String location = deliveryLocationField.getText().trim();
-            String timeFrom = timeFromField.getText().trim();
-            String timeTo = timeToField.getText().trim();
+            LocalDate deliveryDate = deliveryDatePicker.getValue();
+            String timeFrom = timeFromComboBox.getValue();
+            String timeTo = timeToComboBox.getValue();
             String feeStr = deliveryFeeField.getText().trim();
 
             // Validate category
@@ -491,17 +533,24 @@ public class CreateOrderController {
                 return false;
             }
 
+            // Validate delivery date
+            if (deliveryDate == null) {
+                deliveryDatePicker.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Delivery date is required");
+                return false;
+            }
+
             // Validate time from
-            if (timeFrom.isEmpty()) {
-                timeFromField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-                showCardError("Time From is required");
+            if (timeFrom == null || timeFrom.isEmpty()) {
+                timeFromComboBox.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Start time is required");
                 return false;
             }
 
             // Validate time to
-            if (timeTo.isEmpty()) {
-                timeToField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-                showCardError("Time To is required");
+            if (timeTo == null || timeTo.isEmpty()) {
+                timeToComboBox.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("End time is required");
                 return false;
             }
 
@@ -532,7 +581,16 @@ public class CreateOrderController {
                 String productName = "[" + category + "] " + productNameField.getText().trim();
                 String description = descriptionArea.getText().trim();
                 String location = deliveryLocationField.getText().trim();
-                String timeRange = timeFromField.getText().trim() + " - " + timeToField.getText().trim();
+
+                // Format delivery date and time
+                LocalDate deliveryDate = deliveryDatePicker.getValue();
+                String timeFrom = timeFromComboBox.getValue();
+                String timeTo = timeToComboBox.getValue();
+
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+                String formattedDate = deliveryDate.format(dateFormatter);
+                String timeRange = formattedDate + " | " + timeFrom + " - " + timeTo;
+
                 double fee = Double.parseDouble(deliveryFeeField.getText().trim());
                 String notes = notesArea.getText().trim();
 
@@ -565,8 +623,9 @@ public class CreateOrderController {
             productNameField.setStyle("");
             descriptionArea.setStyle("");
             deliveryLocationField.setStyle("");
-            timeFromField.setStyle("");
-            timeToField.setStyle("");
+            deliveryDatePicker.setStyle("");
+            timeFromComboBox.setStyle("");
+            timeToComboBox.setStyle("");
             deliveryFeeField.setStyle("");
         }
 
