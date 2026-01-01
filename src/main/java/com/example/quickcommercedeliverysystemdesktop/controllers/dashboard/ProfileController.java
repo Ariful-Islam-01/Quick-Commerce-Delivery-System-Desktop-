@@ -2,7 +2,9 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.User;
+import com.example.quickcommercedeliverysystemdesktop.utils.ErrorHandler;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
+import com.example.quickcommercedeliverysystemdesktop.utils.ValidationUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -40,12 +42,18 @@ public class ProfileController {
         currentUser = UserSession.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            showError(profileMessageLabel, "No user logged in!");
+            ValidationUtil.showError(profileMessageLabel, "No user logged in!");
             return;
         }
 
         loadUserData();
         loadProfileImage();
+
+        // Clear all message labels
+        ValidationUtil.clearMessage(imageMessageLabel);
+        ValidationUtil.clearMessage(profileMessageLabel);
+        ValidationUtil.clearMessage(addressMessageLabel);
+        ValidationUtil.clearMessage(passwordMessageLabel);
     }
 
     private void loadUserData() {
@@ -87,16 +95,24 @@ public class ProfileController {
 
     @FXML
     public void handleChooseImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Profile Picture");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
+        ValidationUtil.clearMessage(imageMessageLabel);
 
-        File selectedFile = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose Profile Picture");
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+            );
 
-        if (selectedFile != null) {
-            try {
+            File selectedFile = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
+
+            if (selectedFile != null) {
+                // Validate file size (max 5MB)
+                if (selectedFile.length() > 5 * 1024 * 1024) {
+                    ValidationUtil.showError(imageMessageLabel, "Image file too large. Maximum size is 5MB.");
+                    return;
+                }
+
                 // Create profiles directory if it doesn't exist
                 Path profilesDir = Paths.get("src/main/resources/com/example/quickcommercedeliverysystemdesktop/assets/profiles");
                 if (!Files.exists(profilesDir)) {
@@ -121,141 +137,152 @@ public class ProfileController {
                     Image image = new Image(selectedFile.toURI().toString());
                     profileImageView.setImage(image);
 
-                    showSuccess(imageMessageLabel, "Profile picture updated successfully!");
+                    ValidationUtil.showSuccess(imageMessageLabel, "✓ Profile picture updated successfully!");
+                    ErrorHandler.logInfo("Profile picture updated for user " + currentUser.getUserId());
                 } else {
-                    showError(imageMessageLabel, "Failed to update profile picture in database.");
+                    ValidationUtil.showError(imageMessageLabel, "Failed to update profile picture in database.");
+                    ErrorHandler.logWarning("Failed to update profile picture for user " + currentUser.getUserId());
                 }
-
-            } catch (IOException e) {
-                showError(imageMessageLabel, "Error saving image: " + e.getMessage());
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            ErrorHandler.handleFileException(e, "uploading profile picture");
+            ValidationUtil.showError(imageMessageLabel, "Error saving image. Please try again.");
         }
     }
 
     @FXML
     public void handleUpdateProfile() {
+        ValidationUtil.clearMessage(profileMessageLabel);
+        ValidationUtil.clearFieldStyle(nameField, emailField, phoneField);
+
         String name = nameField.getText().trim();
         String email = emailField.getText().trim();
         String phone = phoneField.getText().trim();
 
-        // Validation
-        if (name.isEmpty() || email.isEmpty()) {
-            showError(profileMessageLabel, "Name and email are required!");
+        // Validate name
+        if (!ValidationUtil.validateField(nameField, "Name", profileMessageLabel)) {
             return;
         }
 
-        if (!isValidEmail(email)) {
-            showError(profileMessageLabel, "Invalid email format!");
+        // Validate email
+        if (!ValidationUtil.validateEmailField(emailField, profileMessageLabel)) {
             return;
         }
 
-        if (!phone.isEmpty() && !isValidPhone(phone)) {
-            showError(profileMessageLabel, "Invalid phone number format!");
+        // Validate phone format (optional field)
+        if (!phone.isEmpty() && !ValidationUtil.isValidPhone(phone)) {
+            phoneField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+            ValidationUtil.showError(profileMessageLabel, "Invalid phone number format (10-15 digits)!");
             return;
         }
 
-        // Update database
-        boolean success = UserDAO.updateProfile(currentUser.getUserId(), name, email, phone);
+        try {
+            // Update database
+            boolean success = UserDAO.updateProfile(currentUser.getUserId(), name, email, phone);
 
-        if (success) {
-            // Update session
-            currentUser.setName(name);
-            currentUser.setEmail(email);
-            currentUser.setPhone(phone);
-            UserSession.getInstance().setCurrentUser(currentUser);
+            if (success) {
+                // Update session
+                currentUser.setName(name);
+                currentUser.setEmail(email);
+                currentUser.setPhone(phone);
+                UserSession.getInstance().setCurrentUser(currentUser);
 
-            showSuccess(profileMessageLabel, "Profile updated successfully!");
-        } else {
-            showError(profileMessageLabel, "Failed to update profile. Email might already be in use.");
+                ValidationUtil.showSuccess(profileMessageLabel, "✓ Profile updated successfully!");
+                ErrorHandler.logInfo("Profile updated for user " + currentUser.getUserId());
+            } else {
+                emailField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                ValidationUtil.showError(profileMessageLabel, "Failed to update profile. Email might already be in use.");
+                ErrorHandler.logWarning("Profile update failed for user " + currentUser.getUserId());
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleDatabaseException(e, "updating profile");
+            ValidationUtil.showError(profileMessageLabel, "Failed to update profile. Please try again.");
         }
     }
 
     @FXML
     public void handleUpdateAddress() {
+        ValidationUtil.clearMessage(addressMessageLabel);
+        addressField.setStyle("");
+
         String address = addressField.getText().trim();
 
-        if (address.isEmpty()) {
-            showError(addressMessageLabel, "Address cannot be empty!");
+        if (!ValidationUtil.isNotEmpty(address)) {
+            addressField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+            ValidationUtil.showError(addressMessageLabel, "Address cannot be empty!");
             return;
         }
 
-        // Update database
-        boolean success = UserDAO.updateAddress(currentUser.getUserId(), address);
+        try {
+            // Update database
+            boolean success = UserDAO.updateAddress(currentUser.getUserId(), address);
 
-        if (success) {
-            // Update session
-            currentUser.setDefaultAddress(address);
-            UserSession.getInstance().setCurrentUser(currentUser);
+            if (success) {
+                // Update session
+                currentUser.setDefaultAddress(address);
+                UserSession.getInstance().setCurrentUser(currentUser);
 
-            showSuccess(addressMessageLabel, "Address updated successfully!");
-        } else {
-            showError(addressMessageLabel, "Failed to update address.");
+                ValidationUtil.showSuccess(addressMessageLabel, "✓ Address updated successfully!");
+                ErrorHandler.logInfo("Address updated for user " + currentUser.getUserId());
+            } else {
+                ValidationUtil.showError(addressMessageLabel, "Failed to update address.");
+                ErrorHandler.logWarning("Address update failed for user " + currentUser.getUserId());
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleDatabaseException(e, "updating address");
+            ValidationUtil.showError(addressMessageLabel, "Failed to update address. Please try again.");
         }
     }
 
     @FXML
     public void handleChangePassword() {
+        ValidationUtil.clearMessage(passwordMessageLabel);
+        ValidationUtil.clearFieldStyle(currentPasswordField, newPasswordField, confirmPasswordField);
+
         String currentPassword = currentPasswordField.getText();
         String newPassword = newPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        // Validation
-        if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            showError(passwordMessageLabel, "All password fields are required!");
+        // Validate current password
+        if (!ValidationUtil.validateField(currentPasswordField, "Current Password", passwordMessageLabel)) {
             return;
         }
 
-        if (newPassword.length() < 6) {
-            showError(passwordMessageLabel, "New password must be at least 6 characters!");
+        // Validate password match
+        if (!ValidationUtil.validatePasswordMatch(newPasswordField, confirmPasswordField, passwordMessageLabel)) {
             return;
         }
 
-        if (!newPassword.equals(confirmPassword)) {
-            showError(passwordMessageLabel, "New passwords do not match!");
-            return;
-        }
+        try {
+            // Update database
+            boolean success = UserDAO.updatePassword(currentUser.getUserId(), currentPassword, newPassword);
 
-        // Update database
-        boolean success = UserDAO.updatePassword(currentUser.getUserId(), currentPassword, newPassword);
+            if (success) {
+                // Clear password fields
+                currentPasswordField.clear();
+                newPasswordField.clear();
+                confirmPasswordField.clear();
 
-        if (success) {
-            // Clear password fields
-            currentPasswordField.clear();
-            newPasswordField.clear();
-            confirmPasswordField.clear();
-
-            showSuccess(passwordMessageLabel, "Password changed successfully!");
-        } else {
-            showError(passwordMessageLabel, "Failed to change password. Current password might be incorrect.");
+                ValidationUtil.showSuccess(passwordMessageLabel, "✓ Password changed successfully!");
+                ErrorHandler.logInfo("Password changed for user " + currentUser.getUserId());
+            } else {
+                currentPasswordField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                ValidationUtil.showError(passwordMessageLabel, "Failed to change password. Current password is incorrect.");
+                ErrorHandler.logWarning("Password change failed for user " + currentUser.getUserId());
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleDatabaseException(e, "changing password");
+            ValidationUtil.showError(passwordMessageLabel, "Failed to change password. Please try again.");
         }
     }
 
     // Helper methods for validation
-    private boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
-
-    private boolean isValidPhone(String phone) {
-        return phone.matches("^[0-9+\\-\\s()]{10,15}$");
-    }
-
     private String getFileExtension(String fileName) {
         int lastIndexOf = fileName.lastIndexOf(".");
         if (lastIndexOf == -1) {
             return ""; // No extension
         }
         return fileName.substring(lastIndexOf);
-    }
-
-    private void showSuccess(Label label, String message) {
-        label.setText(message);
-        label.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
-    }
-
-    private void showError(Label label, String message) {
-        label.setText(message);
-        label.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
     }
 }
 

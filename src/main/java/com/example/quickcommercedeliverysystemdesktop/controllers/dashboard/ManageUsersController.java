@@ -2,6 +2,8 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.User;
+import com.example.quickcommercedeliverysystemdesktop.utils.ErrorHandler;
+import com.example.quickcommercedeliverysystemdesktop.utils.ValidationUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -349,53 +351,69 @@ public class ManageUsersController {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Validate inputs
-            String name = nameField.getText().trim();
-            String email = emailField.getText().trim();
-            String phone = phoneField.getText().trim();
-            String address = addressField.getText().trim();
-            String password = passwordField.getText();
-            String confirmPassword = confirmPasswordField.getText();
+            try {
+                // Validate inputs
+                String name = nameField.getText().trim();
+                String email = emailField.getText().trim();
+                String phone = phoneField.getText().trim();
+                String address = addressField.getText().trim();
+                String password = passwordField.getText();
+                String confirmPassword = confirmPasswordField.getText();
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                showAlert("Validation Error", "Name, Email, and Password are required", Alert.AlertType.ERROR);
-                return;
-            }
-
-            if (!password.equals(confirmPassword)) {
-                showAlert("Validation Error", "Passwords do not match", Alert.AlertType.ERROR);
-                return;
-            }
-
-            if (password.length() < 6) {
-                showAlert("Validation Error", "Password must be at least 6 characters", Alert.AlertType.ERROR);
-                return;
-            }
-
-            // Create user account
-            boolean success = com.example.quickcommercedeliverysystemdesktop.database.UserDAO.register(
-                name, email, phone, password
-            );
-
-            if (success) {
-                // If admin checkbox is selected, set admin status
-                if (adminCheckBox.isSelected()) {
-                    // Get the newly created user to set admin status
-                    java.util.List<User> users = UserDAO.getAllUsers();
-                    User newUser = users.stream()
-                        .filter(u -> u.getEmail().equals(email))
-                        .findFirst()
-                        .orElse(null);
-
-                    if (newUser != null) {
-                        UserDAO.setAdminStatus(newUser.getUserId(), true);
-                    }
+                // Validate required fields
+                if (!ValidationUtil.isNotEmpty(name)) {
+                    ValidationUtil.showAlert("Validation Error", "Name is required", Alert.AlertType.ERROR);
+                    return;
                 }
 
-                showAlert("Success", "User account created successfully", Alert.AlertType.INFORMATION);
-                loadUsers();
-            } else {
-                showAlert("Error", "Failed to create user. Email may already exist.", Alert.AlertType.ERROR);
+                if (!ValidationUtil.isValidEmail(email)) {
+                    ValidationUtil.showAlert("Validation Error", "Please enter a valid email address", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                if (!phone.isEmpty() && !ValidationUtil.isValidPhone(phone)) {
+                    ValidationUtil.showAlert("Validation Error", "Please enter a valid phone number (10-15 digits)", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                if (!ValidationUtil.isValidPassword(password)) {
+                    ValidationUtil.showAlert("Validation Error", "Password must be at least 6 characters", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                if (!password.equals(confirmPassword)) {
+                    ValidationUtil.showAlert("Validation Error", "Passwords do not match", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                // Create user account
+                boolean success = com.example.quickcommercedeliverysystemdesktop.database.UserDAO.register(
+                    name, email, phone, password
+                );
+
+                if (success) {
+                    // If admin checkbox is selected, set admin status
+                    if (adminCheckBox.isSelected()) {
+                        // Get the newly created user to set admin status
+                        java.util.List<User> users = UserDAO.getAllUsers();
+                        User newUser = users.stream()
+                            .filter(u -> u.getEmail().equals(email))
+                            .findFirst()
+                            .orElse(null);
+
+                        if (newUser != null) {
+                            UserDAO.setAdminStatus(newUser.getUserId(), true);
+                        }
+                    }
+
+                    showAlert("Success", "User account created successfully", Alert.AlertType.INFORMATION);
+                    loadUsers();
+                } else {
+                    showAlert("Error", "Failed to create user. Email may already exist.", Alert.AlertType.ERROR);
+                }
+            } catch (Exception e) {
+                ErrorHandler.handleDatabaseException(e, "creating user");
+                ValidationUtil.showAlert("Error", "Failed to create user. Please try again.", Alert.AlertType.ERROR);
             }
         }
     }

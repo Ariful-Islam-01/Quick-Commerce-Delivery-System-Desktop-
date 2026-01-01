@@ -2,7 +2,9 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.auth;
 
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.User;
+import com.example.quickcommercedeliverysystemdesktop.utils.ErrorHandler;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
+import com.example.quickcommercedeliverysystemdesktop.utils.ValidationUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,29 +20,61 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        messageLabel.setText("");
+        ValidationUtil.clearMessage(messageLabel);
     }
 
     @FXML
     public void handleLogin() {
+        // Clear previous messages and styles
+        ValidationUtil.clearMessage(messageLabel);
+        ValidationUtil.clearFieldStyle(emailField, passwordField);
+
         String email = emailField.getText().trim();
         String password = passwordField.getText();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            messageLabel.setText("Please enter email and password.");
+        // Validate email field
+        if (!ValidationUtil.validateEmailField(emailField, messageLabel)) {
             return;
         }
 
-        User user = UserDAO.login(email, password);
-        if (user == null) {
-            messageLabel.setText("Invalid email or password.");
-        } else {
-            // Save user to session
-            UserSession.getInstance().setCurrentUser(user);
+        // Validate password field
+        if (!ValidationUtil.validateField(passwordField, "Password", messageLabel)) {
+            return;
+        }
 
-            messageLabel.setStyle("-fx-text-fill: #2b7a78;");
-            messageLabel.setText("Login successful. Loading...");
-            loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/MainDashboard.fxml");
+        try {
+            User user = UserDAO.login(email, password);
+
+            if (user == null) {
+                emailField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                passwordField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                ValidationUtil.showError(messageLabel, "Invalid email or password.");
+                ErrorHandler.logWarning("Failed login attempt for email: " + email);
+            } else if (user.isBanned()) {
+                ValidationUtil.showError(messageLabel, "Your account has been banned. Contact support.");
+                ErrorHandler.logWarning("Banned user login attempt: " + email);
+            } else {
+                // Save user to session
+                UserSession.getInstance().setCurrentUser(user);
+
+                ValidationUtil.showSuccess(messageLabel, "Login successful. Loading...");
+                ErrorHandler.logInfo("User logged in: " + user.getName() + " (" + user.getEmail() + ")");
+
+                // Small delay for user to see success message
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(500);
+                        javafx.application.Platform.runLater(() ->
+                            loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/MainDashboard.fxml")
+                        );
+                    } catch (InterruptedException e) {
+                        ErrorHandler.logError(e);
+                    }
+                }).start();
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleDatabaseException(e, "logging in");
+            ValidationUtil.showError(messageLabel, "Login failed. Please try again.");
         }
     }
 
@@ -56,9 +90,9 @@ public class LoginController {
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/styles/style.css").toExternalForm());
             stage.setScene(scene);
+            ErrorHandler.logInfo("Loaded scene: " + fxmlPath);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            messageLabel.setText("Failed to load screen.");
+            ErrorHandler.handleException(ex, "Failed to load screen. Please try again.");
         }
     }
 }
