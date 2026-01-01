@@ -6,7 +6,10 @@ import com.example.quickcommercedeliverysystemdesktop.utils.ErrorHandler;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
 import com.example.quickcommercedeliverysystemdesktop.utils.ValidationUtil;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -14,173 +17,562 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateOrderController {
 
-    @FXML private TextField productNameField;
-    @FXML private TextArea descriptionArea;
-    @FXML private TextField deliveryLocationField;
-    @FXML private TextField timeFromField;
-    @FXML private TextField timeToField;
-    @FXML private TextField deliveryFeeField;
-    @FXML private TextArea notesArea;
-    @FXML private Label imageLabel;
+    @FXML private VBox orderCardsContainer;
     @FXML private Label messageLabel;
+    @FXML private Label orderCountLabel;
+    @FXML private Label totalOrdersLabel;
+    @FXML private Label totalFeeLabel;
 
-    private String selectedImagePath = null;
+    private List<OrderCard> orderCards = new ArrayList<>();
+    private int orderIdCounter = 1;
+
+    // Category options with descriptions
+    private static final String[] CATEGORIES = {
+        "Select Category",
+        "Groceries",
+        "Electronics",
+        "Pharma",
+        "Food & Beverages",
+        "Clothing",
+        "Books & Stationery",
+        "Home & Garden",
+        "Sports & Outdoors",
+        "Other"
+    };
 
     @FXML
     public void initialize() {
         ValidationUtil.clearMessage(messageLabel);
+        // Add first order card by default
+        handleAddNewOrder();
     }
 
     @FXML
-    private void handleChooseImage() {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Select Product Image");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
-            );
+    private void handleAddNewOrder() {
+        OrderCard newCard = new OrderCard(orderIdCounter++);
+        orderCards.add(newCard);
+        orderCardsContainer.getChildren().add(newCard.getCardView());
+        updateSummary();
+        ValidationUtil.clearMessage(messageLabel);
+    }
 
-            File selectedFile = fileChooser.showOpenDialog(imageLabel.getScene().getWindow());
-            if (selectedFile != null) {
-                // Validate file size (max 5MB)
-                if (selectedFile.length() > 5 * 1024 * 1024) {
-                    ValidationUtil.showError(messageLabel, "Image file too large. Maximum size is 5MB.");
-                    return;
+    @FXML
+    private void handleClearAll() {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Clear All Orders");
+        confirmAlert.setHeaderText("Are you sure?");
+        confirmAlert.setContentText("This will remove all orders from the list.");
+
+        if (confirmAlert.showAndWait().get() == ButtonType.OK) {
+            orderCards.clear();
+            orderCardsContainer.getChildren().clear();
+            orderIdCounter = 1;
+            updateSummary();
+            ValidationUtil.clearMessage(messageLabel);
+
+            // Add one empty card
+            handleAddNewOrder();
+        }
+    }
+
+    @FXML
+    private void handleSubmitAllOrders() {
+        ValidationUtil.clearMessage(messageLabel);
+
+        if (orderCards.isEmpty()) {
+            ValidationUtil.showError(messageLabel, "No orders to submit!");
+            return;
+        }
+
+        // Validate all order cards
+        List<Order> validOrders = new ArrayList<>();
+        boolean hasErrors = false;
+
+        for (OrderCard card : orderCards) {
+            if (!card.validateCard()) {
+                hasErrors = true;
+                continue;
+            }
+
+            Order order = card.createOrder();
+            if (order != null) {
+                validOrders.add(order);
+            }
+        }
+
+        if (hasErrors) {
+            ValidationUtil.showError(messageLabel, "Please fix validation errors in the order cards above.");
+            return;
+        }
+
+        if (validOrders.isEmpty()) {
+            ValidationUtil.showError(messageLabel, "No valid orders to submit!");
+            return;
+        }
+
+        // Confirm submission
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Submit Orders");
+        confirmAlert.setHeaderText("Submit " + validOrders.size() + " order(s)?");
+        confirmAlert.setContentText("Total Fee: $" + String.format("%.2f", calculateTotalFee()));
+
+        if (confirmAlert.showAndWait().get() != ButtonType.OK) {
+            return;
+        }
+
+        // Submit all valid orders
+        int successCount = 0;
+        int failCount = 0;
+
+        try {
+            for (Order order : validOrders) {
+                boolean success = OrderDAO.createOrder(order);
+                if (success) {
+                    successCount++;
+                } else {
+                    failCount++;
                 }
-
-                // Create assets/products directory if not exists
-                Path productsDir = Paths.get("src/main/resources/com/example/quickcommercedeliverysystemdesktop/assets/products");
-                Files.createDirectories(productsDir);
-
-                // Copy file with unique name
-                String fileName = System.currentTimeMillis() + "_" + selectedFile.getName();
-                Path destPath = productsDir.resolve(fileName);
-                Files.copy(selectedFile.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
-
-                selectedImagePath = fileName;
-                imageLabel.setText("✓ " + selectedFile.getName());
-                imageLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
-                ErrorHandler.logInfo("Image uploaded: " + fileName);
             }
-        } catch (Exception e) {
-            ErrorHandler.handleFileException(e, "uploading image");
-            ValidationUtil.showError(messageLabel, "Failed to upload image. Please try again.");
-        }
-    }
 
-    @FXML
-    private void handleCreateOrder() {
-        // Clear previous messages and styles
-        ValidationUtil.clearMessage(messageLabel);
-        ValidationUtil.clearFieldStyle(productNameField, deliveryLocationField,
-                                       timeFromField, timeToField, deliveryFeeField);
+            if (successCount > 0) {
+                ValidationUtil.showSuccess(messageLabel,
+                    "✓ Successfully submitted " + successCount + " order(s)!" +
+                    (failCount > 0 ? " (" + failCount + " failed)" : ""));
 
-        // Get input values
-        String productName = productNameField.getText().trim();
-        String description = descriptionArea.getText().trim();
-        String location = deliveryLocationField.getText().trim();
-        String timeFrom = timeFromField.getText().trim();
-        String timeTo = timeToField.getText().trim();
-        String feeStr = deliveryFeeField.getText().trim();
-        String notes = notesArea.getText().trim();
+                ErrorHandler.logInfo("Submitted " + successCount + " orders successfully");
 
-        // Validate required fields
-        if (!ValidationUtil.validateField(productNameField, "Product Name", messageLabel)) {
-            return;
-        }
-
-        if (!ValidationUtil.isNotEmpty(description)) {
-            descriptionArea.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-            ValidationUtil.showError(messageLabel, "Description is required");
-            return;
-        }
-
-        if (!ValidationUtil.validateField(deliveryLocationField, "Delivery Location", messageLabel)) {
-            return;
-        }
-
-        if (!ValidationUtil.validateField(timeFromField, "Time From", messageLabel)) {
-            return;
-        }
-
-        if (!ValidationUtil.validateField(timeToField, "Time To", messageLabel)) {
-            return;
-        }
-
-        // Validate delivery fee
-        if (!ValidationUtil.isPositiveNumber(feeStr)) {
-            deliveryFeeField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-            ValidationUtil.showError(messageLabel, "Please enter a valid positive delivery fee");
-            return;
-        }
-
-        double fee = Double.parseDouble(feeStr);
-
-        // Validate fee range (reasonable range)
-        if (!ValidationUtil.isInRange(fee, 0.01, 1000.00)) {
-            deliveryFeeField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-            ValidationUtil.showError(messageLabel, "Delivery fee must be between $0.01 and $1000.00");
-            return;
-        }
-
-        try {
-            // Get current user info
-            int userId = UserSession.getInstance().getUserId();
-            String userName = UserSession.getInstance().getUserName();
-            String userPhone = UserSession.getInstance().getUserPhone();
-
-            // Create time range
-            String timeRange = timeFrom + " - " + timeTo;
-
-            // Create Order object
-            Order order = new Order(userId, productName, description, location, timeRange,
-                                   fee, notes, userName, userPhone);
-            order.setProductPhoto(selectedImagePath);
-
-            // Save to database (notification will be created automatically in OrderDAO)
-            boolean success = OrderDAO.createOrder(order);
-
-            if (success) {
-                ValidationUtil.showSuccess(messageLabel, "✓ Order created successfully! Waiting for a delivery person to accept.");
-                ErrorHandler.logInfo("Order created by user " + userId + ": " + productName);
-                handleClearForm();
+                // Clear all and start fresh
+                orderCards.clear();
+                orderCardsContainer.getChildren().clear();
+                orderIdCounter = 1;
+                handleAddNewOrder();
+                updateSummary();
             } else {
-                ValidationUtil.showError(messageLabel, "Failed to create order. Please try again.");
-                ErrorHandler.logWarning("Order creation failed for user " + userId);
+                ValidationUtil.showError(messageLabel, "Failed to submit orders. Please try again.");
             }
         } catch (Exception e) {
-            ErrorHandler.handleDatabaseException(e, "creating order");
-            ValidationUtil.showError(messageLabel, "Failed to create order. Please try again.");
+            ErrorHandler.handleDatabaseException(e, "submitting orders");
+            ValidationUtil.showError(messageLabel, "Error submitting orders. Please try again.");
         }
     }
 
-    @FXML
-    private void handleClearForm() {
-        productNameField.clear();
-        descriptionArea.clear();
-        deliveryLocationField.clear();
-        timeFromField.clear();
-        timeToField.clear();
-        deliveryFeeField.clear();
-        notesArea.clear();
-        selectedImagePath = null;
-        imageLabel.setText("No image selected");
-        imageLabel.setStyle("");
-        ValidationUtil.clearMessage(messageLabel);
-        ValidationUtil.clearFieldStyle(productNameField, deliveryLocationField,
-                                       timeFromField, timeToField, deliveryFeeField);
-        descriptionArea.setStyle("");
+    private void updateSummary() {
+        int count = orderCards.size();
+        double totalFee = calculateTotalFee();
+
+        orderCountLabel.setText(count + " Order" + (count != 1 ? "s" : ""));
+        totalOrdersLabel.setText(String.valueOf(count));
+        totalFeeLabel.setText("$" + String.format("%.2f", totalFee));
     }
 
-    private void showError(String message) {
-        ValidationUtil.showError(messageLabel, message);
+    private double calculateTotalFee() {
+        double total = 0.0;
+        for (OrderCard card : orderCards) {
+            try {
+                String feeText = card.deliveryFeeField.getText().trim();
+                if (!feeText.isEmpty()) {
+                    total += Double.parseDouble(feeText);
+                }
+            } catch (NumberFormatException e) {
+                // Skip invalid fees
+            }
+        }
+        return total;
     }
 
-    private void showSuccess(String message) {
-        ValidationUtil.showSuccess(messageLabel, message);
+    private void removeOrderCard(OrderCard card) {
+        orderCards.remove(card);
+        orderCardsContainer.getChildren().remove(card.getCardView());
+        updateSummary();
+
+        // Keep at least one card
+        if (orderCards.isEmpty()) {
+            handleAddNewOrder();
+        }
+    }
+
+    // Inner class representing a single order card
+    private class OrderCard {
+        private int cardId;
+        private VBox cardView;
+        private ComboBox<String> categoryComboBox;
+        private TextField productNameField;
+        private TextArea descriptionArea;
+        private TextField deliveryLocationField;
+        private TextField timeFromField;
+        private TextField timeToField;
+        private TextField deliveryFeeField;
+        private TextArea notesArea;
+        private Label imageLabel;
+        private String selectedImagePath = null;
+        private Label cardMessageLabel;
+
+        public OrderCard(int cardId) {
+            this.cardId = cardId;
+            buildCard();
+        }
+
+        private void buildCard() {
+            // Main card container
+            cardView = new VBox(15);
+            cardView.getStyleClass().add("order-card");
+            cardView.setPadding(new Insets(20));
+
+            // Card Header
+            HBox header = new HBox(10);
+            header.setAlignment(Pos.CENTER_LEFT);
+
+            Label cardTitle = new Label("Order #" + cardId);
+            cardTitle.getStyleClass().add("order-card-title");
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            Button deleteBtn = new Button("🗑");
+            deleteBtn.getStyleClass().add("delete-order-button");
+            deleteBtn.setOnAction(e -> {
+                if (orderCards.size() > 1) {
+                    removeOrderCard(this);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Cannot Delete");
+                    alert.setHeaderText("At least one order is required");
+                    alert.setContentText("You must have at least one order card.");
+                    alert.showAndWait();
+                }
+            });
+
+            header.getChildren().addAll(cardTitle, spacer, deleteBtn);
+
+            // Category Dropdown
+            VBox categoryBox = new VBox(8);
+            Label categoryLabel = new Label("Category *");
+            categoryLabel.getStyleClass().add("form-label");
+
+            categoryComboBox = new ComboBox<>();
+            categoryComboBox.getItems().addAll(CATEGORIES);
+            categoryComboBox.setValue(CATEGORIES[0]);
+            categoryComboBox.getStyleClass().add("form-input");
+            categoryComboBox.setMaxWidth(Double.MAX_VALUE);
+
+            // Dynamic placeholder update
+            categoryComboBox.setOnAction(e -> updateDescriptionPlaceholder());
+
+            categoryBox.getChildren().addAll(categoryLabel, categoryComboBox);
+
+            // Product Name
+            VBox productBox = new VBox(8);
+            Label productLabel = new Label("Product Name *");
+            productLabel.getStyleClass().add("form-label");
+            productNameField = new TextField();
+            productNameField.setPromptText("e.g., Laptop, Books, Groceries");
+            productNameField.getStyleClass().add("form-input");
+            productBox.getChildren().addAll(productLabel, productNameField);
+
+            // Description
+            VBox descBox = new VBox(8);
+            Label descLabel = new Label("Description *");
+            descLabel.getStyleClass().add("form-label");
+            descriptionArea = new TextArea();
+            descriptionArea.setPromptText("Describe the item to be delivered...");
+            descriptionArea.setPrefRowCount(3);
+            descriptionArea.setWrapText(true);
+            descriptionArea.getStyleClass().add("form-input");
+            descBox.getChildren().addAll(descLabel, descriptionArea);
+
+            // Delivery Location
+            VBox locationBox = new VBox(8);
+            Label locationLabel = new Label("Delivery Location *");
+            locationLabel.getStyleClass().add("form-label");
+            deliveryLocationField = new TextField();
+            deliveryLocationField.setPromptText("Full address (Street, City, ZIP)");
+            deliveryLocationField.getStyleClass().add("form-input");
+            locationBox.getChildren().addAll(locationLabel, deliveryLocationField);
+
+            // Time Range
+            HBox timeBox = new HBox(15);
+            VBox timeFromBox = new VBox(8);
+            Label timeFromLabel = new Label("Time From *");
+            timeFromLabel.getStyleClass().add("form-label");
+            timeFromField = new TextField();
+            timeFromField.setPromptText("e.g., 8 PM");
+            timeFromField.getStyleClass().add("form-input");
+            timeFromBox.getChildren().addAll(timeFromLabel, timeFromField);
+            HBox.setHgrow(timeFromBox, Priority.ALWAYS);
+
+            VBox timeToBox = new VBox(8);
+            Label timeToLabel = new Label("Time To *");
+            timeToLabel.getStyleClass().add("form-label");
+            timeToField = new TextField();
+            timeToField.setPromptText("e.g., 9 PM");
+            timeToField.getStyleClass().add("form-input");
+            timeToBox.getChildren().addAll(timeToLabel, timeToField);
+            HBox.setHgrow(timeToBox, Priority.ALWAYS);
+
+            timeBox.getChildren().addAll(timeFromBox, timeToBox);
+
+            // Delivery Fee
+            VBox feeBox = new VBox(8);
+            Label feeLabel = new Label("Delivery Fee (USD) *");
+            feeLabel.getStyleClass().add("form-label");
+            deliveryFeeField = new TextField();
+            deliveryFeeField.setPromptText("e.g., 5.00");
+            deliveryFeeField.getStyleClass().add("form-input");
+
+            // Update summary on fee change
+            deliveryFeeField.textProperty().addListener((obs, old, newVal) -> updateSummary());
+
+            feeBox.getChildren().addAll(feeLabel, deliveryFeeField);
+
+            // Notes
+            VBox notesBox = new VBox(8);
+            Label notesLabel = new Label("Notes for Delivery Person (Optional)");
+            notesLabel.getStyleClass().add("form-label");
+            notesArea = new TextArea();
+            notesArea.setPromptText("Any special instructions...");
+            notesArea.setPrefRowCount(2);
+            notesArea.setWrapText(true);
+            notesArea.getStyleClass().add("form-input");
+            notesBox.getChildren().addAll(notesLabel, notesArea);
+
+            // Product Photo
+            VBox photoBox = new VBox(8);
+            Label photoLabel = new Label("Product Photo (Optional)");
+            photoLabel.getStyleClass().add("form-label");
+            HBox photoButtonBox = new HBox(10);
+            photoButtonBox.setAlignment(Pos.CENTER_LEFT);
+
+            Button chooseImageBtn = new Button("Choose Image");
+            chooseImageBtn.getStyleClass().add("secondary-button");
+            chooseImageBtn.setOnAction(e -> handleChooseImage());
+
+            imageLabel = new Label("No image selected");
+            imageLabel.getStyleClass().add("image-label");
+
+            photoButtonBox.getChildren().addAll(chooseImageBtn, imageLabel);
+            photoBox.getChildren().addAll(photoLabel, photoButtonBox);
+
+            // Card Message Label
+            cardMessageLabel = new Label();
+            cardMessageLabel.getStyleClass().add("card-message-label");
+            cardMessageLabel.setWrapText(true);
+            cardMessageLabel.setManaged(false);
+            cardMessageLabel.setVisible(false);
+
+            // Add all to card
+            cardView.getChildren().addAll(
+                header,
+                categoryBox,
+                productBox,
+                descBox,
+                locationBox,
+                timeBox,
+                feeBox,
+                notesBox,
+                photoBox,
+                cardMessageLabel
+            );
+        }
+
+        private void updateDescriptionPlaceholder() {
+            String category = categoryComboBox.getValue();
+            String placeholder = "Describe the item to be delivered...";
+
+            switch (category) {
+                case "Groceries":
+                    placeholder = "e.g., Fresh vegetables, dairy products, pantry items...";
+                    break;
+                case "Electronics":
+                    placeholder = "e.g., Laptop - 15 inch, Brand new in box, Model: XYZ...";
+                    break;
+                case "Pharma":
+                    placeholder = "e.g., Prescription medicines, vitamins, medical supplies...";
+                    break;
+                case "Food & Beverages":
+                    placeholder = "e.g., Restaurant order, packaged food, beverages...";
+                    break;
+                case "Clothing":
+                    placeholder = "e.g., Shirts, pants, footwear - Size and color details...";
+                    break;
+                case "Books & Stationery":
+                    placeholder = "e.g., Textbooks, notebooks, office supplies...";
+                    break;
+                case "Home & Garden":
+                    placeholder = "e.g., Furniture parts, garden tools, home decor...";
+                    break;
+                case "Sports & Outdoors":
+                    placeholder = "e.g., Sports equipment, camping gear, outdoor accessories...";
+                    break;
+                default:
+                    placeholder = "Describe the item to be delivered...";
+            }
+
+            descriptionArea.setPromptText(placeholder);
+        }
+
+        private void handleChooseImage() {
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Product Image");
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+                );
+
+                File selectedFile = fileChooser.showOpenDialog(cardView.getScene().getWindow());
+                if (selectedFile != null) {
+                    // Validate file size (max 5MB)
+                    if (selectedFile.length() > 5 * 1024 * 1024) {
+                        showCardError("Image file too large. Maximum size is 5MB.");
+                        return;
+                    }
+
+                    // Create assets/products directory if not exists
+                    Path productsDir = Paths.get("src/main/resources/com/example/quickcommercedeliverysystemdesktop/assets/products");
+                    Files.createDirectories(productsDir);
+
+                    // Copy file with unique name
+                    String fileName = System.currentTimeMillis() + "_" + selectedFile.getName();
+                    Path destPath = productsDir.resolve(fileName);
+                    Files.copy(selectedFile.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
+
+                    selectedImagePath = fileName;
+                    imageLabel.setText("✓ " + selectedFile.getName());
+                    imageLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+                    ErrorHandler.logInfo("Image uploaded: " + fileName);
+                }
+            } catch (Exception e) {
+                ErrorHandler.handleFileException(e, "uploading image");
+                showCardError("Failed to upload image.");
+            }
+        }
+
+        public boolean validateCard() {
+            clearCardMessage();
+            clearFieldStyles();
+
+            String category = categoryComboBox.getValue();
+            String productName = productNameField.getText().trim();
+            String description = descriptionArea.getText().trim();
+            String location = deliveryLocationField.getText().trim();
+            String timeFrom = timeFromField.getText().trim();
+            String timeTo = timeToField.getText().trim();
+            String feeStr = deliveryFeeField.getText().trim();
+
+            // Validate category
+            if (category.equals("Select Category")) {
+                categoryComboBox.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Please select a category");
+                return false;
+            }
+
+            // Validate product name
+            if (productName.isEmpty()) {
+                productNameField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Product name is required");
+                return false;
+            }
+
+            // Validate description
+            if (description.isEmpty()) {
+                descriptionArea.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Description is required");
+                return false;
+            }
+
+            // Validate location
+            if (location.isEmpty()) {
+                deliveryLocationField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Delivery location is required");
+                return false;
+            }
+
+            // Validate time from
+            if (timeFrom.isEmpty()) {
+                timeFromField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Time From is required");
+                return false;
+            }
+
+            // Validate time to
+            if (timeTo.isEmpty()) {
+                timeToField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Time To is required");
+                return false;
+            }
+
+            // Validate delivery fee
+            if (!ValidationUtil.isPositiveNumber(feeStr)) {
+                deliveryFeeField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Please enter a valid positive delivery fee");
+                return false;
+            }
+
+            double fee = Double.parseDouble(feeStr);
+            if (!ValidationUtil.isInRange(fee, 0.01, 1000.00)) {
+                deliveryFeeField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                showCardError("Delivery fee must be between $0.01 and $1000.00");
+                return false;
+            }
+
+            return true;
+        }
+
+        public Order createOrder() {
+            try {
+                int userId = UserSession.getInstance().getUserId();
+                String userName = UserSession.getInstance().getUserName();
+                String userPhone = UserSession.getInstance().getUserPhone();
+
+                String category = categoryComboBox.getValue();
+                String productName = "[" + category + "] " + productNameField.getText().trim();
+                String description = descriptionArea.getText().trim();
+                String location = deliveryLocationField.getText().trim();
+                String timeRange = timeFromField.getText().trim() + " - " + timeToField.getText().trim();
+                double fee = Double.parseDouble(deliveryFeeField.getText().trim());
+                String notes = notesArea.getText().trim();
+
+                Order order = new Order(userId, productName, description, location, timeRange,
+                                       fee, notes, userName, userPhone);
+                order.setProductPhoto(selectedImagePath);
+
+                return order;
+            } catch (Exception e) {
+                ErrorHandler.logError(e);
+                return null;
+            }
+        }
+
+        private void showCardError(String message) {
+            cardMessageLabel.setText("❌ " + message);
+            cardMessageLabel.setStyle("-fx-text-fill: #e74c3c; -fx-background-color: #fadbd8;");
+            cardMessageLabel.setManaged(true);
+            cardMessageLabel.setVisible(true);
+        }
+
+        private void clearCardMessage() {
+            cardMessageLabel.setText("");
+            cardMessageLabel.setManaged(false);
+            cardMessageLabel.setVisible(false);
+        }
+
+        private void clearFieldStyles() {
+            categoryComboBox.setStyle("");
+            productNameField.setStyle("");
+            descriptionArea.setStyle("");
+            deliveryLocationField.setStyle("");
+            timeFromField.setStyle("");
+            timeToField.setStyle("");
+            deliveryFeeField.setStyle("");
+        }
+
+        public VBox getCardView() {
+            return cardView;
+        }
     }
 }
 

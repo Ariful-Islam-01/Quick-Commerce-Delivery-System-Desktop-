@@ -438,10 +438,139 @@
 
 /* ==================== CREATE ORDER PAGE STYLES ==================== */
 
+/* Main Container */
+.create-order-main {
+    -fx-background-color: #f5f7fa;
+}
+
 .create-order-container {
     -fx-background-color: #f5f7fa;
 }
 
+/* Order Count Badge */
+.order-count-badge {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #3498db;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 15px;
+}
+
+/* Order Cards Container */
+.order-cards-container {
+    -fx-spacing: 20px;
+}
+
+/* Individual Order Card */
+.order-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 12, 0, 0, 3);
+    -fx-border-color: #e1e8ed;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+}
+
+.order-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 15, 0, 0, 4);
+}
+
+/* Order Card Title */
+.order-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Delete Order Button */
+.delete-order-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.delete-order-button:hover {
+    -fx-background-color: #c0392b;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Add New Order Button */
+.add-order-button {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.add-order-button:hover {
+    -fx-background-color: #229954;
+}
+
+/* Card Message Label */
+.card-message-label {
+    -fx-font-size: 13px;
+    -fx-padding: 10px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-border-color: #e74c3c;
+}
+
+/* Global Summary Footer */
+.global-summary-footer {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, -2);
+}
+
+.summary-content {
+    -fx-background-color: white;
+}
+
+.summary-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2c3e50;
+}
+
+.summary-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3498db;
+}
+
+.summary-value-highlight {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+}
+
+/* Submit All Button */
+.submit-all-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.submit-all-button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Form Container (Legacy - Keep for compatibility) */
 .form-container {
     -fx-background-color: white;
     -fx-padding: 30px;
