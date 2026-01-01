@@ -21,6 +21,8 @@
     -fx-padding: 12px 15px;
     -fx-cursor: hand;
     -fx-background-radius: 5px;
+    -fx-border-width: 0 0 0 0;
+    -fx-border-color: transparent;
 }
 
 .nav-btn:hover {
@@ -29,6 +31,21 @@
 
 .nav-btn:pressed {
     -fx-background-color: #1abc9c;
+}
+
+/* Active Navigation Button State */
+.nav-btn-active {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-width: 0 0 0 5px;
+    -fx-border-color: #1abc9c;
+    -fx-border-style: solid;
+    -fx-background-radius: 5px;
+}
+
+.nav-btn-active:hover {
+    -fx-background-color: #3d5a6f;
 }
 
 /* Logout Button */

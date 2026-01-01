@@ -15,17 +15,17 @@
         <VBox spacing="15" styleClass="sidebar">
             <Label text="Quick Commerce" styleClass="logo"/>
 
-            <Button text="🏠 Home" onAction="#loadHome" styleClass="nav-btn"/>
-            <Button text="➕ Create Order" onAction="#loadCreateOrder" styleClass="nav-btn"/>
-            <Button text="📦 My Orders" onAction="#loadMyOrders" styleClass="nav-btn"/>
-            <Button text="🚚 Deliveries" onAction="#loadDeliveries" styleClass="nav-btn"/>
-            <Button text="💰 Earnings" onAction="#loadEarnings" styleClass="nav-btn"/>
+            <Button fx:id="homeBtn" text="🏠 Home" onAction="#loadHome" styleClass="nav-btn"/>
+            <Button fx:id="createOrderBtn" text="➕ Create Order" onAction="#loadCreateOrder" styleClass="nav-btn"/>
+            <Button fx:id="myOrdersBtn" text="📦 My Orders" onAction="#loadMyOrders" styleClass="nav-btn"/>
+            <Button fx:id="deliveriesBtn" text="🚚 Deliveries" onAction="#loadDeliveries" styleClass="nav-btn"/>
+            <Button fx:id="earningsBtn" text="💰 Earnings" onAction="#loadEarnings" styleClass="nav-btn"/>
             <Button fx:id="notificationsBtn" text="🔔 Notifications" onAction="#loadNotifications" styleClass="nav-btn"/>
             <Button fx:id="adminDashboardBtn" text="📊 Admin Dashboard" onAction="#loadAdminDashboard" styleClass="nav-btn"/>
             <Button fx:id="manageUsersBtn" text="👥 Manage Users" onAction="#loadManageUsers" styleClass="nav-btn"/>
             <Button fx:id="manageOrdersBtn" text="📋 Manage Orders" onAction="#loadManageOrders" styleClass="nav-btn"/>
             <Button fx:id="manageEarningsBtn" text="💵 Manage Earnings" onAction="#loadManageEarnings" styleClass="nav-btn"/>
-            <Button text="👤 Profile" onAction="#loadProfile" styleClass="nav-btn"/>
+            <Button fx:id="profileBtn" text="👤 Profile" onAction="#loadProfile" styleClass="nav-btn"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
