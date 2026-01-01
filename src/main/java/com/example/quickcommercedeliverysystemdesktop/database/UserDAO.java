@@ -33,7 +33,9 @@ public class UserDAO {
 
     // Login (returns User if success)
     public static User login(String email, String passwordPlain) {
-        String sql = "SELECT user_id, name, email, phone, default_address, profile_image FROM Users WHERE email = ? AND password = ?";
+        String sql = "SELECT user_id, name, email, phone, default_address, profile_image, " +
+                    "COALESCE(is_admin, 0) as is_admin, COALESCE(is_banned, 0) as is_banned " +
+                    "FROM Users WHERE email = ? AND password = ?";
         String hashed = PasswordUtil.hash(passwordPlain);
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -49,7 +51,9 @@ public class UserDAO {
                             rs.getString("email"),
                             rs.getString("phone"),
                             rs.getString("default_address"),
-                            rs.getString("profile_image")
+                            rs.getString("profile_image"),
+                            rs.getInt("is_admin") == 1,
+                            rs.getInt("is_banned") == 1
                     );
                 }
             }

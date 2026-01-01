@@ -261,5 +261,113 @@ public class OrderDAO {
         }
         return 0;
     }
+
+    /**
+     * Get orders by status (admin filter)
+     */
+    public static List<Order> getOrdersByStatus(String status) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM Orders WHERE status = ? ORDER BY created_at DESC";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
+            }
+        } catch (Exception ex) {
+            System.err.println("Error fetching orders by status: " + ex.getMessage());
+        }
+
+        return orders;
+    }
+
+    /**
+     * Get customer name for order
+     */
+    public static String getCustomerName(int customerId) {
+        String sql = "SELECT name FROM Users WHERE user_id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, customerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (Exception ex) {
+            System.err.println("Get customer name error: " + ex.getMessage());
+        }
+        return "Unknown";
+    }
+
+    /**
+     * Delete order and related data (cascade) - ADMIN ONLY
+     */
+    public static boolean adminDeleteOrder(int orderId) {
+        try (Connection conn = Database.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                // Delete from Deliveries
+                String deleteDeliveries = "DELETE FROM Deliveries WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteDeliveries)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                // Delete from Earnings
+                String deleteEarnings = "DELETE FROM Earnings WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteEarnings)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                // Delete from OrderHistory
+                String deleteHistory = "DELETE FROM OrderHistory WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteHistory)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                // Delete from Notifications
+                String deleteNotifications = "DELETE FROM Notifications WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteNotifications)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                // Delete from Ratings
+                String deleteRatings = "DELETE FROM Ratings WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteRatings)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                // Finally, delete the order itself
+                String deleteOrder = "DELETE FROM Orders WHERE order_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(deleteOrder)) {
+                    ps.setInt(1, orderId);
+                    ps.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (Exception ex) {
+                conn.rollback();
+                System.err.println("Error deleting order (rolled back): " + ex.getMessage());
+                ex.printStackTrace();
+                return false;
+            }
+        } catch (Exception ex) {
+            System.err.println("Database connection error: " + ex.getMessage());
+            return false;
+        }
+    }
 }
 

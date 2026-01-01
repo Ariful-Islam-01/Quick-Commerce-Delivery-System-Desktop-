@@ -1,6 +1,7 @@
 package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
+import com.example.quickcommercedeliverysystemdesktop.models.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,9 +15,35 @@ public class MainDashboardController {
     @FXML private StackPane contentArea;
     @FXML private Button logoutButton;
     @FXML private Button notificationsBtn;
+    @FXML private Button adminDashboardBtn;
+    @FXML private Button manageUsersBtn;
+    @FXML private Button manageOrdersBtn;
+    @FXML private Button manageEarningsBtn;
 
     @FXML
     public void initialize() {
+        // Check if user is admin and show/hide admin features
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null && !currentUser.isAdmin()) {
+            // Hide admin buttons for non-admin users
+            if (adminDashboardBtn != null) {
+                adminDashboardBtn.setVisible(false);
+                adminDashboardBtn.setManaged(false);
+            }
+            if (manageUsersBtn != null) {
+                manageUsersBtn.setVisible(false);
+                manageUsersBtn.setManaged(false);
+            }
+            if (manageOrdersBtn != null) {
+                manageOrdersBtn.setVisible(false);
+                manageOrdersBtn.setManaged(false);
+            }
+            if (manageEarningsBtn != null) {
+                manageEarningsBtn.setVisible(false);
+                manageEarningsBtn.setManaged(false);
+            }
+        }
+
         loadPage("Home.fxml");
     }
 
@@ -69,6 +96,16 @@ public class MainDashboardController {
     @FXML
     public void loadManageUsers() {
         loadPage("ManageUsers.fxml");
+    }
+
+    @FXML
+    public void loadManageOrders() {
+        loadPage("ManageOrders.fxml");
+    }
+
+    @FXML
+    public void loadManageEarnings() {
+        loadPage("ManageEarnings.fxml");
     }
 
     private void loadPage(String page) {

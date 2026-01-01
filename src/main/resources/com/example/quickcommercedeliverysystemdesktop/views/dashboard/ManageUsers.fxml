@@ -16,6 +16,7 @@
     <HBox alignment="CENTER_LEFT" spacing="10">
         <Text text="👥 Manage Users" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Add User" onAction="#handleAddUser" styleClass="btn-primary"/>
         <Button text="🔄 Refresh" onAction="#handleRefresh" styleClass="btn-primary"/>
     </HBox>
 

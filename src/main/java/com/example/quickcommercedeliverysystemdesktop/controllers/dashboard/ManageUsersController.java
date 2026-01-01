@@ -13,7 +13,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.util.Optional;
 
@@ -303,6 +302,102 @@ public class ManageUsersController {
         loadUsers();
         searchField.clear();
         filterComboBox.setValue("All Users");
+    }
+
+    @FXML
+    private void handleAddUser() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add New User");
+        dialog.setHeaderText("Create New User Account");
+        dialog.initModality(Modality.APPLICATION_MODAL);
+
+        // Create form fields
+        TextField nameField = new TextField();
+        nameField.setPromptText("Full Name");
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email Address");
+
+        TextField phoneField = new TextField();
+        phoneField.setPromptText("Phone Number");
+
+        TextField addressField = new TextField();
+        addressField.setPromptText("Default Address (Optional)");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPromptText("Confirm Password");
+
+        CheckBox adminCheckBox = new CheckBox("Create as Admin User");
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(20));
+        content.getChildren().addAll(
+            new Label("Name:"), nameField,
+            new Label("Email:"), emailField,
+            new Label("Phone:"), phoneField,
+            new Label("Address:"), addressField,
+            new Label("Password:"), passwordField,
+            new Label("Confirm Password:"), confirmPasswordField,
+            adminCheckBox
+        );
+
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Validate inputs
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
+            String phone = phoneField.getText().trim();
+            String address = addressField.getText().trim();
+            String password = passwordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                showAlert("Validation Error", "Name, Email, and Password are required", Alert.AlertType.ERROR);
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                showAlert("Validation Error", "Passwords do not match", Alert.AlertType.ERROR);
+                return;
+            }
+
+            if (password.length() < 6) {
+                showAlert("Validation Error", "Password must be at least 6 characters", Alert.AlertType.ERROR);
+                return;
+            }
+
+            // Create user account
+            boolean success = com.example.quickcommercedeliverysystemdesktop.database.UserDAO.register(
+                name, email, phone, password
+            );
+
+            if (success) {
+                // If admin checkbox is selected, set admin status
+                if (adminCheckBox.isSelected()) {
+                    // Get the newly created user to set admin status
+                    java.util.List<User> users = UserDAO.getAllUsers();
+                    User newUser = users.stream()
+                        .filter(u -> u.getEmail().equals(email))
+                        .findFirst()
+                        .orElse(null);
+
+                    if (newUser != null) {
+                        UserDAO.setAdminStatus(newUser.getUserId(), true);
+                    }
+                }
+
+                showAlert("Success", "User account created successfully", Alert.AlertType.INFORMATION);
+                loadUsers();
+            } else {
+                showAlert("Error", "Failed to create user. Email may already exist.", Alert.AlertType.ERROR);
+            }
+        }
     }
 
     private void showAlert(String title, String message, Alert.AlertType type) {

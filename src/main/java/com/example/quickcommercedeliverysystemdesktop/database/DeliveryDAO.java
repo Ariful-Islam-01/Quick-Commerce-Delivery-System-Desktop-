@@ -676,5 +676,263 @@ public class DeliveryDAO {
         }
         return 0.0;
     }
+
+    /**
+     * Get all earnings with delivery person details (ADMIN)
+     */
+    public static List<AdminEarningRecord> getAllEarningsWithDetails() {
+        List<AdminEarningRecord> earnings = new ArrayList<>();
+        String sql = """
+                SELECT e.earning_id, e.order_id, e.delivery_person_id, e.amount, e.created_at,
+                       u.name as delivery_person_name,
+                       o.product_name, o.customer_id,
+                       c.name as customer_name
+                FROM Earnings e
+                INNER JOIN Users u ON e.delivery_person_id = u.user_id
+                INNER JOIN Orders o ON e.order_id = o.order_id
+                INNER JOIN Users c ON o.customer_id = c.user_id
+                ORDER BY e.created_at DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                AdminEarningRecord record = new AdminEarningRecord(
+                        rs.getInt("earning_id"),
+                        rs.getInt("order_id"),
+                        rs.getInt("delivery_person_id"),
+                        rs.getString("delivery_person_name"),
+                        rs.getInt("customer_id"),
+                        rs.getString("customer_name"),
+                        rs.getString("product_name"),
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                earnings.add(record);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching all earnings: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return earnings;
+    }
+
+    /**
+     * Get earnings filtered by delivery person (ADMIN)
+     */
+    public static List<AdminEarningRecord> getEarningsByDeliveryPerson(int deliveryPersonId) {
+        List<AdminEarningRecord> earnings = new ArrayList<>();
+        String sql = """
+                SELECT e.earning_id, e.order_id, e.delivery_person_id, e.amount, e.created_at,
+                       u.name as delivery_person_name,
+                       o.product_name, o.customer_id,
+                       c.name as customer_name
+                FROM Earnings e
+                INNER JOIN Users u ON e.delivery_person_id = u.user_id
+                INNER JOIN Orders o ON e.order_id = o.order_id
+                INNER JOIN Users c ON o.customer_id = c.user_id
+                WHERE e.delivery_person_id = ?
+                ORDER BY e.created_at DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, deliveryPersonId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                AdminEarningRecord record = new AdminEarningRecord(
+                        rs.getInt("earning_id"),
+                        rs.getInt("order_id"),
+                        rs.getInt("delivery_person_id"),
+                        rs.getString("delivery_person_name"),
+                        rs.getInt("customer_id"),
+                        rs.getString("customer_name"),
+                        rs.getString("product_name"),
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                earnings.add(record);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching earnings by delivery person: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return earnings;
+    }
+
+    /**
+     * Get earnings filtered by date range (ADMIN)
+     */
+    public static List<AdminEarningRecord> getEarningsByDateRange(String fromDate, String toDate) {
+        List<AdminEarningRecord> earnings = new ArrayList<>();
+        String sql = """
+                SELECT e.earning_id, e.order_id, e.delivery_person_id, e.amount, e.created_at,
+                       u.name as delivery_person_name,
+                       o.product_name, o.customer_id,
+                       c.name as customer_name
+                FROM Earnings e
+                INNER JOIN Users u ON e.delivery_person_id = u.user_id
+                INNER JOIN Orders o ON e.order_id = o.order_id
+                INNER JOIN Users c ON o.customer_id = c.user_id
+                WHERE DATE(e.created_at) BETWEEN ? AND ?
+                ORDER BY e.created_at DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, fromDate);
+            ps.setString(2, toDate);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                AdminEarningRecord record = new AdminEarningRecord(
+                        rs.getInt("earning_id"),
+                        rs.getInt("order_id"),
+                        rs.getInt("delivery_person_id"),
+                        rs.getString("delivery_person_name"),
+                        rs.getInt("customer_id"),
+                        rs.getString("customer_name"),
+                        rs.getString("product_name"),
+                        rs.getDouble("amount"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                earnings.add(record);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching earnings by date range: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return earnings;
+    }
+
+    /**
+     * Get all delivery persons who have earnings (ADMIN)
+     */
+    public static List<DeliveryPersonSummary> getDeliveryPersonsWithEarnings() {
+        List<DeliveryPersonSummary> persons = new ArrayList<>();
+        String sql = """
+                SELECT u.user_id, u.name,
+                       COUNT(e.earning_id) as delivery_count,
+                       COALESCE(SUM(e.amount), 0) as total_earned
+                FROM Users u
+                INNER JOIN Earnings e ON u.user_id = e.delivery_person_id
+                GROUP BY u.user_id, u.name
+                ORDER BY total_earned DESC
+                """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                DeliveryPersonSummary person = new DeliveryPersonSummary(
+                        rs.getInt("user_id"),
+                        rs.getString("name"),
+                        rs.getInt("delivery_count"),
+                        rs.getDouble("total_earned")
+                );
+                persons.add(person);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching delivery persons with earnings: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return persons;
+    }
+
+    /**
+     * Inner class for admin earning records with full details
+     */
+    public static class AdminEarningRecord {
+        private final int earningId;
+        private final int orderId;
+        private final int deliveryPersonId;
+        private final String deliveryPersonName;
+        private final int customerId;
+        private final String customerName;
+        private final String productName;
+        private final double amount;
+        private final LocalDateTime earnedAt;
+
+        public AdminEarningRecord(int earningId, int orderId, int deliveryPersonId, String deliveryPersonName,
+                                int customerId, String customerName, String productName, double amount,
+                                LocalDateTime earnedAt) {
+            this.earningId = earningId;
+            this.orderId = orderId;
+            this.deliveryPersonId = deliveryPersonId;
+            this.deliveryPersonName = deliveryPersonName;
+            this.customerId = customerId;
+            this.customerName = customerName;
+            this.productName = productName;
+            this.amount = amount;
+            this.earnedAt = earnedAt;
+        }
+
+        public int getEarningId() { return earningId; }
+        public int getOrderId() { return orderId; }
+        public int getDeliveryPersonId() { return deliveryPersonId; }
+        public String getDeliveryPersonName() { return deliveryPersonName; }
+        public int getCustomerId() { return customerId; }
+        public String getCustomerName() { return customerName; }
+        public String getProductName() { return productName; }
+        public double getAmount() { return amount; }
+        public LocalDateTime getEarnedAt() { return earnedAt; }
+
+        public String getFormattedAmount() {
+            return String.format("$%.2f", amount);
+        }
+
+        public String getFormattedDate() {
+            return earnedAt.toLocalDate().toString();
+        }
+
+        public String getFormattedDateTime() {
+            return earnedAt.toString().replace("T", " ").substring(0, 16);
+        }
+    }
+
+    /**
+     * Inner class for delivery person summary
+     */
+    public static class DeliveryPersonSummary {
+        private final int userId;
+        private final String name;
+        private final int deliveryCount;
+        private final double totalEarned;
+
+        public DeliveryPersonSummary(int userId, String name, int deliveryCount, double totalEarned) {
+            this.userId = userId;
+            this.name = name;
+            this.deliveryCount = deliveryCount;
+            this.totalEarned = totalEarned;
+        }
+
+        public int getUserId() { return userId; }
+        public String getName() { return name; }
+        public int getDeliveryCount() { return deliveryCount; }
+        public double getTotalEarned() { return totalEarned; }
+
+        public String getFormattedEarned() {
+            return String.format("$%.2f", totalEarned);
+        }
+
+        @Override
+        public String toString() {
+            return name + " (" + deliveryCount + " deliveries, " + getFormattedEarned() + ")";
+        }
+    }
 }
 
