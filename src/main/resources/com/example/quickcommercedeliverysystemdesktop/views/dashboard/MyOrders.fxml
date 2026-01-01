@@ -26,10 +26,25 @@
         <Label text="Filter by Status:" styleClass="filter-label"/>
         <ComboBox fx:id="statusFilterComboBox" prefWidth="180" styleClass="filter-combo"/>
         <Button text="Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="View:" styleClass="filter-label"/>
+        <ToggleButton fx:id="cardViewToggle" text="📇 Cards" selected="true" styleClass="view-toggle-button"/>
+        <ToggleButton fx:id="tableViewToggle" text="📋 Table" styleClass="view-toggle-button"/>
     </HBox>
 
-    <!-- Orders Table -->
-    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table">
+    <!-- Cards Container (Default View) -->
+    <ScrollPane fx:id="cardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
+                styleClass="cards-scroll-pane">
+        <VBox fx:id="orderCardsContainer" spacing="15" styleClass="order-cards-container">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Table View (Hidden by default) -->
+    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table"
+               managed="false" visible="false">
         <columns>
             <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="100"/>
             <TableColumn fx:id="productNameColumn" text="Product" prefWidth="200"/>
@@ -44,6 +59,16 @@
                    styleClass="placeholder-label"/>
         </placeholder>
     </TableView>
+
+    <!-- Empty State for Cards -->
+    <VBox fx:id="emptyStateContainer" alignment="CENTER" spacing="15"
+          VBox.vgrow="ALWAYS" styleClass="empty-state-container"
+          managed="false" visible="false">
+        <Label text="📦" style="-fx-font-size: 64px;"/>
+        <Label text="No orders found" styleClass="empty-state-title"/>
+        <Label text="Create your first delivery order to get started!"
+               styleClass="empty-state-subtitle"/>
+    </VBox>
 
 </VBox>
 

@@ -9,8 +9,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 
 public class MyOrdersController {
 
@@ -25,8 +27,16 @@ public class MyOrdersController {
     @FXML private TableColumn<Order, Void> actionsColumn;
     @FXML private Label totalOrdersLabel;
 
+    // Card View Components
+    @FXML private ScrollPane cardsScrollPane;
+    @FXML private VBox orderCardsContainer;
+    @FXML private VBox emptyStateContainer;
+    @FXML private ToggleButton cardViewToggle;
+    @FXML private ToggleButton tableViewToggle;
+
     private ObservableList<Order> allOrders;
     private FilteredList<Order> filteredOrders;
+    private boolean isCardView = true;
 
     @FXML
     public void initialize() {
@@ -35,7 +45,267 @@ public class MyOrdersController {
 
         setupTable();
         setupFilters();
+        setupViewToggles();
         loadOrders();
+    }
+
+    private void setupViewToggles() {
+        ToggleGroup viewGroup = new ToggleGroup();
+        cardViewToggle.setToggleGroup(viewGroup);
+        tableViewToggle.setToggleGroup(viewGroup);
+
+        cardViewToggle.setSelected(true);
+
+        viewGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            if (newToggle == cardViewToggle) {
+                switchToCardView();
+            } else if (newToggle == tableViewToggle) {
+                switchToTableView();
+            } else {
+                // Ensure one is always selected
+                if (oldToggle != null) {
+                    oldToggle.setSelected(true);
+                }
+            }
+        });
+    }
+
+    private void switchToCardView() {
+        isCardView = true;
+        cardsScrollPane.setVisible(true);
+        cardsScrollPane.setManaged(true);
+        ordersTable.setVisible(false);
+        ordersTable.setManaged(false);
+        renderOrderCards();
+    }
+
+    private void switchToTableView() {
+        isCardView = false;
+        cardsScrollPane.setVisible(false);
+        cardsScrollPane.setManaged(false);
+        ordersTable.setVisible(true);
+        ordersTable.setManaged(true);
+    }
+
+    private void renderOrderCards() {
+        orderCardsContainer.getChildren().clear();
+
+        if (filteredOrders.isEmpty()) {
+            emptyStateContainer.setVisible(true);
+            emptyStateContainer.setManaged(true);
+            cardsScrollPane.setVisible(false);
+            cardsScrollPane.setManaged(false);
+        } else {
+            emptyStateContainer.setVisible(false);
+            emptyStateContainer.setManaged(false);
+            cardsScrollPane.setVisible(true);
+            cardsScrollPane.setManaged(true);
+
+            for (Order order : filteredOrders) {
+                VBox card = createOrderCard(order);
+                orderCardsContainer.getChildren().add(card);
+            }
+        }
+    }
+
+    private VBox createOrderCard(Order order) {
+        VBox card = new VBox(12);
+        card.getStyleClass().add("order-card");
+        card.setPadding(new Insets(20));
+
+        // Header Row: Order ID, Category, and Status
+        HBox headerRow = new HBox(12);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label orderIdLabel = new Label("#" + order.getOrderId());
+        orderIdLabel.getStyleClass().add("order-card-id");
+
+        // Extract category from product name (format: [Category] Product)
+        String category = extractCategory(order.getProductName());
+        if (category != null && !category.isEmpty()) {
+            Label categoryLabel = new Label(category);
+            categoryLabel.getStyleClass().add("order-card-category");
+        }
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label statusLabel = new Label(order.getStatus().getDisplayName());
+        statusLabel.getStyleClass().add("order-card-status");
+        statusLabel.setStyle(getStatusCardStyle(order.getStatus()));
+
+        // Add category label if exists
+        if (category != null && !category.isEmpty()) {
+            Label categoryBadge = new Label(category);
+            categoryBadge.getStyleClass().add("order-card-category");
+            headerRow.getChildren().addAll(orderIdLabel, categoryBadge, spacer, statusLabel);
+        } else {
+            headerRow.getChildren().addAll(orderIdLabel, spacer, statusLabel);
+        }
+
+        // Product Row: Product Name and Description
+        VBox productSection = new VBox(8);
+
+        // Clean product name (remove category prefix if exists)
+        String cleanProductName = order.getProductName();
+        if (cleanProductName.contains("]")) {
+            cleanProductName = cleanProductName.substring(cleanProductName.indexOf("]") + 1).trim();
+        }
+
+        Label productLabel = new Label(cleanProductName);
+        productLabel.getStyleClass().add("order-card-product");
+        productLabel.setWrapText(true);
+        productLabel.setMaxWidth(Double.MAX_VALUE);
+
+        productSection.getChildren().add(productLabel);
+
+        // Description (if available)
+        if (order.getDescription() != null && !order.getDescription().isEmpty()) {
+            Label descLabel = new Label(order.getDescription());
+            descLabel.getStyleClass().add("order-card-description");
+            descLabel.setWrapText(true);
+            descLabel.setMaxWidth(Double.MAX_VALUE);
+            productSection.getChildren().add(descLabel);
+        }
+
+        Separator separator1 = new Separator();
+
+        // Location Row
+        HBox locationRow = new HBox(10);
+        locationRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label locationIcon = new Label("📍");
+        locationIcon.setStyle("-fx-font-size: 16px;");
+
+        VBox locationBox = new VBox(3);
+        Label locationTitle = new Label("Delivery Location");
+        locationTitle.getStyleClass().add("order-card-label");
+
+        Label locationText = new Label(order.getDeliveryLocation());
+        locationText.getStyleClass().add("order-card-value");
+        locationText.setWrapText(true);
+
+        locationBox.getChildren().addAll(locationTitle, locationText);
+        HBox.setHgrow(locationBox, Priority.ALWAYS);
+
+        locationRow.getChildren().addAll(locationIcon, locationBox);
+
+        // Time and Fee Row
+        HBox detailsRow = new HBox(20);
+        detailsRow.setAlignment(Pos.CENTER_LEFT);
+
+        // Time
+        VBox timeBox = new VBox(3);
+        HBox.setHgrow(timeBox, Priority.ALWAYS);
+
+        HBox timeHeader = new HBox(5);
+        timeHeader.setAlignment(Pos.CENTER_LEFT);
+        Label timeIcon = new Label("🕐");
+        Label timeTitle = new Label("Delivery Time");
+        timeTitle.getStyleClass().add("order-card-label");
+        timeHeader.getChildren().addAll(timeIcon, timeTitle);
+
+        Label timeText = new Label(order.getDeliveryTimeRange());
+        timeText.getStyleClass().add("order-card-value");
+
+        timeBox.getChildren().addAll(timeHeader, timeText);
+
+        // Fee
+        VBox feeBox = new VBox(3);
+
+        HBox feeHeader = new HBox(5);
+        feeHeader.setAlignment(Pos.CENTER_LEFT);
+        Label feeIcon = new Label("💵");
+        Label feeTitle = new Label("Delivery Fee");
+        feeTitle.getStyleClass().add("order-card-label");
+        feeHeader.getChildren().addAll(feeIcon, feeTitle);
+
+        Label feeText = new Label(order.getFormattedDeliveryFee());
+        feeText.getStyleClass().add("order-card-fee");
+
+        feeBox.getChildren().addAll(feeHeader, feeText);
+
+        detailsRow.getChildren().addAll(timeBox, feeBox);
+
+        Separator separator2 = new Separator();
+
+        // Footer: Date and Actions
+        HBox footerRow = new HBox(15);
+        footerRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox dateBox = new VBox(3);
+        Label dateTitle = new Label("Created");
+        dateTitle.getStyleClass().add("order-card-label-small");
+
+        Label dateText = new Label(order.getFormattedOrderDate());
+        dateText.getStyleClass().add("order-card-date");
+
+        dateBox.getChildren().addAll(dateTitle, dateText);
+
+        Region footerSpacer = new Region();
+        HBox.setHgrow(footerSpacer, Priority.ALWAYS);
+
+        // Action Buttons
+        HBox actionsBox = new HBox(8);
+        actionsBox.setAlignment(Pos.CENTER_RIGHT);
+
+        Button viewButton = new Button("👁 View");
+        viewButton.getStyleClass().add("card-action-button-primary");
+        viewButton.setOnAction(e -> viewOrderDetails(order));
+
+        actionsBox.getChildren().add(viewButton);
+
+        if (order.canEdit()) {
+            Button editButton = new Button("✏ Edit");
+            editButton.getStyleClass().add("card-action-button");
+            editButton.setOnAction(e -> editOrder(order));
+            actionsBox.getChildren().add(editButton);
+        }
+
+        if (order.canCancel()) {
+            Button cancelButton = new Button("✖ Cancel");
+            cancelButton.getStyleClass().add("card-action-button-danger");
+            cancelButton.setOnAction(e -> cancelOrder(order));
+            actionsBox.getChildren().add(cancelButton);
+        }
+
+        footerRow.getChildren().addAll(dateBox, footerSpacer, actionsBox);
+
+        // Add all rows to card
+        card.getChildren().addAll(
+            headerRow,
+            productSection,
+            separator1,
+            locationRow,
+            detailsRow,
+            separator2,
+            footerRow
+        );
+
+        return card;
+    }
+
+    // Helper method to extract category from product name
+    private String extractCategory(String productName) {
+        if (productName != null && productName.startsWith("[") && productName.contains("]")) {
+            return productName.substring(1, productName.indexOf("]"));
+        }
+        return null;
+    }
+
+    private String getStatusCardStyle(OrderStatus status) {
+        String baseStyle = "-fx-padding: 7px 16px; -fx-border-radius: 18px; " +
+                "-fx-background-radius: 18px; -fx-font-weight: bold; -fx-font-size: 12px; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 2);";
+
+        return switch (status) {
+            case DELIVERED -> baseStyle + " -fx-background-color: linear-gradient(to right, #27ae60, #2ecc71); -fx-text-fill: #ffffff;";
+            case CANCELLED -> baseStyle + " -fx-background-color: linear-gradient(to right, #e74c3c, #ec7063); -fx-text-fill: #ffffff;";
+            case ON_THE_WAY -> baseStyle + " -fx-background-color: linear-gradient(to right, #f39c12, #f1c40f); -fx-text-fill: #ffffff;";
+            case PICKED_UP -> baseStyle + " -fx-background-color: linear-gradient(to right, #3498db, #5dade2); -fx-text-fill: #ffffff;";
+            case ACCEPTED -> baseStyle + " -fx-background-color: linear-gradient(to right, #1abc9c, #48c9b0); -fx-text-fill: #ffffff;";
+            case PENDING -> baseStyle + " -fx-background-color: linear-gradient(to right, #95a5a6, #bdc3c7); -fx-text-fill: #ffffff;";
+        };
     }
 
     private void setupTable() {
@@ -152,12 +422,18 @@ public class MyOrdersController {
         });
 
         updateStatistics();
+        if (isCardView) {
+            renderOrderCards();
+        }
     }
 
     private void loadOrders() {
         int userId = UserSession.getInstance().getUserId();
         allOrders.setAll(OrderDAO.getOrdersByUser(userId));
         updateStatistics();
+        if (isCardView) {
+            renderOrderCards();
+        }
     }
 
     private void updateStatistics() {
