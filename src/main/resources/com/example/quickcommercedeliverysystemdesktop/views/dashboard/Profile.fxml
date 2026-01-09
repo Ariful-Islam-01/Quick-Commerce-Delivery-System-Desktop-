@@ -5,140 +5,192 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.ProfileController"
-      spacing="20" styleClass="content-area">
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.ProfileController"
+            fitToWidth="true"
+            style="-fx-background-color: #f5f7fa; -fx-background: #f5f7fa;"
+            vbarPolicy="ALWAYS"
+            hbarPolicy="NEVER">
 
-    <!-- Page Header -->
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label text="👤 My Profile" styleClass="page-title"/>
-    </HBox>
+    <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: #f5f7fa;">
 
-    <Separator/>
+        <!-- Page Header -->
+        <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 5 0;">
+            <Label text="👤 My Profile" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        </HBox>
 
-    <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-        <VBox spacing="25" style="-fx-padding: 10;">
+        <!-- Profile Overview Card -->
+        <HBox spacing="20" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 2);">
 
             <!-- Profile Image Section -->
-            <VBox spacing="10" alignment="CENTER" styleClass="dashboard-card">
-                <Label text="Profile Picture" styleClass="section-title"/>
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="Profile Picture" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
 
-                <StackPane>
+                <StackPane style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 2);">
                     <ImageView fx:id="profileImageView"
-                               fitWidth="120" fitHeight="120"
+                               fitWidth="240" fitHeight="240"
                                preserveRatio="true"
-                               style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);">
+                               style="-fx-background-radius: 8;">
                         <viewport>
-                            <Rectangle2D width="120" height="120"/>
+                            <Rectangle2D width="240" height="240"/>
                         </viewport>
                     </ImageView>
                 </StackPane>
 
-                <Button text="Choose Image" onAction="#handleChooseImage" styleClass="secondary-button"/>
-                <Label fx:id="imageMessageLabel" styleClass="info-label"/>
+                <Button text="📷 Change Photo" onAction="#handleChooseImage"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 6 14; -fx-background-radius: 6; -fx-font-size: 11px; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 6, 0, 0, 2);"/>
+
+                <Label fx:id="imageMessageLabel" wrapText="true" textAlignment="CENTER" style="-fx-font-size: 10px;"/>
             </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
 
             <!-- Ratings Section (for delivery partners) -->
-            <VBox fx:id="ratingsSection" spacing="10" alignment="CENTER" styleClass="dashboard-card"
-                  style="-fx-padding: 20; -fx-background-color: linear-gradient(to bottom right, #f39c12, #f1c40f);" managed="false" visible="false">
-                <Label text="⭐ My Ratings" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <VBox fx:id="ratingsSection" spacing="15" alignment="CENTER"
+                  style="-fx-padding: 20; -fx-background-color: linear-gradient(to bottom, #fff9e6, #fffbf0); -fx-background-radius: 10; -fx-min-width: 240; -fx-max-width: 240; -fx-min-height: 240; -fx-max-height: 240; -fx-effect: dropshadow(gaussian, rgba(255,193,7,0.2), 12, 0, 0, 3); -fx-border-color: #ffe082; -fx-border-width: 2; -fx-border-radius: 10;"
+                  managed="false" visible="false">
+
+                <Label text="⭐ My Ratings" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #e67e22; -fx-letter-spacing: 0.8px;"/>
 
                 <Label fx:id="ratingStarsLabel" text="☆☆☆☆☆"
-                       style="-fx-font-size: 28px; -fx-text-fill: white;"/>
+                       style="-fx-font-size: 38px; -fx-text-fill: #ffa726; -fx-effect: dropshadow(gaussian, rgba(255,152,0,0.3), 4, 0, 0, 1);"/>
 
-                <HBox spacing="10" alignment="CENTER">
+                <VBox spacing="8" alignment="CENTER">
                     <Label fx:id="averageRatingLabel" text="0.0"
-                           style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                    <VBox alignment="CENTER_LEFT">
-                        <Label text="Average" style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+                           style="-fx-font-size: 44px; -fx-font-weight: bold; -fx-text-fill: #f57c00; -fx-effect: dropshadow(gaussian, rgba(245,124,0,0.2), 3, 0, 0, 1);"/>
+                    <VBox alignment="CENTER" spacing="4">
+                        <Label text="Average Rating" style="-fx-font-size: 13px; -fx-text-fill: #8d6e63; -fx-font-weight: bold;"/>
                         <Label fx:id="totalRatingsLabel" text="0 ratings"
-                               style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+                               style="-fx-font-size: 12px; -fx-text-fill: #a1887f; -fx-font-weight: 600;"/>
                     </VBox>
-                </HBox>
+                </VBox>
             </VBox>
+        </HBox>
 
-            <!-- Personal Information Section -->
-            <VBox spacing="15" styleClass="dashboard-card">
-                <Label text="Personal Information" styleClass="section-title"/>
+        <!-- Personal Information Section -->
+        <VBox spacing="12"
+              style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 2);">
 
-                <GridPane hgap="15" vgap="12">
-                    <columnConstraints>
-                        <ColumnConstraints minWidth="120" prefWidth="120"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                    </columnConstraints>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="📋 Personal Information" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            </HBox>
 
-                    <Label text="Full Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="nameField" promptText="Enter your full name"
-                               GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="form-input"/>
+            <Separator style="-fx-background-color: #ecf0f1;"/>
 
-                    <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="emailField" promptText="Enter your email"
-                               GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="form-input"/>
+            <GridPane hgap="15" vgap="12" style="-fx-padding: 5 0;">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="110" prefWidth="110"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
 
-                    <Label text="Phone:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="phoneField" promptText="Enter your phone number"
-                               GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="form-input"/>
-                </GridPane>
+                <Label text="Full Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <TextField fx:id="nameField" promptText="Enter your full name"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1"
+                           style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
 
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Update Profile" onAction="#handleUpdateProfile"
-                            styleClass="primary-button"
-                            style="-fx-background-color: linear-gradient(to bottom, #27ae60, #229954);"/>
-                </HBox>
+                <Label text="Email Address:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <TextField fx:id="emailField" promptText="your.email@example.com"
+                           GridPane.rowIndex="1" GridPane.columnIndex="1"
+                           style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
 
-                <Label fx:id="profileMessageLabel" wrapText="true" styleClass="message-label"/>
-            </VBox>
+                <Label text="Phone Number:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <TextField fx:id="phoneField" promptText="+880 1XXX-XXXXXX"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1"
+                           style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
+                <Button text="✓ Update Profile" onAction="#handleUpdateProfile"
+                        style="-fx-background-color: linear-gradient(to bottom, #27ae60, #229954); -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 6; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 8, 0, 0, 2);"/>
+            </HBox>
+
+            <Label fx:id="profileMessageLabel" wrapText="true" style="-fx-font-size: 11px; -fx-padding: 5 0 0 0;"/>
+        </VBox>
+
+        <!-- Two Column Layout for Address and Password -->
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50"/>
+                <ColumnConstraints percentWidth="50"/>
+            </columnConstraints>
 
             <!-- Address Section -->
-            <VBox spacing="15" styleClass="dashboard-card">
-                <Label text="Default Address" styleClass="section-title"/>
+            <VBox spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                  style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 2);">
 
-                <TextArea fx:id="addressField" promptText="Enter your default delivery address"
-                          wrapText="true" prefRowCount="3" styleClass="text-area"/>
-
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Update Address" onAction="#handleUpdateAddress"
-                            styleClass="primary-button"
-                            style="-fx-background-color: linear-gradient(to bottom, #f39c12, #e67e22);"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📍 Default Address" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
                 </HBox>
 
-                <Label fx:id="addressMessageLabel" wrapText="true" styleClass="message-label"/>
+                <Separator style="-fx-background-color: #ecf0f1;"/>
+
+                <VBox spacing="8">
+                    <Label text="Delivery Address:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                    <TextArea fx:id="addressField" promptText="Enter your complete delivery address"
+                              wrapText="true" prefRowCount="3"
+                              style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
+                </VBox>
+
+                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
+                    <Button text="✓ Update Address" onAction="#handleUpdateAddress"
+                            style="-fx-background-color: linear-gradient(to bottom, #f39c12, #e67e22); -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 6; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(243,156,18,0.3), 8, 0, 0, 2);"/>
+                </HBox>
+
+                <Label fx:id="addressMessageLabel" wrapText="true" style="-fx-font-size: 11px; -fx-padding: 5 0 0 0;"/>
             </VBox>
 
             <!-- Change Password Section -->
-            <VBox spacing="15" styleClass="dashboard-card">
-                <Label text="Change Password" styleClass="section-title"/>
+            <VBox spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                  style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 2);">
 
-                <GridPane hgap="15" vgap="12">
-                    <columnConstraints>
-                        <ColumnConstraints minWidth="150" prefWidth="150"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                    </columnConstraints>
-
-                    <Label text="Current Password:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <PasswordField fx:id="currentPasswordField" promptText="Enter current password"
-                                   GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="form-input"/>
-
-                    <Label text="New Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <PasswordField fx:id="newPasswordField" promptText="Enter new password"
-                                   GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="form-input"/>
-
-                    <Label text="Confirm Password:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <PasswordField fx:id="confirmPasswordField" promptText="Confirm new password"
-                                   GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="form-input"/>
-                </GridPane>
-
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Change Password" onAction="#handleChangePassword"
-                            styleClass="action-button-danger"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="🔒 Change Password" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
                 </HBox>
 
-                <Label fx:id="passwordMessageLabel" wrapText="true" styleClass="message-label"/>
+                <Separator style="-fx-background-color: #ecf0f1;"/>
+
+                <VBox spacing="10">
+                    <VBox spacing="6">
+                        <Label text="Current Password:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                        <PasswordField fx:id="currentPasswordField" promptText="Enter current password"
+                                       style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
+                    </VBox>
+
+                    <VBox spacing="6">
+                        <Label text="New Password:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                        <PasswordField fx:id="newPasswordField" promptText="Enter new password (min 6 chars)"
+                                       style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
+                    </VBox>
+
+                    <VBox spacing="6">
+                        <Label text="Confirm Password:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                        <PasswordField fx:id="confirmPasswordField" promptText="Re-enter new password"
+                                       style="-fx-background-color: #f8f9fa; -fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #e0e0e0; -fx-border-radius: 6; -fx-font-size: 12px;"/>
+                    </VBox>
+                </VBox>
+
+                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
+                    <Button text="🔑 Change Password" onAction="#handleChangePassword"
+                            style="-fx-background-color: linear-gradient(to bottom, #e74c3c, #c0392b); -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 6; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.3), 8, 0, 0, 2);"/>
+                </HBox>
+
+                <Label fx:id="passwordMessageLabel" wrapText="true" style="-fx-font-size: 11px; -fx-padding: 5 0 0 0;"/>
             </VBox>
+        </GridPane>
 
-        </VBox>
-    </ScrollPane>
+        <!-- Info Footer -->
+        <HBox style="-fx-padding: 20; -fx-background-color: #e8f4f8; -fx-background-radius: 10; -fx-border-color: #d6eaf8; -fx-border-radius: 10; -fx-border-width: 1;">
+            <Label text="💡 Tip: Keep your profile information up to date for better service and communication!"
+                   style="-fx-font-size: 13px; -fx-text-fill: #2980b9; -fx-font-weight: bold;" wrapText="true"/>
+        </HBox>
 
-</VBox>
+    </VBox>
+
+</ScrollPane>
+
 

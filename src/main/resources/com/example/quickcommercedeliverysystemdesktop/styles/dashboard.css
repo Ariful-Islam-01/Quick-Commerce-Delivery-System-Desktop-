@@ -414,6 +414,65 @@
     -fx-padding: 50px;
 }
 
+/* ========== LIST VIEW ========== */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.list-view .viewport {
+    -fx-background-color: transparent;
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 0 2px;
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #dee2e6;
+    -fx-background-radius: 3px;
+}
+
+.list-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #adb5bd;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #34495e;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;
+    -fx-border-color: transparent transparent #e9ecef transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: -1;
+    -fx-min-height: 40px;
+    -fx-max-height: -1;
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-cursor: hand;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #2c3e50;
+}
+
+.list-view .list-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Recent Activity Specific */
+.list-view .list-cell:filled {
+    -fx-font-weight: 600;
+    -fx-wrap-text: true;
+}
+
 /* ========== STATUS BADGES ========== */
 .status-badge {
     -fx-padding: 6px 14px;

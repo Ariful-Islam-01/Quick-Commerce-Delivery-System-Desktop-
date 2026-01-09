@@ -4,100 +4,177 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.HomeController"
-      spacing="25" styleClass="content-area">
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.HomeController"
+            fitToWidth="true" fitToHeight="true"
+            style="-fx-background: #f8f9fa; -fx-background-color: #f8f9fa;">
 
-    <!-- Welcome Header -->
-    <VBox spacing="10">
-        <Label fx:id="welcomeLabel" text="Welcome back!" styleClass="page-title"/>
-        <Label text="Quick Commerce Delivery System - Your peer-to-peer delivery platform"
-               styleClass="page-subtitle"/>
-    </VBox>
+    <VBox spacing="25" style="-fx-background-color: #f8f9fa; -fx-padding: 25;">
 
-    <!-- Quick Stats Section -->
-    <VBox spacing="15">
-        <Label text="Quick Statistics" styleClass="section-title"/>
+        <!-- Welcome Header -->
+        <VBox spacing="5">
+            <Label fx:id="welcomeLabel" text="Welcome back!"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="Quick Commerce Delivery System - Your peer-to-peer delivery platform"
+                   style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+            <Separator style="-fx-background-color: #dee2e6;">
+                <VBox.margin><Insets top="10"/></VBox.margin>
+            </Separator>
+        </VBox>
 
-        <GridPane hgap="20" vgap="20">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.33"/>
-            </columnConstraints>
+        <!-- Quick Statistics Section -->
+        <VBox spacing="15">
+            <Label text="Quick Statistics"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-            <!-- My Orders Card -->
-            <VBox GridPane.columnIndex="0" styleClass="stat-card, stat-card-blue" spacing="8">
-                <Label text="📦 My Orders" styleClass="stat-card-title"/>
-                <Label fx:id="myOrdersCountLabel" text="0" styleClass="stat-card-value">
-                    <padding><Insets top="10"/></padding>
-                </Label>
-                <Label text="Total orders created" styleClass="stat-card-subtitle"/>
+            <GridPane hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.33"/>
+                    <ColumnConstraints percentWidth="33.33"/>
+                    <ColumnConstraints percentWidth="33.33"/>
+                </columnConstraints>
+
+                <!-- My Orders Card -->
+                <VBox GridPane.columnIndex="0" spacing="10"
+                      style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 20;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+                             -fx-border-color: #e9ecef; -fx-border-width: 1; -fx-border-radius: 8;">
+                    <Label text="📦 My Orders"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;"/>
+                    <Label fx:id="myOrdersCountLabel" text="0"
+                           style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #3498db;">
+                        <VBox.margin><Insets top="5"/></VBox.margin>
+                    </Label>
+                    <Label text="Total orders created"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
+                    <Separator style="-fx-background-color: #e9ecef;">
+                        <VBox.margin><Insets top="5" bottom="5"/></VBox.margin>
+                    </Separator>
+                    <Label fx:id="activeOrdersLabel" text="0 active"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #28a745;"/>
+                </VBox>
+
+                <!-- Deliveries Card -->
+                <VBox GridPane.columnIndex="1" spacing="10"
+                      style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 20;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+                             -fx-border-color: #e9ecef; -fx-border-width: 1; -fx-border-radius: 8;">
+                    <Label text="🚚 Deliveries"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;"/>
+                    <Label fx:id="deliveriesCountLabel" text="0"
+                           style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #28a745;">
+                        <VBox.margin><Insets top="5"/></VBox.margin>
+                    </Label>
+                    <Label text="Active deliveries"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
+                    <Separator style="-fx-background-color: #e9ecef;">
+                        <VBox.margin><Insets top="5" bottom="5"/></VBox.margin>
+                    </Separator>
+                    <Label fx:id="completedDeliveriesLabel" text="0 completed"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #17a2b8;"/>
+                </VBox>
+
+                <!-- Earnings Card -->
+                <VBox GridPane.columnIndex="2" spacing="10"
+                      style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 20;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+                             -fx-border-color: #e9ecef; -fx-border-width: 1; -fx-border-radius: 8;">
+                    <Label text="💰 Earnings"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #495057;"/>
+                    <Label fx:id="earningsLabel" text="৳0.00"
+                           style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;">
+                        <VBox.margin><Insets top="5"/></VBox.margin>
+                    </Label>
+                    <Label text="Total earnings"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
+                    <Separator style="-fx-background-color: #e9ecef;">
+                        <VBox.margin><Insets top="5" bottom="5"/></VBox.margin>
+                    </Separator>
+                    <Label fx:id="avgEarningsLabel" text="৳0.00 avg"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #ffc107;"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Quick Actions Section -->
+        <VBox spacing="15">
+            <Label text="Quick Actions"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <HBox spacing="15">
+                <!-- Create Order Button -->
+                <Button text="+ Create New Order"
+                        onAction="#handleCreateOrder"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 6;
+                               -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);"
+                        prefWidth="220">
+                    <HBox.margin><Insets/></HBox.margin>
+                </Button>
+
+                <!-- Browse Orders Button -->
+                <Button text="🔍 Browse Available Orders"
+                        onAction="#handleBrowseOrders"
+                        style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 6;
+                               -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);"
+                        prefWidth="240">
+                    <HBox.margin><Insets/></HBox.margin>
+                </Button>
+
+                <!-- My Deliveries Button -->
+                <Button text="📋 My Deliveries"
+                        onAction="#handleMyDeliveries"
+                        style="-fx-background-color: #fd7e14; -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 6;
+                               -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);"
+                        prefWidth="200">
+                    <HBox.margin><Insets/></HBox.margin>
+                </Button>
+            </HBox>
+        </VBox>
+
+        <!-- Recent Activity Section -->
+        <VBox spacing="15" VBox.vgrow="ALWAYS">
+            <Label text="Recent Activity"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+            <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+                         -fx-border-color: #e9ecef; -fx-border-width: 1; -fx-border-radius: 8;">
+                <ListView fx:id="recentActivityList"
+                          styleClass="list-view"
+                          style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                          prefHeight="280"
+                          minHeight="280"
+                          maxHeight="350">
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 30;">
+                            <Label text="📭" style="-fx-font-size: 40px; -fx-opacity: 0.3;"/>
+                            <Label text="No recent activity"
+                                   style="-fx-font-size: 15px; -fx-text-fill: #6c757d; -fx-font-weight: 600;"/>
+                            <Label text="Start by creating an order or accepting a delivery!"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #adb5bd;"/>
+                        </VBox>
+                    </placeholder>
+                </ListView>
             </VBox>
+        </VBox>
 
-            <!-- Deliveries Card -->
-            <VBox GridPane.columnIndex="1" styleClass="stat-card, stat-card-green" spacing="8">
-                <Label text="🚚 Deliveries" styleClass="stat-card-title"/>
-                <Label fx:id="deliveriesCountLabel" text="0" styleClass="stat-card-value">
-                    <padding><Insets top="10"/></padding>
-                </Label>
-                <Label text="Active deliveries" styleClass="stat-card-subtitle"/>
+        <!-- Footer Tips -->
+        <HBox spacing="12" alignment="CENTER_LEFT"
+              style="-fx-background-color: #fff3cd; -fx-background-radius: 6; -fx-padding: 15;
+                     -fx-border-color: #ffc107; -fx-border-width: 1; -fx-border-radius: 6;">
+            <Label text="💡" style="-fx-font-size: 20px;"/>
+            <VBox spacing="3">
+                <Label text="Pro Tip"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                <Label text="Keep your profile updated and respond to deliveries quickly to build your reputation!"
+                       wrapText="true"
+                       style="-fx-font-size: 13px; -fx-text-fill: #856404;"/>
             </VBox>
-
-            <!-- Earnings Card -->
-            <VBox GridPane.columnIndex="2" styleClass="stat-card, stat-card-orange" spacing="8">
-                <Label text="💰 Earnings" styleClass="stat-card-title"/>
-                <Label fx:id="earningsLabel" text="৳0.00" styleClass="stat-card-value">
-                    <padding><Insets top="10"/></padding>
-                </Label>
-                <Label text="Total earnings" styleClass="stat-card-subtitle"/>
-            </VBox>
-        </GridPane>
-    </VBox>
-
-    <!-- Quick Actions Section -->
-    <VBox spacing="15">
-        <Label text="Quick Actions" styleClass="section-title"/>
-
-        <HBox spacing="15">
-            <!-- Create Order Button -->
-            <Button text="+ Create New Order"
-                    onAction="#handleCreateOrder"
-                    styleClass="primary-button"
-                    prefWidth="200"/>
-
-            <!-- View Available Orders Button -->
-            <Button text="🔍 Browse Available Orders"
-                    onAction="#handleBrowseOrders"
-                    styleClass="primary-button"
-                    style="-fx-background-color: linear-gradient(to bottom, #27ae60, #229954);"
-                    prefWidth="220"/>
-
-            <!-- My Deliveries Button -->
-            <Button text="📋 My Deliveries"
-                    onAction="#handleMyDeliveries"
-                    styleClass="primary-button"
-                    style="-fx-background-color: linear-gradient(to bottom, #f39c12, #e67e22);"
-                    prefWidth="200"/>
         </HBox>
+
     </VBox>
-
-    <!-- Recent Activity Section -->
-    <VBox spacing="15" VBox.vgrow="ALWAYS">
-        <Label text="Recent Activity" styleClass="section-title"/>
-
-        <ListView fx:id="recentActivityList" styleClass="table-view" prefHeight="200">
-            <placeholder>
-                <Label text="No recent activity" styleClass="placeholder-label"/>
-            </placeholder>
-        </ListView>
-    </VBox>
-
-    <!-- Footer Tips -->
-    <HBox styleClass="info-label" style="-fx-padding: 15;">
-        <Label text="💡 Tip: Keep your profile updated and respond to deliveries quickly to build your reputation!"
-               wrapText="true"/>
-    </HBox>
-
-</VBox>
+</ScrollPane>

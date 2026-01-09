@@ -22,6 +22,9 @@ public class HomeController {
     @FXML private Label myOrdersCountLabel;
     @FXML private Label deliveriesCountLabel;
     @FXML private Label earningsLabel;
+    @FXML private Label activeOrdersLabel;
+    @FXML private Label completedDeliveriesLabel;
+    @FXML private Label avgEarningsLabel;
     @FXML private ListView<String> recentActivityList;
 
     private User currentUser;
@@ -44,6 +47,15 @@ public class HomeController {
         List<Order> myOrders = OrderDAO.getOrdersByUser(userId);
         myOrdersCountLabel.setText(String.valueOf(myOrders.size()));
 
+        // Calculate active orders
+        long activeOrders = myOrders.stream()
+                .filter(order -> order.getStatus() != Order.OrderStatus.DELIVERED
+                        && order.getStatus() != Order.OrderStatus.CANCELLED)
+                .count();
+        if (activeOrdersLabel != null) {
+            activeOrdersLabel.setText(activeOrders + " active");
+        }
+
         // Load deliveries count (active deliveries)
         List<Order> myDeliveries = DeliveryDAO.getDeliveriesByPartner(userId);
         long activeDeliveries = myDeliveries.stream()
@@ -52,9 +64,25 @@ public class HomeController {
                 .count();
         deliveriesCountLabel.setText(String.valueOf(activeDeliveries));
 
+        // Calculate completed deliveries
+        long completedDeliveries = myDeliveries.stream()
+                .filter(order -> order.getStatus() == Order.OrderStatus.DELIVERED)
+                .count();
+        if (completedDeliveriesLabel != null) {
+            completedDeliveriesLabel.setText(completedDeliveries + " completed");
+        }
+
         // Load earnings
         DeliveryDAO.DeliveryStats stats = DeliveryDAO.getDeliveryStats(userId);
-        earningsLabel.setText(String.format("$%.2f", stats.getTotalEarnings()));
+        earningsLabel.setText(String.format("৳%.2f", stats.getTotalEarnings()));
+
+        // Calculate average earnings
+        if (avgEarningsLabel != null) {
+            double avgEarnings = stats.getCompletedDeliveries() > 0
+                    ? stats.getTotalEarnings() / stats.getCompletedDeliveries()
+                    : 0.0;
+            avgEarningsLabel.setText(String.format("৳%.2f avg", avgEarnings));
+        }
 
         // Load recent activity
         loadRecentActivity(myOrders, myDeliveries);
@@ -63,25 +91,46 @@ public class HomeController {
     private void loadRecentActivity(List<Order> myOrders, List<Order> myDeliveries) {
         ObservableList<String> activities = FXCollections.observableArrayList();
 
-        // Add recent orders (limit to 5)
-        myOrders.stream()
-                .limit(5)
-                .forEach(order -> activities.add(
-                        String.format("📦 Order #%d - %s (%s)",
-                                order.getOrderId(),
-                                order.getProductName(),
-                                order.getStatus().getDisplayName())
-                ));
+        // Combine all activities with type and timestamp
+        class Activity {
+            final String type;
+            final Order order;
 
-        // Add recent deliveries (limit to 5)
-        myDeliveries.stream()
-                .limit(5)
-                .forEach(order -> activities.add(
-                        String.format("🚚 Delivery #%d - %s (%s)",
-                                order.getOrderId(),
-                                order.getProductName(),
-                                order.getStatus().getDisplayName())
-                ));
+            Activity(String type, Order order) {
+                this.type = type;
+                this.order = order;
+            }
+        }
+
+        java.util.List<Activity> allActivities = new java.util.ArrayList<>();
+
+        // Add orders
+        myOrders.forEach(order -> allActivities.add(new Activity("📦 Order", order)));
+
+        // Add deliveries
+        myDeliveries.forEach(order -> allActivities.add(new Activity("🚚 Delivery", order)));
+
+        // Sort by order ID (descending - most recent first)
+        allActivities.sort((a, b) -> Integer.compare(b.order.getOrderId(), a.order.getOrderId()));
+
+        // Take top 10 and format with truncated product names
+        allActivities.stream()
+                .limit(10)
+                .forEach(activity -> {
+                    String productName = activity.order.getProductName();
+                    // Truncate long product names
+                    if (productName != null && productName.length() > 30) {
+                        productName = productName.substring(0, 27) + "...";
+                    }
+
+                    activities.add(
+                            String.format("%s #%d - %s (%s)",
+                                    activity.type,
+                                    activity.order.getOrderId(),
+                                    productName,
+                                    activity.order.getStatus().getDisplayName())
+                    );
+                });
 
         if (activities.isEmpty()) {
             activities.add("No recent activity. Start by creating an order or accepting a delivery!");

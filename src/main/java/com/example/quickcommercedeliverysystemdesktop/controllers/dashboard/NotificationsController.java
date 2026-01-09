@@ -105,79 +105,137 @@ public class NotificationsController {
     }
 
     private VBox createNotificationCard(Notification notification) {
-        VBox card = new VBox(8);
-        card.setPadding(new Insets(15));
+        VBox card = new VBox(12);
+        card.setPadding(new Insets(20));
+
+        // Enhanced styling with better shadows and colors
+        String backgroundColor = notification.isRead() ? "#ffffff" : "#e8f4f8";
+        String borderColor = notification.isRead() ? "#e0e0e0" : "#3498db";
+        String borderWidth = notification.isRead() ? "1" : "2";
+        String shadow = notification.isRead()
+            ? "dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2)"
+            : "dropshadow(gaussian, rgba(52,152,219,0.15), 12, 0, 0, 3)";
+
         card.setStyle(
-            "-fx-background-color: " + (notification.isRead() ? "#f8f9fa" : "#e3f2fd") + ";" +
-            "-fx-background-radius: 8;" +
-            "-fx-border-color: " + (notification.isRead() ? "#dee2e6" : "#3498db") + ";" +
-            "-fx-border-width: " + (notification.isRead() ? "1" : "2") + ";" +
-            "-fx-border-radius: 8;" +
-            "-fx-cursor: hand;"
+            "-fx-background-color: " + backgroundColor + ";" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: " + borderColor + ";" +
+            "-fx-border-width: " + borderWidth + ";" +
+            "-fx-border-radius: 10;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: " + shadow + ";"
         );
 
         // Header with title and time
-        HBox header = new HBox(10);
+        HBox header = new HBox(12);
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
-        // Notification icon based on type
+        // Notification icon based on type with better styling
         String icon = getIconForType(notification.getType());
         Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 20px;");
+        iconLabel.setStyle("-fx-font-size: 24px; -fx-padding: 0 5 0 0;");
 
-        // Title
+        // Title with better typography
         Label titleLabel = new Label(notification.getTitle());
-        titleLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
 
-        // Time ago
+        // Time ago with improved styling
         Label timeLabel = new Label(notification.getTimeAgo());
-        timeLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
+        timeLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: 600;");
 
-        // Unread indicator
+        // Unread indicator with better design
         if (!notification.isRead()) {
             Label unreadDot = new Label("●");
-            unreadDot.setStyle("-fx-text-fill: #3498db; -fx-font-size: 16px;");
+            unreadDot.setStyle("-fx-text-fill: #3498db; -fx-font-size: 18px; -fx-padding: 0 5;");
             header.getChildren().addAll(iconLabel, titleLabel, timeLabel, unreadDot);
         } else {
             header.getChildren().addAll(iconLabel, titleLabel, timeLabel);
         }
 
-        // Message
+        // Message with improved readability
         Label messageLabel = new Label(notification.getMessage());
         messageLabel.setWrapText(true);
-        messageLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
+        messageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-line-spacing: 2px;");
 
-        // Action buttons
-        HBox actionBox = new HBox(8);
+        // Action buttons with enhanced styling
+        HBox actionBox = new HBox(10);
         actionBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        actionBox.setStyle("-fx-padding: 8 0 0 0;");
 
         if (notification.getOrderId() != null && notification.getOrderId() > 0) {
             Button viewOrderBtn = new Button("View Order");
-            viewOrderBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 4; -fx-font-size: 11px;");
+            viewOrderBtn.setStyle(
+                "-fx-background-color: #3498db; " +
+                "-fx-text-fill: white; " +
+                "-fx-padding: 8 16; " +
+                "-fx-background-radius: 6; " +
+                "-fx-font-size: 12px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-cursor: hand; " +
+                "-fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 4, 0, 0, 2);"
+            );
             viewOrderBtn.setOnAction(e -> handleViewOrder(notification.getOrderId()));
             actionBox.getChildren().add(viewOrderBtn);
         }
 
         if (!notification.isRead()) {
             Button markReadBtn = new Button("Mark as Read");
-            markReadBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 4; -fx-font-size: 11px;");
+            markReadBtn.setStyle(
+                "-fx-background-color: #27ae60; " +
+                "-fx-text-fill: white; " +
+                "-fx-padding: 8 16; " +
+                "-fx-background-radius: 6; " +
+                "-fx-font-size: 12px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-cursor: hand; " +
+                "-fx-effect: dropshadow(gaussian, rgba(39,174,96,0.3), 4, 0, 0, 2);"
+            );
             markReadBtn.setOnAction(e -> handleMarkAsRead(notification));
             actionBox.getChildren().add(markReadBtn);
         }
 
         Button deleteBtn = new Button("Delete");
-        deleteBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-padding: 5 10; -fx-background-radius: 4; -fx-font-size: 11px;");
+        deleteBtn.setStyle(
+            "-fx-background-color: #e74c3c; " +
+            "-fx-text-fill: white; " +
+            "-fx-padding: 8 16; " +
+            "-fx-background-radius: 6; " +
+            "-fx-font-size: 12px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-cursor: hand; " +
+            "-fx-effect: dropshadow(gaussian, rgba(231,76,60,0.3), 4, 0, 0, 2);"
+        );
         deleteBtn.setOnAction(e -> handleDeleteNotification(notification));
         actionBox.getChildren().add(deleteBtn);
 
         card.getChildren().addAll(header, messageLabel, actionBox);
 
-        // Click to mark as read
+        // Click to mark as read with hover effect
         card.setOnMouseClicked(e -> {
             if (!notification.isRead()) {
                 handleMarkAsRead(notification);
             }
+        });
+
+        // Add hover effect
+        card.setOnMouseEntered(e -> {
+            card.setStyle(
+                card.getStyle() +
+                "-fx-scale-x: 1.01; -fx-scale-y: 1.01;"
+            );
+        });
+
+        card.setOnMouseExited(e -> {
+            card.setStyle(
+                "-fx-background-color: " + backgroundColor + ";" +
+                "-fx-background-radius: 10;" +
+                "-fx-border-color: " + borderColor + ";" +
+                "-fx-border-width: " + borderWidth + ";" +
+                "-fx-border-radius: 10;" +
+                "-fx-cursor: hand;" +
+                "-fx-effect: " + shadow + ";"
+            );
         });
 
         return card;
