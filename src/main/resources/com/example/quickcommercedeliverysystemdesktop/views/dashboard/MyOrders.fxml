@@ -25,14 +25,13 @@
     <HBox spacing="15" alignment="CENTER_LEFT" styleClass="filter-section">
         <Label text="Filter by Status:" styleClass="filter-label"/>
         <ComboBox fx:id="statusFilterComboBox" prefWidth="180" styleClass="filter-combo"/>
+        <Label text="Filter by Date:" styleClass="filter-label"/>
+        <DatePicker fx:id="dateFilterPicker" prefWidth="180" promptText="Select date..."/>
+        <Button fx:id="clearDateButton" text="Clear Date" onAction="#handleClearDate" styleClass="secondary-button"/>
         <Button text="Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label text="View:" styleClass="filter-label"/>
-        <ToggleButton fx:id="cardViewToggle" text="📇 Cards" selected="true" styleClass="view-toggle-button"/>
-        <ToggleButton fx:id="tableViewToggle" text="📋 Table" styleClass="view-toggle-button"/>
     </HBox>
 
-    <!-- Cards Container (Default View) -->
+    <!-- Cards Container -->
     <ScrollPane fx:id="cardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
                 styleClass="cards-scroll-pane" style="-fx-background-color: transparent;">
         <GridPane fx:id="orderCardsContainer" hgap="20" vgap="20" styleClass="order-cards-container">
@@ -42,23 +41,6 @@
         </GridPane>
     </ScrollPane>
 
-    <!-- Table View (Hidden by default) -->
-    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS" styleClass="orders-table"
-               managed="false" visible="false">
-        <columns>
-            <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="100"/>
-            <TableColumn fx:id="productNameColumn" text="Product" prefWidth="200"/>
-            <TableColumn fx:id="deliveryLocationColumn" text="Delivery Location" prefWidth="250"/>
-            <TableColumn fx:id="deliveryFeeColumn" text="Fee" prefWidth="80"/>
-            <TableColumn fx:id="statusColumn" text="Status" prefWidth="130"/>
-            <TableColumn fx:id="orderDateColumn" text="Created" prefWidth="160"/>
-            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200"/>
-        </columns>
-        <placeholder>
-            <Label text="No orders found. Create your first order!"
-                   styleClass="placeholder-label"/>
-        </placeholder>
-    </TableView>
 
     <!-- Empty State for Cards -->
     <VBox fx:id="emptyStateContainer" alignment="CENTER" spacing="15"

@@ -4,7 +4,6 @@ import com.example.quickcommercedeliverysystemdesktop.database.OrderDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.Order;
 import com.example.quickcommercedeliverysystemdesktop.models.Order.OrderStatus;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -14,78 +13,33 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class MyOrdersController {
 
     @FXML private ComboBox<String> statusFilterComboBox;
-    @FXML private TableView<Order> ordersTable;
-    @FXML private TableColumn<Order, String> orderIdColumn;
-    @FXML private TableColumn<Order, String> productNameColumn;
-    @FXML private TableColumn<Order, String> deliveryLocationColumn;
-    @FXML private TableColumn<Order, String> deliveryFeeColumn;
-    @FXML private TableColumn<Order, String> statusColumn;
-    @FXML private TableColumn<Order, String> orderDateColumn;
-    @FXML private TableColumn<Order, Void> actionsColumn;
+    @FXML private DatePicker dateFilterPicker;
+    @FXML private Button clearDateButton;
     @FXML private Label totalOrdersLabel;
 
     // Card View Components
     @FXML private ScrollPane cardsScrollPane;
     @FXML private GridPane orderCardsContainer;
     @FXML private VBox emptyStateContainer;
-    @FXML private ToggleButton cardViewToggle;
-    @FXML private ToggleButton tableViewToggle;
 
     private ObservableList<Order> allOrders;
     private FilteredList<Order> filteredOrders;
-    private boolean isCardView = true;
 
     @FXML
     public void initialize() {
         allOrders = FXCollections.observableArrayList();
         filteredOrders = new FilteredList<>(allOrders, p -> true);
 
-        setupTable();
         setupFilters();
-        setupViewToggles();
         loadOrders();
     }
 
-    private void setupViewToggles() {
-        ToggleGroup viewGroup = new ToggleGroup();
-        cardViewToggle.setToggleGroup(viewGroup);
-        tableViewToggle.setToggleGroup(viewGroup);
-
-        cardViewToggle.setSelected(true);
-
-        viewGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle == cardViewToggle) {
-                switchToCardView();
-            } else if (newToggle == tableViewToggle) {
-                switchToTableView();
-            } else {
-                // Ensure one is always selected
-                if (oldToggle != null) {
-                    oldToggle.setSelected(true);
-                }
-            }
-        });
-    }
-
-    private void switchToCardView() {
-        isCardView = true;
-        cardsScrollPane.setVisible(true);
-        cardsScrollPane.setManaged(true);
-        ordersTable.setVisible(false);
-        ordersTable.setManaged(false);
-        renderOrderCards();
-    }
-
-    private void switchToTableView() {
-        isCardView = false;
-        cardsScrollPane.setVisible(false);
-        cardsScrollPane.setManaged(false);
-        ordersTable.setVisible(true);
-        ordersTable.setManaged(true);
-    }
 
     private void renderOrderCards() {
         orderCardsContainer.getChildren().clear();
@@ -332,94 +286,9 @@ public class MyOrdersController {
         };
     }
 
-    private void setupTable() {
-        orderIdColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty("#" + cellData.getValue().getOrderId()));
-
-        productNameColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getProductName()));
-
-        deliveryLocationColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDeliveryLocation()));
-
-        deliveryFeeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedDeliveryFee()));
-
-        statusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getStatus().getDisplayName()));
-
-        // Custom cell factory for status with colors
-        statusColumn.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    Order order = getTableView().getItems().get(getIndex());
-                    setStyle(getStatusStyle(order.getStatus()));
-                }
-            }
-        });
-
-        orderDateColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedOrderDate()));
-
-        // Actions column with Edit/Cancel/View buttons
-        actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button viewButton = new Button("View");
-            private final Button editButton = new Button("Edit");
-            private final Button cancelButton = new Button("Cancel");
-
-            {
-                viewButton.getStyleClass().add("action-button");
-                editButton.getStyleClass().add("action-button");
-                cancelButton.getStyleClass().add("action-button-danger");
-
-                viewButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    viewOrderDetails(order);
-                });
-
-                editButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    editOrder(order);
-                });
-
-                cancelButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    cancelOrder(order);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    Order order = getTableView().getItems().get(getIndex());
-                    HBox buttons = new HBox(5);
-                    buttons.getChildren().add(viewButton);
-
-                    if (order.canEdit()) {
-                        buttons.getChildren().add(editButton);
-                    }
-                    if (order.canCancel()) {
-                        buttons.getChildren().add(cancelButton);
-                    }
-
-                    setGraphic(buttons);
-                }
-            }
-        });
-
-        ordersTable.setItems(filteredOrders);
-    }
 
     private void setupFilters() {
+        // Status filter setup
         ObservableList<String> filterOptions = FXCollections.observableArrayList(
                 "All Status",
                 OrderStatus.PENDING.getDisplayName(),
@@ -431,33 +300,56 @@ public class MyOrdersController {
         );
         statusFilterComboBox.setItems(filterOptions);
         statusFilterComboBox.setValue("All Status");
-
         statusFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+
+        // Date filter setup with DatePicker
+        dateFilterPicker.setPromptText("Select date...");
+        dateFilterPicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+
+        // Clear date button functionality
+        clearDateButton.setOnAction(e -> {
+            dateFilterPicker.setValue(null);
+            applyFilters();
+        });
     }
 
     private void applyFilters() {
         String statusFilter = statusFilterComboBox.getValue();
+        LocalDate selectedDate = dateFilterPicker.getValue();
 
         filteredOrders.setPredicate(order -> {
+            // Status filter
             if (statusFilter != null && !statusFilter.equals("All Status")) {
-                return order.getStatus().getDisplayName().equals(statusFilter);
+                if (!order.getStatus().getDisplayName().equals(statusFilter)) {
+                    return false;
+                }
             }
+
+            // Date filter - filter by exact date
+            if (selectedDate != null) {
+                LocalDateTime orderDate = order.getOrderDate();
+                if (orderDate != null) {
+                    LocalDate orderLocalDate = orderDate.toLocalDate();
+                    if (!orderLocalDate.equals(selectedDate)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+
             return true;
         });
 
         updateStatistics();
-        if (isCardView) {
-            renderOrderCards();
-        }
+        renderOrderCards();
     }
 
     private void loadOrders() {
         int userId = UserSession.getInstance().getUserId();
         allOrders.setAll(OrderDAO.getOrdersByUser(userId));
         updateStatistics();
-        if (isCardView) {
-            renderOrderCards();
-        }
+        renderOrderCards();
     }
 
     private void updateStatistics() {
@@ -524,19 +416,12 @@ public class MyOrdersController {
         showAlert("Orders refreshed", Alert.AlertType.INFORMATION);
     }
 
-    private String getStatusStyle(OrderStatus status) {
-        String baseStyle = "-fx-padding: 5px 10px; -fx-border-radius: 12px; " +
-                "-fx-background-radius: 12px; -fx-font-weight: bold; ";
-
-        return switch (status) {
-            case DELIVERED -> baseStyle + "-fx-background-color: #d4edda; -fx-text-fill: #155724;";
-            case CANCELLED -> baseStyle + "-fx-background-color: #f8d7da; -fx-text-fill: #721c24;";
-            case ON_THE_WAY -> baseStyle + "-fx-background-color: #fff3cd; -fx-text-fill: #856404;";
-            case PICKED_UP -> baseStyle + "-fx-background-color: #d1ecf1; -fx-text-fill: #0c5460;";
-            case ACCEPTED -> baseStyle + "-fx-background-color: #cce5ff; -fx-text-fill: #004085;";
-            case PENDING -> baseStyle + "-fx-background-color: #e2e3e5; -fx-text-fill: #383d41;";
-        };
+    @FXML
+    private void handleClearDate() {
+        dateFilterPicker.setValue(null);
+        applyFilters();
     }
+
 
     private void showAlert(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
