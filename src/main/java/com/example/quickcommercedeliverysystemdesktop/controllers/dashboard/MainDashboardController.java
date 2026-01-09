@@ -179,7 +179,7 @@ public class MainDashboardController {
             );
             Parent root = loader.load();
 
-            Scene scene = new Scene(root, 1000, 650);
+            Scene scene = new Scene(root, 1200, 750);
 
             scene.getStylesheets().add(
                     getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/styles/style.css")
@@ -190,8 +190,8 @@ public class MainDashboardController {
 
             // Maintain window properties
             stage.setResizable(true);
-            stage.setMinWidth(800);
-            stage.setMinHeight(600);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(650);
 
             stage.show();
 

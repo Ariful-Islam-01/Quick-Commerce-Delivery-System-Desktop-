@@ -41,7 +41,7 @@ public class Main extends Application {
                 getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/auth/Login.fxml")
             );
 
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1200, 750);
 
             // Load CSS
             String cssPath = getClass().getResource(
@@ -56,12 +56,12 @@ public class Main extends Application {
             primaryStage.setResizable(true);
 
             // Set minimum window dimensions to prevent too small sizing
-            primaryStage.setMinWidth(800);
-            primaryStage.setMinHeight(600);
+            primaryStage.setMinWidth(1000);
+            primaryStage.setMinHeight(650);
 
-            // Set preferred/default size
-            primaryStage.setWidth(1000);
-            primaryStage.setHeight(650);
+            // Set preferred/default size for optimal viewing
+            primaryStage.setWidth(1200);
+            primaryStage.setHeight(750);
 
             // Set application icon (if exists)
             try {
