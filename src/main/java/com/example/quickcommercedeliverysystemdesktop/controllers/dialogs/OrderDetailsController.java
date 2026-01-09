@@ -3,16 +3,20 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.dialogs;
 import com.example.quickcommercedeliverysystemdesktop.database.DeliveryDAO;
 import com.example.quickcommercedeliverysystemdesktop.database.NotificationDAO;
 import com.example.quickcommercedeliverysystemdesktop.database.OrderDAO;
+import com.example.quickcommercedeliverysystemdesktop.database.RatingDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.Order;
 import com.example.quickcommercedeliverysystemdesktop.models.Order.OrderStatus;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.InputStream;
@@ -124,6 +128,11 @@ public class OrderDetailsController {
             customerPhoneLabel.setText(order.getCustomerPhone() != null ? order.getCustomerPhone() : "Not available");
         }
 
+        // Delivery Partner Info (for customers)
+        if (order.getAcceptedByUserId() != null) {
+            loadDeliveryPartnerInfo(order.getAcceptedByUserId());
+        }
+
         // Build Timeline
         buildStatusTimeline();
     }
@@ -167,6 +176,42 @@ public class OrderDetailsController {
             photoLabel.setText("No photo available");
         } catch (Exception e) {
             photoLabel.setText("No photo");
+        }
+    }
+
+    /**
+     * Load delivery partner information from database
+     */
+    private void loadDeliveryPartnerInfo(int deliveryPartnerId) {
+        try {
+            com.example.quickcommercedeliverysystemdesktop.models.User deliveryPartner =
+                com.example.quickcommercedeliverysystemdesktop.database.UserDAO.getUserById(deliveryPartnerId);
+
+            if (deliveryPartner != null) {
+                partnerNameLabel.setText(deliveryPartner.getName());
+                partnerPhoneLabel.setText(deliveryPartner.getPhone() != null ? deliveryPartner.getPhone() : "Not available");
+
+                // Set delivery status based on order status
+                String statusText = switch (order.getStatus()) {
+                    case ACCEPTED -> "Accepted - Preparing for pickup";
+                    case PICKED_UP -> "Picked up - On the way to you";
+                    case ON_THE_WAY -> "On the way - Delivery in progress";
+                    case DELIVERED -> "Delivered - Order completed";
+                    case CANCELLED -> "Cancelled";
+                    default -> "Processing";
+                };
+
+                deliveryStatusLabel.setText(statusText);
+            } else {
+                partnerNameLabel.setText("Information not available");
+                partnerPhoneLabel.setText("Not available");
+                deliveryStatusLabel.setText("Unknown");
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading delivery partner info: " + e.getMessage());
+            partnerNameLabel.setText("Error loading info");
+            partnerPhoneLabel.setText("Not available");
+            deliveryStatusLabel.setText("Unknown");
         }
     }
 
@@ -427,7 +472,263 @@ public class OrderDetailsController {
 
     @FXML
     private void handleRateDelivery() {
-        showAlert("Rating feature coming soon!", Alert.AlertType.INFORMATION);
+        // Validate order status
+        if (order == null) {
+            showAlert("Order not found!", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Check if order is delivered
+        if (order.getStatus() != OrderStatus.DELIVERED) {
+            showAlert("You can only rate a delivery after it has been completed.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Check if there's a delivery partner
+        if (order.getAcceptedByUserId() == null) {
+            showAlert("No delivery partner assigned to this order!", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Check if already rated
+        if (RatingDAO.hasRating(order.getOrderId())) {
+            RatingDAO.Rating existingRating = RatingDAO.getRatingForOrder(order.getOrderId());
+            if (existingRating != null) {
+                showAlert("You already rated this delivery!\n\n" +
+                         "Rating: " + existingRating.getRating() + " ⭐\n" +
+                         "Comment: " + (existingRating.getComment() != null && !existingRating.getComment().isEmpty()
+                             ? existingRating.getComment() : "None"),
+                         Alert.AlertType.INFORMATION);
+            } else {
+                showAlert("This order has already been rated.", Alert.AlertType.INFORMATION);
+            }
+            return;
+        }
+
+        // Create rating dialog
+        showRatingDialog();
+    }
+
+    /**
+     * Show rating dialog with star selection
+     */
+    private void showRatingDialog() {
+        Stage ratingStage = new Stage();
+        ratingStage.initModality(Modality.APPLICATION_MODAL);
+        ratingStage.setTitle("Rate Delivery - Order #" + order.getOrderId());
+        ratingStage.setResizable(false);
+
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(30));
+        container.setAlignment(Pos.CENTER);
+        container.setStyle("-fx-background-color: white;");
+
+        // Title
+        Label titleLabel = new Label("How was your delivery experience?");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        // Subtitle
+        Label subtitleLabel = new Label("Rate the service provided by your delivery partner");
+        subtitleLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #7f8c8d;");
+
+        // Star Rating
+        HBox starBox = new HBox(15);
+        starBox.setAlignment(Pos.CENTER);
+        starBox.setStyle("-fx-padding: 10 0;");
+
+        final int[] selectedRating = {0};
+        Button[] starButtons = new Button[5];
+
+        // Rating description label
+        Label ratingDescLabel = new Label("Tap a star to rate");
+        ratingDescLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #95a5a6; -fx-font-style: italic;");
+
+        for (int i = 0; i < 5; i++) {
+            final int rating = i + 1;
+            Button starBtn = new Button("☆");
+            starBtn.setStyle("-fx-font-size: 36px; -fx-background-color: transparent; " +
+                           "-fx-text-fill: #bdc3c7; -fx-cursor: hand; -fx-padding: 5;");
+
+            // Add hover effect
+            starBtn.setOnMouseEntered(e -> {
+                if (selectedRating[0] == 0) {
+                    updateStarsPreview(starButtons, rating);
+                }
+            });
+
+            starBtn.setOnMouseExited(e -> {
+                if (selectedRating[0] == 0) {
+                    updateStars(starButtons, 0);
+                } else {
+                    updateStars(starButtons, selectedRating[0]);
+                }
+            });
+
+            starBtn.setOnAction(e -> {
+                selectedRating[0] = rating;
+                updateStars(starButtons, rating);
+                // Update description based on rating
+                String[] descriptions = {
+                    "Poor - Not satisfied",
+                    "Fair - Below expectations",
+                    "Good - Meets expectations",
+                    "Very Good - Above expectations",
+                    "Excellent - Outstanding service!"
+                };
+                ratingDescLabel.setText(descriptions[rating - 1]);
+                ratingDescLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #f39c12; -fx-font-weight: bold;");
+            });
+
+            starButtons[i] = starBtn;
+            starBox.getChildren().add(starBtn);
+        }
+
+        // Comment
+        Label commentLabel = new Label("Share your feedback (Optional):");
+        commentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: 600;");
+
+        TextArea commentArea = new TextArea();
+        commentArea.setPromptText("Tell us about your experience with the delivery partner...");
+        commentArea.setPrefRowCount(4);
+        commentArea.setMaxWidth(450);
+        commentArea.setWrapText(true);
+        commentArea.setStyle("-fx-border-color: #dfe6e9; -fx-border-width: 2px; -fx-border-radius: 8px; " +
+                           "-fx-background-radius: 8px; -fx-padding: 10; -fx-font-size: 13px;");
+
+        // Focus effect for comment area
+        commentArea.setOnMouseEntered(e ->
+            commentArea.setStyle(commentArea.getStyle().replace("#dfe6e9", "#3498db")));
+        commentArea.setOnMouseExited(e ->
+            commentArea.setStyle(commentArea.getStyle().replace("#3498db", "#dfe6e9")));
+
+        // Buttons
+        HBox buttonBox = new HBox(15);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setStyle("-fx-padding: 10 0 0 0;");
+
+        Button submitBtn = new Button("Submit Rating");
+        submitBtn.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; " +
+                         "-fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 35; " +
+                         "-fx-cursor: hand; -fx-background-radius: 8px; " +
+                         "-fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.4), 10, 0, 0, 2);");
+
+        submitBtn.setOnMouseEntered(e ->
+            submitBtn.setStyle(submitBtn.getStyle() + "-fx-background-color: #2980b9;"));
+        submitBtn.setOnMouseExited(e ->
+            submitBtn.setStyle(submitBtn.getStyle().replace("-fx-background-color: #2980b9;", "-fx-background-color: #3498db;")));
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; " +
+                         "-fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 12 35; " +
+                         "-fx-cursor: hand; -fx-background-radius: 8px;");
+
+        cancelBtn.setOnMouseEntered(e ->
+            cancelBtn.setStyle(cancelBtn.getStyle() + "-fx-background-color: #7f8c8d;"));
+        cancelBtn.setOnMouseExited(e ->
+            cancelBtn.setStyle(cancelBtn.getStyle().replace("-fx-background-color: #7f8c8d;", "-fx-background-color: #95a5a6;")));
+
+        submitBtn.setOnAction(e -> {
+            if (selectedRating[0] == 0) {
+                showAlert("Please select a rating before submitting!", Alert.AlertType.WARNING);
+                return;
+            }
+
+            String comment = commentArea.getText().trim();
+
+            boolean success = RatingDAO.submitRating(
+                order.getOrderId(),
+                order.getCreatedByUserId(),
+                order.getAcceptedByUserId(),
+                selectedRating[0],
+                comment.isEmpty() ? null : comment
+            );
+
+            if (success) {
+                // Notify delivery partner
+                NotificationDAO.createNotification(
+                    order.getAcceptedByUserId(),
+                    "New Rating Received",
+                    "You received a " + selectedRating[0] + " ⭐ rating for order #" + order.getOrderId() +
+                    (comment.isEmpty() ? "" : "\nComment: " + comment),
+                    "INFO",
+                    order.getOrderId()
+                );
+
+                showAlert("Thank you for your feedback!\nYour rating has been submitted successfully.",
+                         Alert.AlertType.INFORMATION);
+                ratingStage.close();
+
+                // Disable and update rate button after rating
+                if (rateDeliveryBtn != null) {
+                    rateDeliveryBtn.setDisable(true);
+                    rateDeliveryBtn.setText("Rated ✓");
+                    rateDeliveryBtn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; " +
+                                            "-fx-padding: 10 20; -fx-background-radius: 5; -fx-opacity: 0.7;");
+                }
+            } else {
+                showAlert("Failed to submit rating. Please try again later.", Alert.AlertType.ERROR);
+            }
+        });
+
+        cancelBtn.setOnAction(e -> ratingStage.close());
+
+        buttonBox.getChildren().addAll(submitBtn, cancelBtn);
+
+        // Add separator line
+        javafx.scene.shape.Line separator = new javafx.scene.shape.Line();
+        separator.setEndX(400);
+        separator.setStroke(javafx.scene.paint.Color.web("#ecf0f1"));
+        separator.setStrokeWidth(2);
+
+        container.getChildren().addAll(
+            titleLabel,
+            subtitleLabel,
+            new javafx.scene.layout.Region() {{ setPrefHeight(5); }},
+            starBox,
+            ratingDescLabel,
+            separator,
+            commentLabel,
+            commentArea,
+            buttonBox
+        );
+
+        Scene scene = new Scene(container, 550, 520);
+        ratingStage.setScene(scene);
+        ratingStage.showAndWait();
+    }
+
+    /**
+     * Update star button display based on rating
+     */
+    private void updateStars(Button[] starButtons, int rating) {
+        for (int i = 0; i < starButtons.length; i++) {
+            if (i < rating) {
+                starButtons[i].setText("⭐");
+                starButtons[i].setStyle("-fx-font-size: 36px; -fx-background-color: transparent; " +
+                                      "-fx-text-fill: #f39c12; -fx-cursor: hand; -fx-padding: 5;");
+            } else {
+                starButtons[i].setText("☆");
+                starButtons[i].setStyle("-fx-font-size: 36px; -fx-background-color: transparent; " +
+                                      "-fx-text-fill: #bdc3c7; -fx-cursor: hand; -fx-padding: 5;");
+            }
+        }
+    }
+
+    /**
+     * Preview star rating on hover
+     */
+    private void updateStarsPreview(Button[] starButtons, int rating) {
+        for (int i = 0; i < starButtons.length; i++) {
+            if (i < rating) {
+                starButtons[i].setText("⭐");
+                starButtons[i].setStyle("-fx-font-size: 36px; -fx-background-color: transparent; " +
+                                      "-fx-text-fill: #f39c12; -fx-cursor: hand; -fx-padding: 5; -fx-opacity: 0.7;");
+            } else {
+                starButtons[i].setText("☆");
+                starButtons[i].setStyle("-fx-font-size: 36px; -fx-background-color: transparent; " +
+                                      "-fx-text-fill: #bdc3c7; -fx-cursor: hand; -fx-padding: 5;");
+            }
+        }
     }
 
     @FXML

@@ -6,23 +6,35 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.auth.RegisterController"
-            prefWidth="460" prefHeight="520" styleClass="root-pane">
+            prefWidth="1000" prefHeight="650" styleClass="root-pane">
 
-    <VBox alignment="CENTER" spacing="14" layoutX="60" layoutY="30" prefWidth="340">
+    <VBox alignment="CENTER" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
 
-        <Label text="Create Account" styleClass="app-title"/>
+        <Label text="Quick Commerce" styleClass="app-title"/>
+        <Label text="Delivery System" style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d; -fx-padding: 0 0 20 0;"/>
 
-        <VBox spacing="8" styleClass="card">
-            <TextField fx:id="nameField" promptText="Full name" />
-            <TextField fx:id="emailField" promptText="Email" />
-            <TextField fx:id="phoneField" promptText="Phone (optional)" />
-            <PasswordField fx:id="passwordField" promptText="Password" />
-            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" />
-            <Button text="Sign Up" onAction="#handleRegister" styleClass="btn-primary"/>
-            <Label fx:id="messageLabel" styleClass="message"/>
-            <HBox alignment="CENTER">
-                <Label text="Already have an account?" style="-fx-font-size:11px; -fx-text-fill:#666;"/>
-                <Hyperlink text="Login" onAction="#goToLogin"/>
+        <VBox spacing="8" styleClass="card" prefWidth="400" maxWidth="400">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+
+            <Label text="Create your account" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;"/>
+
+            <TextField fx:id="nameField" promptText="Full Name" styleClass="form-input"/>
+            <TextField fx:id="emailField" promptText="Email Address" styleClass="form-input"/>
+            <TextField fx:id="phoneField" promptText="Phone Number (optional)" styleClass="form-input"/>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="form-input"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" styleClass="form-input"/>
+            <Button text="Create Account" onAction="#handleRegister" styleClass="btn-primary" maxWidth="Infinity"/>
+            <Label fx:id="messageLabel" styleClass="message" wrapText="true"/>
+
+            <HBox alignment="CENTER" spacing="5">
+                <padding>
+                    <Insets top="10"/>
+                </padding>
+                <Label text="Already have an account?" style="-fx-font-size:12px; -fx-text-fill:#7f8c8d;"/>
+                <Hyperlink text="Login" onAction="#goToLogin" style="-fx-font-size:12px;"/>
             </HBox>
         </VBox>
 

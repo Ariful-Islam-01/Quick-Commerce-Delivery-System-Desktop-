@@ -40,6 +40,25 @@
                 <Label fx:id="imageMessageLabel" style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;"/>
             </VBox>
 
+            <!-- Ratings Section (for delivery partners) -->
+            <VBox fx:id="ratingsSection" spacing="10" alignment="CENTER" styleClass="dashboard-card"
+                  style="-fx-padding: 20; -fx-background-color: linear-gradient(to bottom right, #f39c12, #f1c40f);" managed="false" visible="false">
+                <Label text="⭐ My Ratings" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+                <Label fx:id="ratingStarsLabel" text="☆☆☆☆☆"
+                       style="-fx-font-size: 28px; -fx-text-fill: white;"/>
+
+                <HBox spacing="10" alignment="CENTER">
+                    <Label fx:id="averageRatingLabel" text="0.0"
+                           style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    <VBox alignment="CENTER_LEFT">
+                        <Label text="Average" style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+                        <Label fx:id="totalRatingsLabel" text="0 ratings"
+                               style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
             <!-- Personal Information Section -->
             <VBox spacing="15" styleClass="dashboard-card" style="-fx-padding: 20;">
                 <Label text="Personal Information" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>

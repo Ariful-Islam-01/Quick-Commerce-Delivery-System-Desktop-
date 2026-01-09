@@ -1,5 +1,6 @@
 package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 
+import com.example.quickcommercedeliverysystemdesktop.database.RatingDAO;
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
 import com.example.quickcommercedeliverysystemdesktop.models.User;
 import com.example.quickcommercedeliverysystemdesktop.utils.ErrorHandler;
@@ -9,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -34,6 +36,11 @@ public class ProfileController {
     @FXML private Label addressMessageLabel;
     @FXML private Label passwordMessageLabel;
 
+    @FXML private VBox ratingsSection;
+    @FXML private Label averageRatingLabel;
+    @FXML private Label totalRatingsLabel;
+    @FXML private Label ratingStarsLabel;
+
     private User currentUser;
     private String selectedImagePath = "";
 
@@ -48,6 +55,7 @@ public class ProfileController {
 
         loadUserData();
         loadProfileImage();
+        loadRatingsStats();
 
         // Clear all message labels
         ValidationUtil.clearMessage(imageMessageLabel);
@@ -90,6 +98,34 @@ public class ProfileController {
         } catch (Exception e) {
             // If default avatar doesn't exist, create a placeholder
             System.err.println("Default avatar not found");
+        }
+    }
+
+    private void loadRatingsStats() {
+        // Only show ratings section if elements are present
+        if (ratingsSection == null) return;
+
+        try {
+            RatingDAO.RatingStats stats = RatingDAO.getRatingStats(currentUser.getUserId());
+
+            if (stats.getTotalRatings() > 0) {
+                averageRatingLabel.setText(String.format("%.1f", stats.getAverageRating()));
+                totalRatingsLabel.setText(stats.getTotalRatings() + " ratings");
+                ratingStarsLabel.setText(stats.getStarDisplay());
+                ratingsSection.setVisible(true);
+                ratingsSection.setManaged(true);
+            } else {
+                // Hide ratings section if no ratings yet
+                ratingsSection.setVisible(false);
+                ratingsSection.setManaged(false);
+            }
+        } catch (Exception e) {
+            ErrorHandler.logError(e);
+            // Hide ratings section on error
+            if (ratingsSection != null) {
+                ratingsSection.setVisible(false);
+                ratingsSection.setManaged(false);
+            }
         }
     }
 

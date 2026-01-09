@@ -51,7 +51,17 @@ public class Main extends Application {
 
             primaryStage.setTitle("Quick Commerce Delivery System");
             primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
+
+            // Enable window resizing with minimize and maximize
+            primaryStage.setResizable(true);
+
+            // Set minimum window dimensions to prevent too small sizing
+            primaryStage.setMinWidth(800);
+            primaryStage.setMinHeight(600);
+
+            // Set preferred/default size
+            primaryStage.setWidth(1000);
+            primaryStage.setHeight(650);
 
             // Set application icon (if exists)
             try {

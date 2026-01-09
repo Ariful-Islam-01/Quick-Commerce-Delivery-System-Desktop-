@@ -197,9 +197,48 @@ public class OrderDAO {
             // Ignore
         }
 
-        Order order = new Order(orderId, customerId, null, productName, description, photo,
+        // Get delivery person ID and timestamps from Deliveries table
+        Integer acceptedByUserId = null;
+        LocalDateTime acceptedAt = null;
+        LocalDateTime pickedUpAt = null;
+        LocalDateTime deliveryDate = null;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "SELECT delivery_person_id, created_at, pickup_time, delivered_time FROM Deliveries WHERE order_id = ? ORDER BY delivery_id DESC LIMIT 1")) {
+            ps.setInt(1, orderId);
+            ResultSet deliveryRs = ps.executeQuery();
+            if (deliveryRs.next()) {
+                acceptedByUserId = deliveryRs.getInt("delivery_person_id");
+                Timestamp acceptedTs = deliveryRs.getTimestamp("created_at");
+                if (acceptedTs != null) acceptedAt = acceptedTs.toLocalDateTime();
+
+                Timestamp pickedUpTs = deliveryRs.getTimestamp("pickup_time");
+                if (pickedUpTs != null) pickedUpAt = pickedUpTs.toLocalDateTime();
+
+                Timestamp deliveredTs = deliveryRs.getTimestamp("delivered_time");
+                if (deliveredTs != null) deliveryDate = deliveredTs.toLocalDateTime();
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        // Get rating ID if exists
+        Integer ratingId = null;
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement("SELECT rating_id FROM Ratings WHERE order_id = ?")) {
+            ps.setInt(1, orderId);
+            ResultSet ratingRs = ps.executeQuery();
+            if (ratingRs.next()) {
+                ratingId = ratingRs.getInt("rating_id");
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        Order order = new Order(orderId, customerId, acceptedByUserId, productName, description, photo,
                                deliveryLocation, timeRange, fee, null, customerName, customerPhone,
-                               status, orderDate, null, null, null, null);
+                               status, orderDate, acceptedAt, pickedUpAt, deliveryDate, ratingId);
 
         return order;
     }

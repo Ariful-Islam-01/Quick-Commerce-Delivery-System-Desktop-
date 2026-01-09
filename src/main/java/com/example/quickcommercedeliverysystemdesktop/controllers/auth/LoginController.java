@@ -87,9 +87,15 @@ public class LoginController {
         try {
             Stage stage = (Stage) emailField.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1000, 650);
             scene.getStylesheets().add(getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/styles/style.css").toExternalForm());
             stage.setScene(scene);
+
+            // Maintain window properties
+            stage.setResizable(true);
+            stage.setMinWidth(800);
+            stage.setMinHeight(600);
+
             ErrorHandler.logInfo("Loaded scene: " + fxmlPath);
         } catch (Exception ex) {
             ErrorHandler.handleException(ex, "Failed to load screen. Please try again.");
