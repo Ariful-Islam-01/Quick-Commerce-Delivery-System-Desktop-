@@ -47,6 +47,47 @@ public class CreateOrderController {
         "Other"
     };
 
+    // Product items for each category
+    private static final java.util.Map<String, String[]> CATEGORY_PRODUCTS = new java.util.HashMap<>() {{
+        put("Groceries", new String[]{
+            "Select Product", "Fresh Vegetables", "Fresh Fruits", "Dairy Products",
+            "Bakery Items", "Meat & Fish", "Rice & Grains", "Snacks & Beverages",
+            "Cooking Oil", "Spices & Condiments"
+        });
+        put("Electronics", new String[]{
+            "Select Product", "Mobile Phone", "Laptop", "Tablet", "Smart Watch",
+            "Headphones", "Speaker", "Camera", "Gaming Console", "TV", "Other Electronics"
+        });
+        put("Pharma", new String[]{
+            "Select Product", "Prescription Medicine", "OTC Medicine", "Vitamins & Supplements",
+            "First Aid Supplies", "Medical Equipment", "Baby Care Products",
+            "Personal Care Items", "Health Monitors"
+        });
+        put("Food & Beverages", new String[]{
+            "Select Product", "Restaurant Food", "Fast Food", "Coffee & Tea",
+            "Soft Drinks", "Juices", "Packaged Food", "Desserts", "Baked Goods"
+        });
+        put("Clothing", new String[]{
+            "Select Product", "Men's Clothing", "Women's Clothing", "Kids Clothing",
+            "Shoes & Footwear", "Accessories", "Bags", "Watches", "Jewelry"
+        });
+        put("Books & Stationery", new String[]{
+            "Select Product", "Textbooks", "Novels & Fiction", "Educational Books",
+            "Notebooks", "Pens & Pencils", "Art Supplies", "Office Supplies"
+        });
+        put("Home & Garden", new String[]{
+            "Select Product", "Furniture", "Home Decor", "Kitchen Items",
+            "Garden Tools", "Plants & Seeds", "Cleaning Supplies", "Bed & Bath"
+        });
+        put("Sports & Outdoors", new String[]{
+            "Select Product", "Sports Equipment", "Fitness Gear", "Camping Gear",
+            "Outdoor Clothing", "Cycling Accessories", "Swimming Items"
+        });
+        put("Other", new String[]{
+            "Select Product", "Custom Item"
+        });
+    }};
+
     @FXML
     public void initialize() {
         ValidationUtil.clearMessage(messageLabel);
@@ -121,7 +162,7 @@ public class CreateOrderController {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Submit Orders");
         confirmAlert.setHeaderText("Submit " + validOrders.size() + " order(s)?");
-        confirmAlert.setContentText("Total Fee: $" + String.format("%.2f", calculateTotalFee()));
+        confirmAlert.setContentText("Total Fee: ৳" + String.format("%.2f", calculateTotalFee()));
 
         if (confirmAlert.showAndWait().get() != ButtonType.OK) {
             return;
@@ -169,7 +210,7 @@ public class CreateOrderController {
 
         orderCountLabel.setText(count + " Order" + (count != 1 ? "s" : ""));
         totalOrdersLabel.setText(String.valueOf(count));
-        totalFeeLabel.setText("$" + String.format("%.2f", totalFee));
+        totalFeeLabel.setText("৳" + String.format("%.2f", totalFee));
     }
 
     private double calculateTotalFee() {
@@ -203,7 +244,7 @@ public class CreateOrderController {
         private int cardId;
         private VBox cardView;
         private ComboBox<String> categoryComboBox;
-        private TextField productNameField;
+        private ComboBox<String> productNameComboBox; // Combined field for product selection/entry
         private TextArea descriptionArea;
         private TextField deliveryLocationField;
         private DatePicker deliveryDatePicker;
@@ -214,6 +255,9 @@ public class CreateOrderController {
         private Label imageLabel;
         private String selectedImagePath = null;
         private Label cardMessageLabel;
+        private VBox detailsContainer;
+        private boolean isExpanded = true;
+        private Button expandCollapseBtn;
 
         // Time options for combo boxes
         private static final String[] TIME_OPTIONS = {
@@ -248,6 +292,11 @@ public class CreateOrderController {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
+            // Expand/Collapse Button
+            expandCollapseBtn = new Button("▼");
+            expandCollapseBtn.getStyleClass().add("expand-button");
+            expandCollapseBtn.setOnAction(e -> toggleExpand());
+
             Button deleteBtn = new Button("🗑");
             deleteBtn.getStyleClass().add("delete-order-button");
             deleteBtn.setOnAction(e -> {
@@ -262,7 +311,10 @@ public class CreateOrderController {
                 }
             });
 
-            header.getChildren().addAll(cardTitle, spacer, deleteBtn);
+            header.getChildren().addAll(cardTitle, spacer, expandCollapseBtn, deleteBtn);
+
+            // Details Container (collapsible)
+            detailsContainer = new VBox(15);
 
             // Category Dropdown
             VBox categoryBox = new VBox(8);
@@ -275,19 +327,26 @@ public class CreateOrderController {
             categoryComboBox.getStyleClass().add("form-input");
             categoryComboBox.setMaxWidth(Double.MAX_VALUE);
 
-            // Dynamic placeholder update
-            categoryComboBox.setOnAction(e -> updateDescriptionPlaceholder());
+            // Update product dropdown and placeholder when category changes
+            categoryComboBox.setOnAction(e -> {
+                updateProductDropdown();
+                updateDescriptionPlaceholder();
+            });
 
             categoryBox.getChildren().addAll(categoryLabel, categoryComboBox);
 
-            // Product Name
+            // Product Name - Editable ComboBox (combined dropdown + text field)
             VBox productBox = new VBox(8);
             Label productLabel = new Label("Product Name *");
             productLabel.getStyleClass().add("form-label");
-            productNameField = new TextField();
-            productNameField.setPromptText("e.g., Laptop, Books, Groceries");
-            productNameField.getStyleClass().add("form-input");
-            productBox.getChildren().addAll(productLabel, productNameField);
+
+            productNameComboBox = new ComboBox<>();
+            productNameComboBox.setEditable(true); // Allow custom entry
+            productNameComboBox.setPromptText("Select a category first or type product name");
+            productNameComboBox.getStyleClass().add("form-input");
+            productNameComboBox.setMaxWidth(Double.MAX_VALUE);
+
+            productBox.getChildren().addAll(productLabel, productNameComboBox);
 
             // Description
             VBox descBox = new VBox(8);
@@ -356,12 +415,12 @@ public class CreateOrderController {
 
             timeBox.getChildren().addAll(timeFromBox, timeToBox);
 
-            // Delivery Fee
+            // Delivery Fee (changed to BDT)
             VBox feeBox = new VBox(8);
-            Label feeLabel = new Label("Delivery Fee (USD) *");
+            Label feeLabel = new Label("Delivery Fee (BDT ৳) *");
             feeLabel.getStyleClass().add("form-label");
             deliveryFeeField = new TextField();
-            deliveryFeeField.setPromptText("e.g., 5.00");
+            deliveryFeeField.setPromptText("e.g., 50.00");
             deliveryFeeField.getStyleClass().add("form-input");
 
             // Update summary on fee change
@@ -404,9 +463,8 @@ public class CreateOrderController {
             cardMessageLabel.setManaged(false);
             cardMessageLabel.setVisible(false);
 
-            // Add all to card
-            cardView.getChildren().addAll(
-                header,
+            // Add all to details container
+            detailsContainer.getChildren().addAll(
                 categoryBox,
                 productBox,
                 descBox,
@@ -418,6 +476,41 @@ public class CreateOrderController {
                 photoBox,
                 cardMessageLabel
             );
+
+            // Add all to card
+            cardView.getChildren().addAll(header, detailsContainer);
+        }
+
+        private void toggleExpand() {
+            isExpanded = !isExpanded;
+            detailsContainer.setVisible(isExpanded);
+            detailsContainer.setManaged(isExpanded);
+            expandCollapseBtn.setText(isExpanded ? "▼" : "▶");
+        }
+
+        private void updateProductDropdown() {
+            String category = categoryComboBox.getValue();
+
+            if (category.equals("Select Category")) {
+                // Clear and disable when no category selected
+                productNameComboBox.getItems().clear();
+                productNameComboBox.setValue(null);
+                productNameComboBox.setPromptText("Select a category first or type product name");
+            } else {
+                // Load products for selected category
+                String[] products = CATEGORY_PRODUCTS.get(category);
+                productNameComboBox.getItems().clear();
+
+                if (products != null) {
+                    // Add products but skip "Select Product" placeholder
+                    for (int i = 1; i < products.length; i++) {
+                        productNameComboBox.getItems().add(products[i]);
+                    }
+                }
+
+                productNameComboBox.setValue(null);
+                productNameComboBox.setPromptText("Select or type product name");
+            }
         }
 
         private void updateDescriptionPlaceholder() {
@@ -497,7 +590,7 @@ public class CreateOrderController {
             clearFieldStyles();
 
             String category = categoryComboBox.getValue();
-            String productName = productNameField.getText().trim();
+            String productName = productNameComboBox.getEditor().getText().trim();
             String description = descriptionArea.getText().trim();
             String location = deliveryLocationField.getText().trim();
             LocalDate deliveryDate = deliveryDatePicker.getValue();
@@ -514,7 +607,7 @@ public class CreateOrderController {
 
             // Validate product name
             if (productName.isEmpty()) {
-                productNameField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
+                productNameComboBox.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
                 showCardError("Product name is required");
                 return false;
             }
@@ -562,9 +655,9 @@ public class CreateOrderController {
             }
 
             double fee = Double.parseDouble(feeStr);
-            if (!ValidationUtil.isInRange(fee, 0.01, 1000.00)) {
+            if (!ValidationUtil.isInRange(fee, 1.00, 10000.00)) {
                 deliveryFeeField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2px;");
-                showCardError("Delivery fee must be between $0.01 and $1000.00");
+                showCardError("Delivery fee must be between ৳1.00 and ৳10,000.00");
                 return false;
             }
 
@@ -578,7 +671,7 @@ public class CreateOrderController {
                 String userPhone = UserSession.getInstance().getUserPhone();
 
                 String category = categoryComboBox.getValue();
-                String productName = "[" + category + "] " + productNameField.getText().trim();
+                String productName = "[" + category + "] " + productNameComboBox.getEditor().getText().trim();
                 String description = descriptionArea.getText().trim();
                 String location = deliveryLocationField.getText().trim();
 
@@ -620,7 +713,7 @@ public class CreateOrderController {
 
         private void clearFieldStyles() {
             categoryComboBox.setStyle("");
-            productNameField.setStyle("");
+            productNameComboBox.setStyle("");
             descriptionArea.setStyle("");
             deliveryLocationField.setStyle("");
             deliveryDatePicker.setStyle("");

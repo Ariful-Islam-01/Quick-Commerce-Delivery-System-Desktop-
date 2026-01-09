@@ -448,46 +448,91 @@
 }
 
 /* Order Count Badge */
+/* ==================== CREATE ORDER PAGE - PROFESSIONAL DESIGN ==================== */
+
+/* Main Container */
+.create-order-main {
+    -fx-background-color: #f5f7fa;
+}
+
+.create-order-container {
+    -fx-background-color: transparent;
+}
+
+/* Header Section */
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.page-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
 .order-count-badge {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-background-color: #3498db;
-    -fx-padding: 6px 12px;
-    -fx-background-radius: 15px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.3), 8, 0, 0, 2);
 }
 
 /* Order Cards Container */
 .order-cards-container {
-    -fx-spacing: 20px;
+    -fx-spacing: 25px;
 }
 
-/* Individual Order Card */
+/* Individual Order Card - Enhanced Design */
 .order-card {
     -fx-background-color: white;
     -fx-background-radius: 12px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);
     -fx-border-color: #e1e8ed;
     -fx-border-width: 1px;
     -fx-border-radius: 12px;
+    -fx-padding: 20px;
 }
 
 .order-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 15, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 16, 0, 0, 4);
+    -fx-border-color: #3498db;
 }
 
 /* Order Card Title */
 .order-card-title {
-    -fx-font-size: 18px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
+    -fx-font-family: "Segoe UI Semibold", "Roboto Medium", sans-serif;
+}
+
+/* Expand/Collapse Button */
+.expand-button {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-font-weight: bold;
+}
+
+.expand-button:hover {
+    -fx-background-color: #bdc3c7;
 }
 
 /* Delete Order Button */
 .delete-order-button {
-    -fx-background-color: #e74c3c;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
+    -fx-background-color: transparent;
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 18px;
     -fx-padding: 8px 12px;
     -fx-background-radius: 6px;
     -fx-cursor: hand;
@@ -495,60 +540,282 @@
 }
 
 .delete-order-button:hover {
-    -fx-background-color: #c0392b;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+    -fx-background-color: #fee;
+    -fx-text-fill: #c0392b;
 }
 
-/* Add New Order Button */
-.add-order-button {
-    -fx-background-color: #27ae60;
+/* Form Labels - Professional Typography */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #34495e;
+    -fx-font-family: "Segoe UI Semibold", "Roboto Medium", sans-serif;
+}
+
+/* Form Input Fields - Enhanced Design */
+.form-input {
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #2c3e50;
+    -fx-prompt-text-fill: #95a5a6;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.form-input:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #f8f9fa;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.2), 8, 0, 0, 0);
+}
+
+.form-input:hover {
+    -fx-border-color: #74b9ff;
+}
+
+/* ComboBox Styling */
+.combo-box {
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #f8f9fa;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 10px 15px;
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #3498db;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 15px;
+}
+
+/* TextArea Styling */
+.text-area {
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #2c3e50;
+    -fx-prompt-text-fill: #95a5a6;
+}
+
+.text-area:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #f8f9fa;
+}
+
+.text-area .content {
+    -fx-background-color: white;
+}
+
+/* DatePicker Styling */
+.date-picker {
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #dfe6e9;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.date-picker:focused {
+    -fx-border-color: #3498db;
+}
+
+.date-picker .date-picker-display-node {
+    -fx-background-color: white;
+    -fx-padding: 12px 15px;
+}
+
+/* Secondary Button (Choose Image, etc.) */
+.secondary-button {
+    -fx-background-color: white;
+    -fx-text-fill: #3498db;
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+/* Image Label */
+.image-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-style: italic;
+}
+
+/* Add New Order Button - Premium Design */
+.add-order-button {
+    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 14px 35px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);
 }
 
 .add-order-button:hover {
-    -fx-background-color: #229954;
+    -fx-background-color: linear-gradient(to bottom, #2980b9, #21618c);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.add-order-button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
 }
 
 /* Card Message Label */
 .card-message-label {
     -fx-font-size: 13px;
-    -fx-padding: 10px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
+    -fx-padding: 12px 15px;
+    -fx-background-color: #fee;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-border-color: #e74c3c;
+    -fx-text-fill: #c0392b;
 }
 
-/* Global Summary Footer */
+/* Global Summary Footer - Professional Design */
 .global-summary-footer {
     -fx-background-color: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, -2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, -5);
+    -fx-border-color: #e0e6ed;
+    -fx-border-width: 2px 0 0 0;
 }
 
 .summary-content {
     -fx-background-color: white;
+    -fx-padding: 20px 40px;
 }
 
 .summary-label {
-    -fx-font-size: 15px;
+    -fx-font-size: 11px;
     -fx-font-weight: 600;
-    -fx-text-fill: #2c3e50;
+    -fx-text-fill: #95a5a6;
+    -fx-font-family: "Segoe UI Semibold", "Roboto Medium", sans-serif;
 }
 
 .summary-value {
-    -fx-font-size: 18px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3498db;
+    -fx-text-fill: #2c3e50;
+    -fx-font-family: "Segoe UI Bold", "Roboto Bold", sans-serif;
 }
 
 .summary-value-highlight {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #27ae60;
+    -fx-font-family: "Segoe UI Bold", "Roboto Bold", sans-serif;
+}
+
+/* Submit All Orders Button - Premium Green */
+.submit-all-button {
+    -fx-background-color: linear-gradient(to bottom, #27ae60, #229954);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 14px 40px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.4), 12, 0, 0, 3);
+}
+
+.submit-all-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #229954, #1e8449);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.submit-all-button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Message Label - Success/Error States */
+.message-label {
+    -fx-font-size: 14px;
+    -fx-padding: 15px;
+    -fx-background-radius: 8px;
+    -fx-font-weight: 500;
+}
+
+/* ScrollPane Styling */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 10px;
+}
+
+.scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 5px;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #bdc3c7;
+    -fx-background-radius: 5px;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #95a5a6;
+}
+
+/* Separator Styling */
+.separator {
+    -fx-background-color: #e0e6ed;
+}
+
+/* ==================== END CREATE ORDER STYLING ==================== */
     -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #27ae60;

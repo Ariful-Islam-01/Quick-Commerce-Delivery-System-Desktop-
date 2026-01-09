@@ -8,62 +8,118 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.CreateOrderController"
-            styleClass="create-order-main">
+            styleClass="create-order-main"
+            style="-fx-background-color: #f5f7fa;">
 
     <!-- Main Content Area with ScrollPane -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="scroll-pane">
-            <VBox spacing="25" styleClass="create-order-container">
+        <ScrollPane fitToWidth="true" fitToHeight="true"
+                   styleClass="scroll-pane"
+                   style="-fx-background: #f5f7fa; -fx-background-color: #f5f7fa;">
+            <VBox spacing="30" styleClass="create-order-container">
                 <padding>
-                    <Insets top="30" right="30" bottom="100" left="30"/>
+                    <Insets top="35" right="40" bottom="120" left="40"/>
                 </padding>
 
-                <!-- Header -->
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <Text text="Create Delivery Orders" styleClass="page-title"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="orderCountLabel" text="0 Orders" styleClass="order-count-badge"/>
-                </HBox>
+                <!-- Professional Header Section -->
+                <VBox spacing="12" styleClass="header-section">
+                    <HBox alignment="CENTER_LEFT" spacing="20">
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Text text="Create Delivery Orders"
+                                 styleClass="page-title"
+                                 style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-fill: #2c3e50;"/>
+                            <Text text="Schedule your deliveries and manage multiple orders efficiently"
+                                 styleClass="page-subtitle"
+                                 style="-fx-font-size: 14px; -fx-fill: #7f8c8d;"/>
+                        </VBox>
+                        <Label fx:id="orderCountLabel" text="0 Orders"
+                              styleClass="order-count-badge"
+                              style="-fx-background-color: #3498db; -fx-text-fill: white;
+                                     -fx-padding: 10 20; -fx-background-radius: 20;
+                                     -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    </HBox>
 
-                <Separator/>
+                    <!-- Decorative separator -->
+                    <Separator style="-fx-background-color: #e0e6ed; -fx-pref-height: 2px;"/>
+                </VBox>
 
                 <!-- Dynamic Order Cards Container -->
-                <VBox fx:id="orderCardsContainer" spacing="20" styleClass="order-cards-container"/>
+                <VBox fx:id="orderCardsContainer" spacing="25" styleClass="order-cards-container"/>
 
-                <!-- Add New Order Button -->
-                <Button text="➕ Add New Order" onAction="#handleAddNewOrder"
-                       styleClass="add-order-button" maxWidth="Infinity"/>
+                <!-- Professional Add New Order Button -->
+                <HBox alignment="CENTER" spacing="15" styleClass="action-button-container">
+                    <Button text="➕  Add New Order" onAction="#handleAddNewOrder"
+                           styleClass="add-order-button"
+                           style="-fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+                                  -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 600;
+                                  -fx-padding: 14 35; -fx-background-radius: 8; -fx-cursor: hand;
+                                  -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.4), 10, 0, 0, 3);"
+                           prefWidth="300"/>
+                </HBox>
 
-                <!-- Message Label -->
-                <Label fx:id="messageLabel" styleClass="message-label" wrapText="true"/>
+                <!-- Message Label with Better Styling -->
+                <Label fx:id="messageLabel" styleClass="message-label" wrapText="true"
+                      style="-fx-font-size: 14px; -fx-padding: 15; -fx-background-radius: 8;"/>
 
             </VBox>
         </ScrollPane>
     </center>
 
-    <!-- Sticky Footer with Global Summary -->
+    <!-- Professional Sticky Footer with Enhanced Summary -->
     <bottom>
-        <VBox styleClass="global-summary-footer">
-            <Separator/>
-            <HBox spacing="20" alignment="CENTER" styleClass="summary-content">
-                <padding>
-                    <Insets top="15" right="30" bottom="15" left="30"/>
-                </padding>
+        <VBox styleClass="global-summary-footer"
+             style="-fx-background-color: white;
+                    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, -5);
+                    -fx-border-color: #e0e6ed; -fx-border-width: 2 0 0 0;">
 
-                <Label text="Total Orders:" styleClass="summary-label"/>
-                <Label fx:id="totalOrdersLabel" text="0" styleClass="summary-value"/>
+            <HBox spacing="30" alignment="CENTER" styleClass="summary-content"
+                 style="-fx-padding: 20 40;">
 
-                <Separator orientation="VERTICAL"/>
+                <!-- Total Orders Section -->
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="TOTAL ORDERS"
+                          styleClass="summary-label"
+                          style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;
+                                 -fx-font-weight: 600; -fx-letter-spacing: 0.5px;"/>
+                    <Label fx:id="totalOrdersLabel" text="0"
+                          styleClass="summary-value"
+                          style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                </VBox>
 
-                <Label text="Total Delivery Fee:" styleClass="summary-label"/>
-                <Label fx:id="totalFeeLabel" text="0.00" styleClass="summary-value-highlight"/>
+                <Separator orientation="VERTICAL"
+                          style="-fx-background-color: #e0e6ed; -fx-pref-width: 2px; -fx-pref-height: 50px;"/>
+
+                <!-- Total Fee Section -->
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="TOTAL DELIVERY FEE"
+                          styleClass="summary-label"
+                          style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;
+                                 -fx-font-weight: 600; -fx-letter-spacing: 0.5px;"/>
+                    <Label fx:id="totalFeeLabel" text="৳0.00"
+                          styleClass="summary-value-highlight"
+                          style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                </VBox>
 
                 <Region HBox.hgrow="ALWAYS"/>
 
-                <Button text="Clear All" onAction="#handleClearAll"
-                       styleClass="secondary-button" prefWidth="120"/>
-                <Button text="Submit All Orders" onAction="#handleSubmitAllOrders"
-                       styleClass="submit-all-button" prefWidth="180"/>
+                <!-- Action Buttons -->
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <Button text="Clear All" onAction="#handleClearAll"
+                           styleClass="secondary-button"
+                           style="-fx-background-color: white; -fx-text-fill: #e74c3c;
+                                  -fx-border-color: #e74c3c; -fx-border-width: 2px;
+                                  -fx-font-size: 14px; -fx-font-weight: 600;
+                                  -fx-padding: 12 30; -fx-background-radius: 8;
+                                  -fx-border-radius: 8; -fx-cursor: hand;"
+                           prefWidth="140"/>
+                    <Button text="Submit All Orders" onAction="#handleSubmitAllOrders"
+                           styleClass="submit-all-button"
+                           style="-fx-background-color: linear-gradient(to bottom, #27ae60, #229954);
+                                  -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;
+                                  -fx-padding: 14 40; -fx-background-radius: 8; -fx-cursor: hand;
+                                  -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.4), 12, 0, 0, 3);"
+                           prefWidth="220"/>
+                </HBox>
             </HBox>
         </VBox>
     </bottom>
