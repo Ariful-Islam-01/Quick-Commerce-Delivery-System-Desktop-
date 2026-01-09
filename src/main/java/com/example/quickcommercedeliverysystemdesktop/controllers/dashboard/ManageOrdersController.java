@@ -77,8 +77,8 @@ public class ManageOrdersController {
 
         // Actions column with buttons
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button viewButton = new Button("👁️ View");
-            private final Button deleteButton = new Button("🗑️ Delete");
+            private final Button viewButton = new Button("View");
+            private final Button deleteButton = new Button("Delete");
 
             {
                 viewButton.getStyleClass().add("action-button");
@@ -233,12 +233,12 @@ public class ManageOrdersController {
 
     private String getStatusBadge(String status) {
         return switch (status) {
-            case "PENDING" -> "⏳ Pending";
-            case "ACCEPTED" -> "✅ Accepted";
-            case "PICKED_UP" -> "📦 Picked Up";
-            case "ON_THE_WAY" -> "🚚 On the Way";
-            case "DELIVERED" -> "✔️ Delivered";
-            case "CANCELLED" -> "❌ Cancelled";
+            case "PENDING" -> "⏳Pending";
+            case "ACCEPTED" -> "✅Accepted";
+            case "PICKED_UP" -> "📦Picked Up";
+            case "ON_THE_WAY" -> "🚚On the Way";
+            case "DELIVERED" -> "✔Delivered";
+            case "CANCELLED" -> "❌Cancelled";
             default -> status;
         };
     }
