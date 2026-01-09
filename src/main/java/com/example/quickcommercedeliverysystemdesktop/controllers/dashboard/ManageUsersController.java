@@ -74,10 +74,10 @@ public class ManageUsersController {
 
         // Actions column with buttons
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button viewButton = new Button("👁️ View");
-            private final Button editButton = new Button("✏️ Edit");
-            private final Button banButton = new Button("🚫 Ban");
-            private final Button deleteButton = new Button("🗑️ Delete");
+            private final Button viewButton = new Button("View");
+            private final Button editButton = new Button("Edit");
+            private final Button banButton = new Button("Ban");
+            private final Button deleteButton = new Button("Delete");
 
             {
                 viewButton.getStyleClass().add("action-button");
@@ -113,7 +113,7 @@ public class ManageUsersController {
                     setGraphic(null);
                 } else {
                     User user = getTableView().getItems().get(getIndex());
-                    banButton.setText(user.isBanned() ? "✅ Unban" : "🚫 Ban");
+                    banButton.setText(user.isBanned() ? "Unban" : "Ban");
 
                     HBox buttons = new HBox(5, viewButton, editButton, banButton, deleteButton);
                     buttons.setAlignment(Pos.CENTER);
@@ -185,8 +185,9 @@ public class ManageUsersController {
         alert.setTitle("User Details");
         alert.setHeaderText("User Information");
 
-        VBox content = new VBox(10);
-        content.setPadding(new Insets(10));
+        VBox content = new VBox(12);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-font-size: 13px;");
 
         content.getChildren().addAll(
             new Label("ID: " + user.getUserId()),
@@ -199,6 +200,8 @@ public class ManageUsersController {
         );
 
         alert.getDialogPane().setContent(content);
+        alert.getDialogPane().setPrefSize(450, 320);
+        alert.getDialogPane().setMinSize(450, 320);
         alert.showAndWait();
     }
 
@@ -210,14 +213,19 @@ public class ManageUsersController {
 
         // Create form fields
         TextField nameField = new TextField(user.getName());
+        nameField.setPrefWidth(350);
         TextField emailField = new TextField(user.getEmail());
+        emailField.setPrefWidth(350);
         TextField phoneField = new TextField(user.getPhone());
+        phoneField.setPrefWidth(350);
         TextField addressField = new TextField(user.getDefaultAddress() != null ? user.getDefaultAddress() : "");
+        addressField.setPrefWidth(350);
         CheckBox adminCheckBox = new CheckBox("Admin User");
         adminCheckBox.setSelected(user.isAdmin());
 
-        VBox content = new VBox(10);
+        VBox content = new VBox(12);
         content.setPadding(new Insets(20));
+        content.setStyle("-fx-font-size: 13px;");
         content.getChildren().addAll(
             new Label("Name:"), nameField,
             new Label("Email:"), emailField,
@@ -227,6 +235,8 @@ public class ManageUsersController {
         );
 
         dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().setPrefSize(500, 450);
+        dialog.getDialogPane().setMinSize(500, 450);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
@@ -316,26 +326,33 @@ public class ManageUsersController {
         // Create form fields
         TextField nameField = new TextField();
         nameField.setPromptText("Full Name");
+        nameField.setPrefWidth(350);
 
         TextField emailField = new TextField();
         emailField.setPromptText("Email Address");
+        emailField.setPrefWidth(350);
 
         TextField phoneField = new TextField();
         phoneField.setPromptText("Phone Number");
+        phoneField.setPrefWidth(350);
 
         TextField addressField = new TextField();
         addressField.setPromptText("Default Address (Optional)");
+        addressField.setPrefWidth(350);
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.setPrefWidth(350);
 
         PasswordField confirmPasswordField = new PasswordField();
         confirmPasswordField.setPromptText("Confirm Password");
+        confirmPasswordField.setPrefWidth(350);
 
         CheckBox adminCheckBox = new CheckBox("Create as Admin User");
 
-        VBox content = new VBox(10);
+        VBox content = new VBox(12);
         content.setPadding(new Insets(20));
+        content.setStyle("-fx-font-size: 13px;");
         content.getChildren().addAll(
             new Label("Name:"), nameField,
             new Label("Email:"), emailField,
@@ -347,6 +364,8 @@ public class ManageUsersController {
         );
 
         dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().setPrefSize(500, 550);
+        dialog.getDialogPane().setMinSize(500, 550);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         Optional<ButtonType> result = dialog.showAndWait();
