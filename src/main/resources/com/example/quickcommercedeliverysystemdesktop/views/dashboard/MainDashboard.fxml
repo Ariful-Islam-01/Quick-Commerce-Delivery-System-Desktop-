@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.MainDashboardController"
@@ -21,10 +20,6 @@
             <Button fx:id="deliveriesBtn" text="🚚 Deliveries" onAction="#loadDeliveries" styleClass="nav-btn"/>
             <Button fx:id="earningsBtn" text="💰 Earnings" onAction="#loadEarnings" styleClass="nav-btn"/>
             <Button fx:id="notificationsBtn" text="🔔 Notifications" onAction="#loadNotifications" styleClass="nav-btn"/>
-            <Button fx:id="adminDashboardBtn" text="📊 Admin Dashboard" onAction="#loadAdminDashboard" styleClass="nav-btn"/>
-            <Button fx:id="manageUsersBtn" text="👥 Manage Users" onAction="#loadManageUsers" styleClass="nav-btn"/>
-            <Button fx:id="manageOrdersBtn" text="📋 Manage Orders" onAction="#loadManageOrders" styleClass="nav-btn"/>
-            <Button fx:id="manageEarningsBtn" text="💵 Manage Earnings" onAction="#loadManageEarnings" styleClass="nav-btn"/>
             <Button fx:id="profileBtn" text="👤 Profile" onAction="#loadProfile" styleClass="nav-btn"/>
 
             <Region VBox.vgrow="ALWAYS"/>

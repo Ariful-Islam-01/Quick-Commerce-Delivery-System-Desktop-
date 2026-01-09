@@ -64,9 +64,16 @@ public class LoginController {
                 new Thread(() -> {
                     try {
                         Thread.sleep(500);
-                        javafx.application.Platform.runLater(() ->
-                            loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/MainDashboard.fxml")
-                        );
+                        javafx.application.Platform.runLater(() -> {
+                            // Route to appropriate dashboard based on user role
+                            if (user.isAdmin()) {
+                                loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/AdminMainDashboard.fxml");
+                                ErrorHandler.logInfo("Admin user redirected to Admin Dashboard");
+                            } else {
+                                loadScene("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/MainDashboard.fxml");
+                                ErrorHandler.logInfo("Regular user redirected to User Dashboard");
+                            }
+                        });
                     } catch (InterruptedException e) {
                         ErrorHandler.logError(e);
                     }

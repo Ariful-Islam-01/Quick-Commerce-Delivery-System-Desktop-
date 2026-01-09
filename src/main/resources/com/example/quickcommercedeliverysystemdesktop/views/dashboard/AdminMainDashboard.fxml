@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.AdminMainDashboardController"
+            prefWidth="1000" prefHeight="600"
+            stylesheets="@../../styles/dashboard.css">
+
+    <!-- Admin Sidebar -->
+    <left>
+        <VBox spacing="15" styleClass="sidebar">
+            <Label text="Quick Commerce" styleClass="logo"/>
+            <Label text="Admin Panel" style="-fx-text-fill: #ffc107; -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
+
+            <!-- Admin Dashboard Section -->
+            <Button fx:id="adminDashboardBtn" text="📊 Admin Dashboard" onAction="#loadAdminDashboard" styleClass="nav-btn"/>
+
+            <!-- Manage Users Section -->
+            <Button fx:id="manageUsersBtn" text="👥 Manage Users" onAction="#loadManageUsers" styleClass="nav-btn"/>
+
+            <!-- Manage Orders Section -->
+            <Button fx:id="manageOrdersBtn" text="📋 Manage Orders" onAction="#loadManageOrders" styleClass="nav-btn"/>
+
+            <!-- Manage Earnings Section -->
+            <Button fx:id="manageEarningsBtn" text="💵 Manage Earnings" onAction="#loadManageEarnings" styleClass="nav-btn"/>
+
+            <!-- Profile Section -->
+            <Button fx:id="profileBtn" text="👤 Profile" onAction="#loadProfile" styleClass="nav-btn"/>
+            <Button fx:id="notificationsBtn" text="🔔 Notifications" onAction="#loadNotifications" styleClass="nav-btn"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="logoutButton"
+                    text="🚪 Logout"
+                    onAction="#handleLogout"
+                    styleClass="logout-btn"/>
+        </VBox>
+    </left>
+
+    <!-- Content Area -->
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+
+</BorderPane>
+

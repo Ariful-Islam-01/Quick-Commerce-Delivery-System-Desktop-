@@ -15,84 +15,67 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 /**
- * Main Dashboard Controller for Regular Users
- * Handles navigation for user-specific features
+ * Admin Main Dashboard Controller
+ * Handles navigation for admin-specific features
  */
-public class MainDashboardController {
+public class AdminMainDashboardController {
 
     @FXML private StackPane contentArea;
+    @FXML private Button adminDashboardBtn;
+    @FXML private Button manageUsersBtn;
+    @FXML private Button manageOrdersBtn;
+    @FXML private Button manageEarningsBtn;
+    @FXML private Button profileBtn;
+    @FXML private Button notificationsBtn;
     @FXML private Button logoutButton;
 
-    // Navigation Buttons
-    @FXML private Button homeBtn;
-    @FXML private Button createOrderBtn;
-    @FXML private Button myOrdersBtn;
-    @FXML private Button deliveriesBtn;
-    @FXML private Button earningsBtn;
-    @FXML private Button notificationsBtn;
-    @FXML private Button profileBtn;
-
-    // Track currently active button
-    private Button activeButton;
+    private Button activeButton = null;
 
     @FXML
     public void initialize() {
         try {
-            loadPage("Home.fxml");
-            setActiveButton(homeBtn); // Set Home as active by default
-            ErrorHandler.logInfo("User Main Dashboard initialized");
+            // Load Admin Dashboard by default
+            loadAdminDashboard();
+            ErrorHandler.logInfo("Admin Main Dashboard initialized");
         } catch (Exception e) {
-            ErrorHandler.handleException(e, "Failed to initialize User Main Dashboard");
+            ErrorHandler.handleException(e, "Failed to initialize Admin Main Dashboard");
         }
     }
 
     @FXML
-    public void loadHome() {
-        loadPage("Home.fxml");
-        setActiveButton(homeBtn);
+    public void loadAdminDashboard() {
+        loadPage("AdminDashboard.fxml");
+        setActiveButton(adminDashboardBtn);
     }
 
     @FXML
-    public void loadCreateOrder() {
-        loadPage("CreateOrder.fxml");
-        setActiveButton(createOrderBtn);
+    public void loadManageUsers() {
+        loadPage("ManageUsers.fxml");
+        setActiveButton(manageUsersBtn);
     }
 
     @FXML
-    public void loadMyOrders() {
-        loadPage("MyOrders.fxml");
-        setActiveButton(myOrdersBtn);
+    public void loadManageOrders() {
+        loadPage("ManageOrders.fxml");
+        setActiveButton(manageOrdersBtn);
     }
 
     @FXML
-    public void loadOrders() {
-        // Redirect to MyOrders for customer view
-        loadPage("MyOrders.fxml");
-        setActiveButton(myOrdersBtn);
-    }
-
-    @FXML
-    public void loadDeliveries() {
-        loadPage("Deliveries.fxml");
-        setActiveButton(deliveriesBtn);
-    }
-
-    @FXML
-    public void loadEarnings() {
-        loadPage("Earnings.fxml");
-        setActiveButton(earningsBtn);
-    }
-
-    @FXML
-    public void loadNotifications() {
-        loadPage("Notifications.fxml");
-        setActiveButton(notificationsBtn);
+    public void loadManageEarnings() {
+        loadPage("ManageEarnings.fxml");
+        setActiveButton(manageEarningsBtn);
     }
 
     @FXML
     public void loadProfile() {
         loadPage("Profile.fxml");
         setActiveButton(profileBtn);
+    }
+
+    @FXML
+    public void loadNotifications() {
+        loadPage("Notifications.fxml");
+        setActiveButton(notificationsBtn);
     }
 
     @FXML
@@ -107,7 +90,7 @@ public class MainDashboardController {
             try {
                 // Clear user session
                 UserSession.getInstance().clearSession();
-                ErrorHandler.logInfo("User logged out");
+                ErrorHandler.logInfo("Admin logged out");
 
                 // Navigate to login
                 Stage stage = (Stage) logoutButton.getScene().getWindow();
@@ -129,37 +112,33 @@ public class MainDashboardController {
     /**
      * Load a page into the content area
      */
-    private void loadPage(String page) {
+    private void loadPage(String fxmlFile) {
         try {
-            Parent root = FXMLLoader.load(
-                getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/" + page)
+            Parent page = FXMLLoader.load(
+                getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/dashboard/" + fxmlFile)
             );
-            contentArea.getChildren().setAll(root);
-            ErrorHandler.logInfo("Loaded page: " + page);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+            ErrorHandler.logInfo("Loaded admin page: " + fxmlFile);
         } catch (Exception e) {
-            ErrorHandler.handleException(e, "Failed to load page: " + page);
+            ErrorHandler.handleException(e, "Failed to load page: " + fxmlFile);
         }
     }
 
     /**
-     * Sets the active state for the navigation button
-    /**
-     * Sets the active state for the navigation button
-     * Removes active class from previous button and adds it to the new one
-     * @param button The button to set as active
+     * Set active navigation button styling
      */
     private void setActiveButton(Button button) {
-        // Remove active class from previously active button
+        // Remove active class from previous button
         if (activeButton != null) {
             activeButton.getStyleClass().remove("nav-btn-active");
         }
 
-        // Set new active button
+        // Add active class to current button
         if (button != null) {
+            button.getStyleClass().add("nav-btn-active");
             activeButton = button;
-            if (!activeButton.getStyleClass().contains("nav-btn-active")) {
-                activeButton.getStyleClass().add("nav-btn-active");
-            }
         }
     }
 }
+
