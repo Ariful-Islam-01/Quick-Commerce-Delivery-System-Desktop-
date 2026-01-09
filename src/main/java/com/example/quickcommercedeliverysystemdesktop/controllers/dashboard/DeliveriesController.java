@@ -5,38 +5,31 @@ import com.example.quickcommercedeliverysystemdesktop.database.DeliveryDAO.Deliv
 import com.example.quickcommercedeliverysystemdesktop.models.Order;
 import com.example.quickcommercedeliverysystemdesktop.models.Order.OrderStatus;
 import com.example.quickcommercedeliverysystemdesktop.utils.UserSession;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+
+import java.util.List;
 
 public class DeliveriesController {
 
     @FXML private TabPane deliveryTabPane;
 
-    // Available Orders Tab
-    @FXML private TableView<Order> availableOrdersTable;
-    @FXML private TableColumn<Order, String> availOrderIdColumn;
-    @FXML private TableColumn<Order, String> availProductColumn;
-    @FXML private TableColumn<Order, String> availLocationColumn;
-    @FXML private TableColumn<Order, String> availFeeColumn;
-    @FXML private TableColumn<Order, String> availTimeColumn;
-    @FXML private TableColumn<Order, Void> availActionsColumn;
+    // Available Orders Tab - Card View
+    @FXML private ScrollPane availableCardsScrollPane;
+    @FXML private GridPane availableCardsContainer;
+    @FXML private VBox availableEmptyState;
     @FXML private Label availableCountLabel;
 
-    // My Deliveries Tab
+    // My Deliveries Tab - Card View
     @FXML private ComboBox<String> deliveryStatusFilter;
-    @FXML private TableView<Order> myDeliveriesTable;
-    @FXML private TableColumn<Order, String> myOrderIdColumn;
-    @FXML private TableColumn<Order, String> myProductColumn;
-    @FXML private TableColumn<Order, String> myLocationColumn;
-    @FXML private TableColumn<Order, String> myFeeColumn;
-    @FXML private TableColumn<Order, String> myStatusColumn;
-    @FXML private TableColumn<Order, Void> myActionsColumn;
+    @FXML private ScrollPane myDeliveriesCardsScrollPane;
+    @FXML private GridPane myDeliveriesCardsContainer;
+    @FXML private VBox myDeliveriesEmptyState;
     @FXML private Label myDeliveriesCountLabel;
 
     // Statistics
@@ -58,151 +51,317 @@ public class DeliveriesController {
         myDeliveries = FXCollections.observableArrayList();
         filteredDeliveries = new FilteredList<>(myDeliveries, p -> true);
 
-        setupAvailableOrdersTable();
-        setupMyDeliveriesTable();
         setupFilters();
         loadData();
     }
 
-    private void setupAvailableOrdersTable() {
-        availOrderIdColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty("#" + cellData.getValue().getOrderId()));
+    private void renderAvailableOrderCards() {
+        availableCardsContainer.getChildren().clear();
+        availableCardsContainer.getRowConstraints().clear();
+        availableCardsContainer.getColumnConstraints().clear();
 
-        availProductColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getProductName()));
+        if (availableOrders.isEmpty()) {
+            availableEmptyState.setVisible(true);
+            availableEmptyState.setManaged(true);
+            availableCardsScrollPane.setVisible(false);
+            availableCardsScrollPane.setManaged(false);
+            return;
+        }
 
-        availLocationColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDeliveryLocation()));
+        availableEmptyState.setVisible(false);
+        availableEmptyState.setManaged(false);
+        availableCardsScrollPane.setVisible(true);
+        availableCardsScrollPane.setManaged(true);
 
-        availFeeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedDeliveryFee()));
+        // Setup column constraints for 2 cards per row
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        availableCardsContainer.getColumnConstraints().addAll(col1, col2);
 
-        availTimeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDeliveryTimeRange()));
+        int row = 0;
+        int col = 0;
 
-        // Actions column with Accept button
-        availActionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button acceptButton = new Button("Accept");
+        for (Order order : availableOrders) {
+            VBox card = createAvailableOrderCard(order);
+            availableCardsContainer.add(card, col, row);
 
-            {
-                acceptButton.getStyleClass().add("action-button");
-                acceptButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    acceptOrder(order);
-                });
+            col++;
+            if (col > 1) {
+                col = 0;
+                row++;
             }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox buttons = new HBox(5);
-                    buttons.setAlignment(Pos.CENTER);
-                    buttons.getChildren().add(acceptButton);
-                    setGraphic(buttons);
-                }
-            }
-        });
-
-        availableOrdersTable.setItems(availableOrders);
+        }
     }
 
-    private void setupMyDeliveriesTable() {
-        myOrderIdColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty("#" + cellData.getValue().getOrderId()));
+    private VBox createAvailableOrderCard(Order order) {
+        VBox card = new VBox(12);
+        card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2); " +
+                     "-fx-border-color: #e0e0e0; -fx-border-radius: 12; -fx-border-width: 1;");
+        card.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
-        myProductColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getProductName()));
+        // Header Row: Order ID and Fee
+        HBox headerRow = new HBox(10);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
 
-        myLocationColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDeliveryLocation()));
+        Label orderIdLabel = new Label("Order #" + order.getOrderId());
+        orderIdLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
-        myFeeColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedDeliveryFee()));
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        myStatusColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getStatus().getDisplayName()));
+        Label feeLabel = new Label(order.getFormattedDeliveryFee());
+        feeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #27ae60;");
 
-        // Custom cell factory for status with colors
-        myStatusColumn.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    Order order = getTableView().getItems().get(getIndex());
-                    setStyle(getStatusStyle(order.getStatus()));
-                }
+        headerRow.getChildren().addAll(orderIdLabel, spacer, feeLabel);
+
+        // Product Section
+        VBox productSection = new VBox(5);
+        Label productTitle = new Label("Product:");
+        productTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;");
+        Label productLabel = new Label(order.getProductName());
+        productLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;");
+        productLabel.setWrapText(true);
+        productSection.getChildren().addAll(productTitle, productLabel);
+
+
+        // Separator
+        Separator separator1 = new Separator();
+        separator1.setStyle("-fx-background-color: #ecf0f1;");
+
+        // Location Section
+        VBox locationSection = new VBox(5);
+        Label locationTitle = new Label("Delivery Location:");
+        locationTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;");
+        HBox locationBox = new HBox(8);
+        locationBox.setAlignment(Pos.CENTER_LEFT);
+        Label locationIcon = new Label("📍");
+        locationIcon.setStyle("-fx-font-size: 14px;");
+        Label locationLabel = new Label(order.getDeliveryLocation());
+        locationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
+        locationLabel.setWrapText(true);
+        locationBox.getChildren().addAll(locationIcon, locationLabel);
+        locationSection.getChildren().addAll(locationTitle, locationBox);
+
+        // Time Range Section
+        VBox timeSection = new VBox(5);
+        Label timeTitle = new Label("Delivery Time:");
+        timeTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;");
+        HBox timeBox = new HBox(8);
+        timeBox.setAlignment(Pos.CENTER_LEFT);
+        Label timeIcon = new Label("🕐");
+        timeIcon.setStyle("-fx-font-size: 14px;");
+        Label timeLabel = new Label(order.getDeliveryTimeRange());
+        timeLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
+        timeBox.getChildren().addAll(timeIcon, timeLabel);
+        timeSection.getChildren().addAll(timeTitle, timeBox);
+
+        // Separator
+        Separator separator2 = new Separator();
+        separator2.setStyle("-fx-background-color: #ecf0f1;");
+
+        // Actions
+        HBox actionsBox = new HBox(10);
+        actionsBox.setAlignment(Pos.CENTER);
+
+        Button acceptButton = new Button("Accept Order");
+        acceptButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; " +
+                             "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; " +
+                             "-fx-cursor: hand; -fx-font-size: 13px;");
+        acceptButton.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(acceptButton, Priority.ALWAYS);
+
+        acceptButton.setOnAction(e -> acceptOrder(order));
+
+        // Hover effect
+        acceptButton.setOnMouseEntered(e ->
+            acceptButton.setStyle("-fx-background-color: #229954; -fx-text-fill: white; " +
+                                 "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; " +
+                                 "-fx-cursor: hand; -fx-font-size: 13px;"));
+        acceptButton.setOnMouseExited(e ->
+            acceptButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; " +
+                                 "-fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; " +
+                                 "-fx-cursor: hand; -fx-font-size: 13px;"));
+
+        actionsBox.getChildren().add(acceptButton);
+
+        card.getChildren().addAll(headerRow, productSection, separator1, locationSection, timeSection, separator2, actionsBox);
+
+        return card;
+    }
+
+    private void renderMyDeliveriesCards() {
+        myDeliveriesCardsContainer.getChildren().clear();
+        myDeliveriesCardsContainer.getRowConstraints().clear();
+        myDeliveriesCardsContainer.getColumnConstraints().clear();
+
+        if (filteredDeliveries.isEmpty()) {
+            myDeliveriesEmptyState.setVisible(true);
+            myDeliveriesEmptyState.setManaged(true);
+            myDeliveriesCardsScrollPane.setVisible(false);
+            myDeliveriesCardsScrollPane.setManaged(false);
+            return;
+        }
+
+        myDeliveriesEmptyState.setVisible(false);
+        myDeliveriesEmptyState.setManaged(false);
+        myDeliveriesCardsScrollPane.setVisible(true);
+        myDeliveriesCardsScrollPane.setManaged(true);
+
+        // Setup column constraints for 2 cards per row
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        myDeliveriesCardsContainer.getColumnConstraints().addAll(col1, col2);
+
+        int row = 0;
+        int col = 0;
+
+        for (Order order : filteredDeliveries) {
+            VBox card = createMyDeliveryCard(order);
+            myDeliveriesCardsContainer.add(card, col, row);
+
+            col++;
+            if (col > 1) {
+                col = 0;
+                row++;
             }
-        });
+        }
+    }
 
-        // Actions column with status update buttons
-        myActionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button pickupButton = new Button("Pick Up");
-            private final Button onWayButton = new Button("On The Way");
-            private final Button deliverButton = new Button("Deliver");
-            private final Button viewButton = new Button("View");
+    private VBox createMyDeliveryCard(Order order) {
+        VBox card = new VBox(12);
+        card.setStyle("-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2); " +
+                     "-fx-border-color: #e0e0e0; -fx-border-radius: 12; -fx-border-width: 1;");
+        card.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
-            {
-                pickupButton.getStyleClass().add("action-button");
-                onWayButton.getStyleClass().add("action-button");
-                deliverButton.getStyleClass().add("action-button");
-                viewButton.getStyleClass().add("action-button");
+        // Header Row: Order ID, Status, and Fee
+        HBox headerRow = new HBox(10);
+        headerRow.setAlignment(Pos.CENTER_LEFT);
 
-                pickupButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    markAsPickedUp(order);
-                });
+        Label orderIdLabel = new Label("Order #" + order.getOrderId());
+        orderIdLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
-                onWayButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    markAsOnTheWay(order);
-                });
+        // Status Badge
+        Label statusBadge = new Label(order.getStatus().getDisplayName());
+        statusBadge.setStyle(getStatusBadgeStyle(order.getStatus()));
 
-                deliverButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    completeDelivery(order);
-                });
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                viewButton.setOnAction(event -> {
-                    Order order = getTableView().getItems().get(getIndex());
-                    viewOrderDetails(order);
-                });
-            }
+        Label feeLabel = new Label(order.getFormattedDeliveryFee());
+        feeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #27ae60;");
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    Order order = getTableView().getItems().get(getIndex());
-                    HBox buttons = new HBox(5);
-                    buttons.setAlignment(Pos.CENTER);
+        headerRow.getChildren().addAll(orderIdLabel, statusBadge, spacer, feeLabel);
 
-                    OrderStatus status = order.getStatus();
+        // Product Section
+        VBox productSection = new VBox(5);
+        Label productTitle = new Label("Product:");
+        productTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;");
+        Label productLabel = new Label(order.getProductName());
+        productLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #34495e;");
+        productLabel.setWrapText(true);
+        productSection.getChildren().addAll(productTitle, productLabel);
 
-                    if (status == OrderStatus.ACCEPTED) {
-                        buttons.getChildren().addAll(pickupButton, viewButton);
-                    } else if (status == OrderStatus.PICKED_UP) {
-                        buttons.getChildren().addAll(onWayButton, deliverButton, viewButton);
-                    } else if (status == OrderStatus.ON_THE_WAY) {
-                        buttons.getChildren().addAll(deliverButton, viewButton);
-                    } else {
-                        buttons.getChildren().add(viewButton);
-                    }
 
-                    setGraphic(buttons);
-                }
-            }
-        });
+        // Separator
+        Separator separator1 = new Separator();
+        separator1.setStyle("-fx-background-color: #ecf0f1;");
 
-        myDeliveriesTable.setItems(filteredDeliveries);
+        // Location Section
+        VBox locationSection = new VBox(5);
+        Label locationTitle = new Label("Delivery Location:");
+        locationTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;");
+        HBox locationBox = new HBox(8);
+        locationBox.setAlignment(Pos.CENTER_LEFT);
+        Label locationIcon = new Label("📍");
+        locationIcon.setStyle("-fx-font-size: 14px;");
+        Label locationLabel = new Label(order.getDeliveryLocation());
+        locationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #555;");
+        locationLabel.setWrapText(true);
+        locationBox.getChildren().addAll(locationIcon, locationLabel);
+        locationSection.getChildren().addAll(locationTitle, locationBox);
+
+        // Separator
+        Separator separator2 = new Separator();
+        separator2.setStyle("-fx-background-color: #ecf0f1;");
+
+        // Actions based on status
+        HBox actionsBox = new HBox(10);
+        actionsBox.setAlignment(Pos.CENTER);
+
+        OrderStatus status = order.getStatus();
+
+        if (status == OrderStatus.ACCEPTED) {
+            Button pickupButton = createActionButton("Pick Up", "#3498db");
+            pickupButton.setOnAction(e -> markAsPickedUp(order));
+
+            Button viewButton = createActionButton("View Details", "#95a5a6");
+            viewButton.setOnAction(e -> viewOrderDetails(order));
+
+            actionsBox.getChildren().addAll(pickupButton, viewButton);
+
+        } else if (status == OrderStatus.PICKED_UP) {
+            Button onWayButton = createActionButton("On The Way", "#f39c12");
+            onWayButton.setOnAction(e -> markAsOnTheWay(order));
+
+            Button deliverButton = createActionButton("Deliver", "#27ae60");
+            deliverButton.setOnAction(e -> completeDelivery(order));
+
+            Button viewButton = createActionButton("View", "#95a5a6");
+            viewButton.setOnAction(e -> viewOrderDetails(order));
+
+            actionsBox.getChildren().addAll(onWayButton, deliverButton, viewButton);
+
+        } else if (status == OrderStatus.ON_THE_WAY) {
+            Button deliverButton = createActionButton("Deliver", "#27ae60");
+            deliverButton.setOnAction(e -> completeDelivery(order));
+
+            Button viewButton = createActionButton("View Details", "#95a5a6");
+            viewButton.setOnAction(e -> viewOrderDetails(order));
+
+            actionsBox.getChildren().addAll(deliverButton, viewButton);
+
+        } else {
+            Button viewButton = createActionButton("View Details", "#3498db");
+            viewButton.setOnAction(e -> viewOrderDetails(order));
+            actionsBox.getChildren().add(viewButton);
+        }
+
+        card.getChildren().addAll(headerRow, productSection, separator1, locationSection, separator2, actionsBox);
+
+        return card;
+    }
+
+    private Button createActionButton(String text, String color) {
+        Button button = new Button(text);
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; " +
+                       "-fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 6; " +
+                       "-fx-cursor: hand; -fx-font-size: 12px;");
+        button.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(button, Priority.ALWAYS);
+
+        // Hover effect
+        button.setOnMouseEntered(e -> button.setOpacity(0.8));
+        button.setOnMouseExited(e -> button.setOpacity(1.0));
+
+        return button;
+    }
+
+    private String getStatusBadgeStyle(OrderStatus status) {
+        String baseStyle = "-fx-padding: 5 12; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold; ";
+
+        return switch (status) {
+            case DELIVERED -> baseStyle + "-fx-background-color: #d4edda; -fx-text-fill: #155724;";
+            case ON_THE_WAY -> baseStyle + "-fx-background-color: #fff3cd; -fx-text-fill: #856404;";
+            case PICKED_UP -> baseStyle + "-fx-background-color: #d1ecf1; -fx-text-fill: #0c5460;";
+            case ACCEPTED -> baseStyle + "-fx-background-color: #cce5ff; -fx-text-fill: #004085;";
+            default -> baseStyle + "-fx-background-color: #e2e3e5; -fx-text-fill: #383d41;";
+        };
     }
 
     private void setupFilters() {
@@ -230,6 +389,7 @@ public class DeliveriesController {
         });
 
         updateCounts();
+        renderMyDeliveriesCards();
     }
 
     private void loadData() {
@@ -239,13 +399,23 @@ public class DeliveriesController {
     }
 
     private void loadAvailableOrders() {
-        availableOrders.setAll(DeliveryDAO.getAvailableOrders());
+        // Get all available orders
+        List<Order> allAvailableOrders = DeliveryDAO.getAvailableOrders();
+
+        // Filter out orders created by the current user (delivery partner shouldn't see their own orders)
+        List<Order> filteredOrders = allAvailableOrders.stream()
+                .filter(order -> order.getCreatedByUserId() != currentUserId)
+                .collect(java.util.stream.Collectors.toList());
+
+        availableOrders.setAll(filteredOrders);
         availableCountLabel.setText("Available: " + availableOrders.size());
+        renderAvailableOrderCards();
     }
 
     private void loadMyDeliveries() {
         myDeliveries.setAll(DeliveryDAO.getDeliveriesByPartner(currentUserId));
         updateCounts();
+        renderMyDeliveriesCards();
     }
 
     private void loadStatistics() {
@@ -379,18 +549,6 @@ public class DeliveriesController {
         showAlert("Data refreshed!", Alert.AlertType.INFORMATION);
     }
 
-    private String getStatusStyle(OrderStatus status) {
-        String baseStyle = "-fx-padding: 5px 10px; -fx-border-radius: 12px; " +
-                "-fx-background-radius: 12px; -fx-font-weight: bold; ";
-
-        return switch (status) {
-            case DELIVERED -> baseStyle + "-fx-background-color: #d4edda; -fx-text-fill: #155724;";
-            case ON_THE_WAY -> baseStyle + "-fx-background-color: #fff3cd; -fx-text-fill: #856404;";
-            case PICKED_UP -> baseStyle + "-fx-background-color: #d1ecf1; -fx-text-fill: #0c5460;";
-            case ACCEPTED -> baseStyle + "-fx-background-color: #cce5ff; -fx-text-fill: #004085;";
-            default -> baseStyle + "-fx-background-color: #e2e3e5; -fx-text-fill: #383d41;";
-        };
-    }
 
     private void showAlert(String message, Alert.AlertType type) {
         Alert alert = new Alert(type);

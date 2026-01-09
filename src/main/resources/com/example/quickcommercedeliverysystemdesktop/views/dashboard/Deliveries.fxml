@@ -59,10 +59,17 @@
     </GridPane>
 
     <!-- Tab Pane for Available Orders and My Deliveries -->
-    <TabPane fx:id="deliveryTabPane" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="deliveryTabPane" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE"
+             styleClass="custom-tab-pane">
 
         <!-- Available Orders Tab -->
-        <Tab text="Available Orders">
+        <Tab styleClass="custom-tab">
+            <graphic>
+                <HBox spacing="8" alignment="CENTER">
+                    <Label text="📦" style="-fx-font-size: 16px;"/>
+                    <Label text="Available Orders" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+            </graphic>
             <VBox spacing="15" style="-fx-padding: 15;">
 
                 <!-- Available Orders Header -->
@@ -72,25 +79,35 @@
                     <Label text="Orders waiting to be accepted" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
                 </HBox>
 
-                <!-- Available Orders Table -->
-                <TableView fx:id="availableOrdersTable" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="availOrderIdColumn" text="Order ID" prefWidth="80"/>
-                        <TableColumn fx:id="availProductColumn" text="Product" prefWidth="150"/>
-                        <TableColumn fx:id="availLocationColumn" text="Delivery Location" prefWidth="200"/>
-                        <TableColumn fx:id="availFeeColumn" text="Fee" prefWidth="100"/>
-                        <TableColumn fx:id="availTimeColumn" text="Time Range" prefWidth="150"/>
-                        <TableColumn fx:id="availActionsColumn" text="Actions" prefWidth="120"/>
-                    </columns>
-                    <placeholder>
-                        <Label text="No available orders at the moment"/>
-                    </placeholder>
-                </TableView>
+                <!-- Available Orders Cards -->
+                <ScrollPane fx:id="availableCardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-background: transparent;">
+                    <GridPane fx:id="availableCardsContainer" hgap="20" vgap="20">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                    </GridPane>
+                </ScrollPane>
+
+                <!-- Empty State for Available Orders -->
+                <VBox fx:id="availableEmptyState" alignment="CENTER" spacing="15"
+                      VBox.vgrow="ALWAYS" managed="false" visible="false">
+                    <Label text="📦" style="-fx-font-size: 64px;"/>
+                    <Label text="No available orders" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="Check back later for new delivery opportunities!"
+                           style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                </VBox>
             </VBox>
         </Tab>
 
         <!-- My Deliveries Tab -->
-        <Tab text="My Deliveries">
+        <Tab styleClass="custom-tab">
+            <graphic>
+                <HBox spacing="8" alignment="CENTER">
+                    <Label text="🚚" style="-fx-font-size: 16px;"/>
+                    <Label text="My Deliveries" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+            </graphic>
             <VBox spacing="15" style="-fx-padding: 15;">
 
                 <!-- My Deliveries Header with Filter -->
@@ -101,20 +118,24 @@
                     <ComboBox fx:id="deliveryStatusFilter" prefWidth="150"/>
                 </HBox>
 
-                <!-- My Deliveries Table -->
-                <TableView fx:id="myDeliveriesTable" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="myOrderIdColumn" text="Order ID" prefWidth="80"/>
-                        <TableColumn fx:id="myProductColumn" text="Product" prefWidth="150"/>
-                        <TableColumn fx:id="myLocationColumn" text="Location" prefWidth="180"/>
-                        <TableColumn fx:id="myFeeColumn" text="Fee" prefWidth="100"/>
-                        <TableColumn fx:id="myStatusColumn" text="Status" prefWidth="120"/>
-                        <TableColumn fx:id="myActionsColumn" text="Actions" prefWidth="250"/>
-                    </columns>
-                    <placeholder>
-                        <Label text="You haven't accepted any deliveries yet"/>
-                    </placeholder>
-                </TableView>
+                <!-- My Deliveries Cards -->
+                <ScrollPane fx:id="myDeliveriesCardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-background: transparent;">
+                    <GridPane fx:id="myDeliveriesCardsContainer" hgap="20" vgap="20">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                    </GridPane>
+                </ScrollPane>
+
+                <!-- Empty State for My Deliveries -->
+                <VBox fx:id="myDeliveriesEmptyState" alignment="CENTER" spacing="15"
+                      VBox.vgrow="ALWAYS" managed="false" visible="false">
+                    <Label text="🚚" style="-fx-font-size: 64px;"/>
+                    <Label text="No deliveries yet" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    <Label text="Accept orders from the Available Orders tab to get started!"
+                           style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                </VBox>
             </VBox>
         </Tab>
     </TabPane>
