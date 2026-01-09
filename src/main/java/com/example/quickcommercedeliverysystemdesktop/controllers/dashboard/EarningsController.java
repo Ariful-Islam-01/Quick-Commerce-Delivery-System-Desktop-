@@ -109,9 +109,10 @@ public class EarningsController {
     private void setupChart() {
         if (earningsChart != null) {
             xAxis.setLabel("Date");
-            yAxis.setLabel("Earnings ($)");
-            earningsChart.setTitle("Daily Earnings (Last 7 Days)");
+            yAxis.setLabel("Earnings (৳)");
+            earningsChart.setTitle("");
             earningsChart.setLegendVisible(false);
+            earningsChart.setStyle("-fx-bar-fill: #3498db;");
         }
     }
 
@@ -124,24 +125,24 @@ public class EarningsController {
     private void loadStatistics() {
         // Get overall stats
         DeliveryStats stats = DeliveryDAO.getDeliveryStats(currentUserId);
-        totalEarningsLabel.setText(String.format("$%.2f", stats.getTotalEarnings()));
+        totalEarningsLabel.setText(String.format("৳%.2f", stats.getTotalEarnings()));
         completedDeliveriesLabel.setText(String.valueOf(stats.getCompletedDeliveries()));
 
         // Calculate average
         double average = stats.getCompletedDeliveries() > 0
                 ? stats.getTotalEarnings() / stats.getCompletedDeliveries()
                 : 0.0;
-        averageEarningLabel.setText(String.format("$%.2f", average));
+        averageEarningLabel.setText(String.format("৳%.2f", average));
 
         // Get period-specific earnings
         double todayEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "TODAY");
-        todayEarningsLabel.setText(String.format("$%.2f", todayEarnings));
+        todayEarningsLabel.setText(String.format("৳%.2f", todayEarnings));
 
         double weekEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "WEEK");
-        weekEarningsLabel.setText(String.format("$%.2f", weekEarnings));
+        weekEarningsLabel.setText(String.format("৳%.2f", weekEarnings));
 
         double monthEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "MONTH");
-        monthEarningsLabel.setText(String.format("$%.2f", monthEarnings));
+        monthEarningsLabel.setText(String.format("৳%.2f", monthEarnings));
     }
 
     private void loadEarningsHistory() {

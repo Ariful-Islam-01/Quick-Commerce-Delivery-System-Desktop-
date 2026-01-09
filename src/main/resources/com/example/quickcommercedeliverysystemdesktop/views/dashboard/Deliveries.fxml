@@ -79,6 +79,18 @@
                     <Label text="Orders waiting to be accepted" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
                 </HBox>
 
+                <!-- Search and Sort Controls -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+                    <Label text="🔍" style="-fx-font-size: 16px;"/>
+                    <TextField fx:id="searchTextField" promptText="Search by item name..." prefWidth="250"
+                               style="-fx-background-radius: 6; -fx-padding: 8;"/>
+                    <Label text="Sort by:" style="-fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="sortComboBox" prefWidth="180" promptText="Select sort order..."
+                              style="-fx-background-radius: 6;"/>
+                    <Button fx:id="clearFiltersButton" text="Clear" onAction="#handleClearFilters"
+                            style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                </HBox>
+
                 <!-- Available Orders Cards -->
                 <ScrollPane fx:id="availableCardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
                             style="-fx-background-color: transparent; -fx-background: transparent;">

@@ -9,24 +9,24 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.EarningsController"
             fitToWidth="true"
-            style="-fx-background-color: transparent;"
+            style="-fx-background-color: #f5f7fa; -fx-background: #f5f7fa;"
             vbarPolicy="ALWAYS"
             hbarPolicy="NEVER">
 
-<VBox spacing="20" style="-fx-padding: 20;">
+<VBox spacing="25" style="-fx-padding: 25; -fx-background-color: #f5f7fa;">
 
     <!-- Header -->
-    <HBox alignment="CENTER_LEFT" spacing="15">
-        <Label text="💰 Earnings Dashboard" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+        <Label text="💰 Earnings Dashboard" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Refresh" onAction="#handleRefresh"
-                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 5;"/>
-        <Button text="Export Report" onAction="#handleExportReport"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+        <Button text="🔄 Refresh" onAction="#handleRefresh"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+        <Button text="📊 Export Report" onAction="#handleExportReport"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 13px;"/>
     </HBox>
 
     <!-- Statistics Cards Row 1 -->
-    <GridPane hgap="15" vgap="15">
+    <GridPane hgap="20" vgap="20">
         <columnConstraints>
             <ColumnConstraints percentWidth="33.33"/>
             <ColumnConstraints percentWidth="33.33"/>
@@ -34,38 +34,38 @@
         </columnConstraints>
 
         <!-- Total Earnings Card -->
-        <VBox GridPane.columnIndex="0" style="-fx-background-color: #8e44ad; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="Total Earnings" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Label fx:id="totalEarningsLabel" text="0.00"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+        <VBox GridPane.columnIndex="0" style="-fx-background-color: linear-gradient(to bottom right, #8e44ad, #9b59b6); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(142, 68, 173, 0.3), 15, 0, 0, 5);">
+            <Label text="💵 Total Earnings" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+            <Label fx:id="totalEarningsLabel" text="৳0.00"
+                   style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="All time earnings" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="All time earnings" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
 
         <!-- Today Earnings Card -->
-        <VBox GridPane.columnIndex="1" style="-fx-background-color: #27ae60; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="Today's Earnings" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Label fx:id="todayEarningsLabel" text="0.00"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+        <VBox GridPane.columnIndex="1" style="-fx-background-color: linear-gradient(to bottom right, #27ae60, #2ecc71); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(39, 174, 96, 0.3), 15, 0, 0, 5);">
+            <Label text="📅 Today's Earnings" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+            <Label fx:id="todayEarningsLabel" text="৳0.00"
+                   style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="Earned today" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="Earned today" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
 
         <!-- Completed Deliveries Card -->
-        <VBox GridPane.columnIndex="2" style="-fx-background-color: #3498db; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="Completed Deliveries" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <VBox GridPane.columnIndex="2" style="-fx-background-color: linear-gradient(to bottom right, #3498db, #5dade2); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.3), 15, 0, 0, 5);">
+            <Label text="✅ Completed Deliveries" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
             <Label fx:id="completedDeliveriesLabel" text="0"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+                   style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="Total completed" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="Total completed" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
     </GridPane>
 
     <!-- Statistics Cards Row 2 -->
-    <GridPane hgap="15" vgap="15">
+    <GridPane hgap="20" vgap="20">
         <columnConstraints>
             <ColumnConstraints percentWidth="33.33"/>
             <ColumnConstraints percentWidth="33.33"/>
@@ -73,89 +73,95 @@
         </columnConstraints>
 
         <!-- Week Earnings Card -->
-        <VBox GridPane.columnIndex="0" style="-fx-background-color: #e67e22; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="This Week" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Label fx:id="weekEarningsLabel" text="0.00"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+        <VBox GridPane.columnIndex="0" style="-fx-background-color: linear-gradient(to bottom right, #e67e22, #f39c12); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(230, 126, 34, 0.3), 15, 0, 0, 5);">
+            <Label text="📆 This Week" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+            <Label fx:id="weekEarningsLabel" text="৳0.00"
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="Last 7 days" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="Last 7 days" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
 
         <!-- Month Earnings Card -->
-        <VBox GridPane.columnIndex="1" style="-fx-background-color: #e74c3c; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="This Month" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Label fx:id="monthEarningsLabel" text="0.00"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+        <VBox GridPane.columnIndex="1" style="-fx-background-color: linear-gradient(to bottom right, #e74c3c, #ec7063); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.3), 15, 0, 0, 5);">
+            <Label text="📊 This Month" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+            <Label fx:id="monthEarningsLabel" text="৳0.00"
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="Last 30 days" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="Last 30 days" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
 
         <!-- Average Earning Card -->
-        <VBox GridPane.columnIndex="2" style="-fx-background-color: #16a085; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="Average per Delivery" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-            <Label fx:id="averageEarningLabel" text="0.00"
-                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;">
-                <padding><Insets top="10"/></padding>
+        <VBox GridPane.columnIndex="2" style="-fx-background-color: linear-gradient(to bottom right, #16a085, #1abc9c); -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(22, 160, 133, 0.3), 15, 0, 0, 5);">
+            <Label text="📈 Average per Delivery" style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.95); -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+            <Label fx:id="averageEarningLabel" text="৳0.00"
+                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;">
+                <padding><Insets top="12" bottom="5"/></padding>
             </Label>
-            <Label text="Avg. earning" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            <Label text="Avg. earning" style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.85);"/>
         </VBox>
     </GridPane>
 
     <!-- Earnings Chart -->
-    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
-                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-        <Label text="Daily Earnings Trend" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-        <BarChart fx:id="earningsChart" prefHeight="250">
+    <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 12;
+                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="📈 Daily Earnings Trend" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Last 7 Days" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+        </HBox>
+        <BarChart fx:id="earningsChart" prefHeight="280" animated="true">
             <xAxis>
-                <CategoryAxis fx:id="xAxis" side="BOTTOM"/>
+                <CategoryAxis fx:id="xAxis" side="BOTTOM" tickLabelFill="#34495e"/>
             </xAxis>
             <yAxis>
-                <NumberAxis fx:id="yAxis" side="LEFT"/>
+                <NumberAxis fx:id="yAxis" side="LEFT" tickLabelFill="#34495e"/>
             </yAxis>
         </BarChart>
     </VBox>
 
     <!-- Earnings History Section -->
     <VBox spacing="15" minHeight="300"
-          style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;
-                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+          style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 12;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);">
 
         <!-- History Header with Filter -->
         <HBox alignment="CENTER_LEFT" spacing="15">
-            <Label text="Earnings History" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label text="📋 Earnings History" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Label text="Period:"/>
-            <ComboBox fx:id="periodFilter" prefWidth="150"/>
+            <Label text="Period:" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+            <ComboBox fx:id="periodFilter" prefWidth="150"
+                      style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6;"/>
             <Label fx:id="recordsCountLabel" text="Showing 0 record(s)"
-                   style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                   style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
         </HBox>
 
         <!-- Earnings History Table -->
-        <TableView fx:id="earningsTable" minHeight="200" prefHeight="350">
+        <TableView fx:id="earningsTable" minHeight="200" prefHeight="380"
+                   style="-fx-background-color: white; -fx-border-color: #ecf0f1; -fx-border-radius: 8;">
             <columns>
-                <TableColumn fx:id="dateColumn" text="Date" prefWidth="100"/>
-                <TableColumn fx:id="timeColumn" text="Time" prefWidth="80"/>
-                <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="90"/>
-                <TableColumn fx:id="productColumn" text="Product" prefWidth="180"/>
-                <TableColumn fx:id="locationColumn" text="Location" prefWidth="200"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="100"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="100" style="-fx-alignment: CENTER;"/>
+                <TableColumn fx:id="timeColumn" text="Time" prefWidth="80" style="-fx-alignment: CENTER;"/>
+                <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="90" style="-fx-alignment: CENTER;"/>
+                <TableColumn fx:id="productColumn" text="Product" prefWidth="200"/>
+                <TableColumn fx:id="locationColumn" text="Location" prefWidth="220"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="100" style="-fx-alignment: CENTER-RIGHT;"/>
             </columns>
             <placeholder>
-                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 30;">
-                    <Label text="💵" style="-fx-font-size: 48px;"/>
-                    <Label text="No earnings yet" style="-fx-font-size: 16px; -fx-text-fill: #999;"/>
-                    <Label text="Complete deliveries to start earning!" style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 40;">
+                    <Label text="💵" style="-fx-font-size: 64px;"/>
+                    <Label text="No earnings yet" style="-fx-font-size: 18px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+                    <Label text="Complete deliveries to start earning!" style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
                 </VBox>
             </placeholder>
         </TableView>
     </VBox>
 
     <!-- Info Footer -->
-    <HBox style="-fx-padding: 10; -fx-background-color: #f0f8ff; -fx-background-radius: 5;">
+    <HBox style="-fx-padding: 15; -fx-background-color: #e8f4f8; -fx-background-radius: 10; -fx-border-color: #d6eaf8; -fx-border-radius: 10; -fx-border-width: 1;">
         <Label text="💡 Tip: Keep track of your earnings and aim for consistent delivery performance to maximize your income!"
-               style="-fx-font-size: 12px; -fx-text-fill: #2980b9;" wrapText="true"/>
+               style="-fx-font-size: 13px; -fx-text-fill: #2980b9; -fx-font-weight: bold;" wrapText="true"/>
     </HBox>
 
 </VBox>

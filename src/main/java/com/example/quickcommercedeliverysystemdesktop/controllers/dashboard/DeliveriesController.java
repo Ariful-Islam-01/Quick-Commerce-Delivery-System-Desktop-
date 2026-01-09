@@ -24,6 +24,9 @@ public class DeliveriesController {
     @FXML private GridPane availableCardsContainer;
     @FXML private VBox availableEmptyState;
     @FXML private Label availableCountLabel;
+    @FXML private TextField searchTextField;
+    @FXML private ComboBox<String> sortComboBox;
+    @FXML private Button clearFiltersButton;
 
     // My Deliveries Tab - Card View
     @FXML private ComboBox<String> deliveryStatusFilter;
@@ -39,6 +42,7 @@ public class DeliveriesController {
     @FXML private Label totalEarningsLabel;
 
     private ObservableList<Order> availableOrders;
+    private FilteredList<Order> filteredAvailableOrders;
     private ObservableList<Order> myDeliveries;
     private FilteredList<Order> filteredDeliveries;
     private int currentUserId;
@@ -48,19 +52,84 @@ public class DeliveriesController {
         currentUserId = UserSession.getInstance().getUserId();
 
         availableOrders = FXCollections.observableArrayList();
+        filteredAvailableOrders = new FilteredList<>(availableOrders, p -> true);
         myDeliveries = FXCollections.observableArrayList();
         filteredDeliveries = new FilteredList<>(myDeliveries, p -> true);
 
+        setupSearchAndSort();
         setupFilters();
         loadData();
     }
 
-    private void renderAvailableOrderCards() {
+    private void setupSearchAndSort() {
+        // Setup sort options
+        ObservableList<String> sortOptions = FXCollections.observableArrayList(
+                "Default",
+                "Nearest Location",
+                "Highest Fee",
+                "Earliest Time Window"
+        );
+        sortComboBox.setItems(sortOptions);
+        sortComboBox.setValue("Default");
+
+        // Search listener
+        searchTextField.textProperty().addListener((obs, oldVal, newVal) -> applyAvailableFiltersAndSort());
+
+        // Sort listener
+        sortComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyAvailableFiltersAndSort());
+    }
+
+    private void applyAvailableFiltersAndSort() {
+        String searchText = searchTextField.getText().toLowerCase().trim();
+
+        // Apply search filter
+        filteredAvailableOrders.setPredicate(order -> {
+            if (searchText.isEmpty()) {
+                return true;
+            }
+            return order.getProductName().toLowerCase().contains(searchText) ||
+                   (order.getDescription() != null && order.getDescription().toLowerCase().contains(searchText));
+        });
+
+        // Apply sorting
+        List<Order> sortedOrders = new java.util.ArrayList<>(filteredAvailableOrders);
+        String sortBy = sortComboBox.getValue();
+
+        if (sortBy != null && !sortBy.equals("Default")) {
+            switch (sortBy) {
+                case "Nearest Location":
+                    // Sort alphabetically by location (in a real app, you'd use geolocation)
+                    sortedOrders.sort((o1, o2) -> o1.getDeliveryLocation().compareToIgnoreCase(o2.getDeliveryLocation()));
+                    break;
+                case "Highest Fee":
+                    // Sort by fee descending
+                    sortedOrders.sort((o1, o2) -> Double.compare(o2.getDeliveryFee(), o1.getDeliveryFee()));
+                    break;
+                case "Earliest Time Window":
+                    // Sort by time range
+                    sortedOrders.sort((o1, o2) -> o1.getDeliveryTimeRange().compareToIgnoreCase(o2.getDeliveryTimeRange()));
+                    break;
+            }
+        }
+
+        // Update the display
+        renderAvailableOrderCards(sortedOrders);
+        availableCountLabel.setText("Available: " + sortedOrders.size());
+    }
+
+    @FXML
+    private void handleClearFilters() {
+        searchTextField.clear();
+        sortComboBox.setValue("Default");
+        applyAvailableFiltersAndSort();
+    }
+
+    private void renderAvailableOrderCards(List<Order> ordersToRender) {
         availableCardsContainer.getChildren().clear();
         availableCardsContainer.getRowConstraints().clear();
         availableCardsContainer.getColumnConstraints().clear();
 
-        if (availableOrders.isEmpty()) {
+        if (ordersToRender.isEmpty()) {
             availableEmptyState.setVisible(true);
             availableEmptyState.setManaged(true);
             availableCardsScrollPane.setVisible(false);
@@ -83,7 +152,7 @@ public class DeliveriesController {
         int row = 0;
         int col = 0;
 
-        for (Order order : availableOrders) {
+        for (Order order : ordersToRender) {
             VBox card = createAvailableOrderCard(order);
             availableCardsContainer.add(card, col, row);
 
@@ -408,8 +477,7 @@ public class DeliveriesController {
                 .collect(java.util.stream.Collectors.toList());
 
         availableOrders.setAll(filteredOrders);
-        availableCountLabel.setText("Available: " + availableOrders.size());
-        renderAvailableOrderCards();
+        applyAvailableFiltersAndSort();
     }
 
     private void loadMyDeliveries() {
