@@ -112,7 +112,21 @@ public class EarningsController {
             yAxis.setLabel("Earnings (৳)");
             earningsChart.setTitle("");
             earningsChart.setLegendVisible(false);
-            earningsChart.setStyle("-fx-bar-fill: #3498db;");
+
+            // Apply styling to make bars visible
+            earningsChart.setStyle(
+                "-fx-bar-fill: #3498db; " +
+                "-fx-background-color: white; " +
+                "-fx-plot-background-color: #f8f9fa;"
+            );
+
+            // Set axis styling
+            xAxis.setStyle("-fx-tick-label-fill: #34495e; -fx-font-size: 12px;");
+            yAxis.setStyle("-fx-tick-label-fill: #34495e; -fx-font-size: 12px;");
+
+            // Enable auto-ranging
+            yAxis.setAutoRanging(true);
+            yAxis.setForceZeroInRange(true);
         }
     }
 
@@ -123,8 +137,14 @@ public class EarningsController {
     }
 
     private void loadStatistics() {
+        System.out.println("=== LOADING EARNINGS STATISTICS ===");
+        System.out.println("Current User ID: " + currentUserId);
+
         // Get overall stats
         DeliveryStats stats = DeliveryDAO.getDeliveryStats(currentUserId);
+        System.out.println("Total Earnings: " + stats.getTotalEarnings());
+        System.out.println("Completed Deliveries: " + stats.getCompletedDeliveries());
+
         totalEarningsLabel.setText(String.format("৳%.2f", stats.getTotalEarnings()));
         completedDeliveriesLabel.setText(String.valueOf(stats.getCompletedDeliveries()));
 
@@ -132,17 +152,23 @@ public class EarningsController {
         double average = stats.getCompletedDeliveries() > 0
                 ? stats.getTotalEarnings() / stats.getCompletedDeliveries()
                 : 0.0;
+        System.out.println("Average: " + average);
         averageEarningLabel.setText(String.format("৳%.2f", average));
 
         // Get period-specific earnings
         double todayEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "TODAY");
+        System.out.println("Today's Earnings: " + todayEarnings);
         todayEarningsLabel.setText(String.format("৳%.2f", todayEarnings));
 
         double weekEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "WEEK");
+        System.out.println("Week Earnings: " + weekEarnings);
         weekEarningsLabel.setText(String.format("৳%.2f", weekEarnings));
 
         double monthEarnings = DeliveryDAO.getEarningsForPeriod(currentUserId, "MONTH");
+        System.out.println("Month Earnings: " + monthEarnings);
         monthEarningsLabel.setText(String.format("৳%.2f", monthEarnings));
+
+        System.out.println("=== STATISTICS LOADED ===");
     }
 
     private void loadEarningsHistory() {
@@ -152,18 +178,68 @@ public class EarningsController {
     }
 
     private void loadChartData() {
+        System.out.println("=== LOADING CHART DATA ===");
         if (earningsChart != null) {
             List<DailyEarning> dailyEarnings = DeliveryDAO.getDailyEarnings(currentUserId, 7);
+            System.out.println("Retrieved " + dailyEarnings.size() + " daily earning records");
+
+            earningsChart.getData().clear();
 
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName("Daily Earnings");
 
-            for (DailyEarning daily : dailyEarnings) {
-                series.getData().add(new XYChart.Data<>(daily.getDate(), daily.getTotalAmount()));
+            if (dailyEarnings != null && !dailyEarnings.isEmpty()) {
+                // Format dates for better display
+                java.time.format.DateTimeFormatter inputFormatter =
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                java.time.format.DateTimeFormatter outputFormatter =
+                    java.time.format.DateTimeFormatter.ofPattern("MMM dd");
+
+                for (DailyEarning daily : dailyEarnings) {
+                    System.out.println("  Date: " + daily.getDate() + ", Amount: " + daily.getTotalAmount());
+                    try {
+                        // Parse and format the date
+                        java.time.LocalDate date = java.time.LocalDate.parse(daily.getDate(), inputFormatter);
+                        String formattedDate = date.format(outputFormatter);
+
+                        XYChart.Data<String, Number> data = new XYChart.Data<>(
+                            formattedDate,
+                            daily.getTotalAmount()
+                        );
+                        series.getData().add(data);
+                    } catch (Exception e) {
+                        System.err.println("Error parsing date: " + daily.getDate());
+                        // If date parsing fails, use original date
+                        XYChart.Data<String, Number> data = new XYChart.Data<>(
+                            daily.getDate(),
+                            daily.getTotalAmount()
+                        );
+                        series.getData().add(data);
+                    }
+                }
+            } else {
+                System.out.println("No earnings data - showing placeholder");
+                // Add placeholder data to show empty chart
+                series.getData().add(new XYChart.Data<>("No Data", 0));
             }
 
-            earningsChart.getData().clear();
             earningsChart.getData().add(series);
+
+            // Apply CSS and force layout update
+            earningsChart.applyCss();
+            earningsChart.layout();
+
+            // Style each bar to ensure visibility
+            javafx.application.Platform.runLater(() -> {
+                for (XYChart.Series<String, Number> s : earningsChart.getData()) {
+                    for (XYChart.Data<String, Number> d : s.getData()) {
+                        if (d.getNode() != null) {
+                            d.getNode().setStyle("-fx-bar-fill: #3498db; -fx-background-color: #3498db;");
+                        }
+                    }
+                }
+            });
+            System.out.println("=== CHART DATA LOADED ===");
         }
     }
 

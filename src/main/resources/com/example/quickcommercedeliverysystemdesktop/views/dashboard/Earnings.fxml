@@ -111,12 +111,15 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Label text="Last 7 Days" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
         </HBox>
-        <BarChart fx:id="earningsChart" prefHeight="280" animated="true">
+        <BarChart fx:id="earningsChart" prefHeight="280" animated="true"
+                  style="-fx-background-color: white; -fx-plot-background-color: #f8f9fa;">
             <xAxis>
-                <CategoryAxis fx:id="xAxis" side="BOTTOM" tickLabelFill="#34495e"/>
+                <CategoryAxis fx:id="xAxis" side="BOTTOM"
+                             style="-fx-tick-label-fill: #34495e; -fx-font-size: 12px; -fx-font-weight: bold;"/>
             </xAxis>
             <yAxis>
-                <NumberAxis fx:id="yAxis" side="LEFT" tickLabelFill="#34495e"/>
+                <NumberAxis fx:id="yAxis" side="LEFT"
+                           style="-fx-tick-label-fill: #34495e; -fx-font-size: 12px; -fx-font-weight: bold;"/>
             </yAxis>
         </BarChart>
     </VBox>

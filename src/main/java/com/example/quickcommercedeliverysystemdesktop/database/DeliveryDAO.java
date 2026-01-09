@@ -420,9 +420,9 @@ public class DeliveryDAO {
      */
     public static double getEarningsForPeriod(int deliveryPersonId, String period) {
         String dateFilter = switch (period) {
-            case "TODAY" -> "DATE(e.created_at) = DATE('now')";
-            case "WEEK" -> "DATE(e.created_at) >= DATE('now', '-7 days')";
-            case "MONTH" -> "DATE(e.created_at) >= DATE('now', '-30 days')";
+            case "TODAY" -> "DATE(e.created_at, 'localtime') = DATE('now', 'localtime')";
+            case "WEEK" -> "DATE(e.created_at, 'localtime') >= DATE('now', 'localtime', '-6 days')";
+            case "MONTH" -> "DATE(e.created_at, 'localtime') >= DATE('now', 'localtime', '-29 days')";
             default -> "1=1"; // All time
         };
 
@@ -432,6 +432,10 @@ public class DeliveryDAO {
                 WHERE e.delivery_person_id = ? AND %s
                 """, dateFilter);
 
+        System.out.println("Getting earnings for period: " + period);
+        System.out.println("SQL: " + sql);
+        System.out.println("Delivery Person ID: " + deliveryPersonId);
+
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -439,7 +443,9 @@ public class DeliveryDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return rs.getDouble("total");
+                double total = rs.getDouble("total");
+                System.out.println("Result for " + period + ": " + total);
+                return total;
             }
 
         } catch (SQLException e) {
@@ -455,32 +461,44 @@ public class DeliveryDAO {
      */
     public static List<DailyEarning> getDailyEarnings(int deliveryPersonId, int days) {
         List<DailyEarning> dailyEarnings = new ArrayList<>();
+
+        // Calculate the number of days to go back (days - 1 to include today)
+        int daysBack = days - 1;
+
         String sql = """
-                SELECT DATE(e.created_at) as earning_date,
+                SELECT DATE(e.created_at, 'localtime') as earning_date,
                        COALESCE(SUM(e.amount), 0) as daily_total,
                        COUNT(*) as delivery_count
                 FROM Earnings e
                 WHERE e.delivery_person_id = ?
-                  AND DATE(e.created_at) >= DATE('now', '-' || ? || ' days')
-                GROUP BY DATE(e.created_at)
-                ORDER BY earning_date DESC
+                  AND DATE(e.created_at, 'localtime') >= DATE('now', 'localtime', '-' || ? || ' days')
+                  AND DATE(e.created_at, 'localtime') <= DATE('now', 'localtime')
+                GROUP BY DATE(e.created_at, 'localtime')
+                ORDER BY earning_date ASC
                 """;
+
+        System.out.println("Getting daily earnings for " + days + " days (daysBack=" + daysBack + ")");
+        System.out.println("Delivery Person ID: " + deliveryPersonId);
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, deliveryPersonId);
-            ps.setInt(2, days);
+            ps.setInt(2, daysBack);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                DailyEarning daily = new DailyEarning(
-                        rs.getString("earning_date"),
-                        rs.getDouble("daily_total"),
-                        rs.getInt("delivery_count")
-                );
+                String date = rs.getString("earning_date");
+                double amount = rs.getDouble("daily_total");
+                int count = rs.getInt("delivery_count");
+
+                System.out.println("  Daily: " + date + " = ৳" + amount + " (" + count + " deliveries)");
+
+                DailyEarning daily = new DailyEarning(date, amount, count);
                 dailyEarnings.add(daily);
             }
+
+            System.out.println("Total daily records: " + dailyEarnings.size());
 
         } catch (SQLException e) {
             System.err.println("Error fetching daily earnings: " + e.getMessage());
