@@ -34,12 +34,12 @@
 
     <!-- Cards Container (Default View) -->
     <ScrollPane fx:id="cardsScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS"
-                styleClass="cards-scroll-pane">
-        <VBox fx:id="orderCardsContainer" spacing="15" styleClass="order-cards-container">
+                styleClass="cards-scroll-pane" style="-fx-background-color: transparent;">
+        <GridPane fx:id="orderCardsContainer" hgap="20" vgap="20" styleClass="order-cards-container">
             <padding>
-                <Insets top="5" right="5" bottom="5" left="5"/>
+                <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-        </VBox>
+        </GridPane>
     </ScrollPane>
 
     <!-- Table View (Hidden by default) -->

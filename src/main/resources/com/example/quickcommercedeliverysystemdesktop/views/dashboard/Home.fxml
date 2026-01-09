@@ -7,19 +7,18 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dashboard.HomeController"
-      spacing="25" style="-fx-padding: 30;">
+      spacing="25" styleClass="content-area">
 
     <!-- Welcome Header -->
     <VBox spacing="10">
-        <Label fx:id="welcomeLabel" text="Welcome back!"
-               style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+        <Label fx:id="welcomeLabel" text="Welcome back!" styleClass="page-title"/>
         <Label text="Quick Commerce Delivery System - Your peer-to-peer delivery platform"
-               style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+               styleClass="page-subtitle"/>
     </VBox>
 
     <!-- Quick Stats Section -->
     <VBox spacing="15">
-        <Label text="Quick Statistics" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Label text="Quick Statistics" styleClass="section-title"/>
 
         <GridPane hgap="20" vgap="20">
             <columnConstraints>
@@ -29,85 +28,76 @@
             </columnConstraints>
 
             <!-- My Orders Card -->
-            <VBox GridPane.columnIndex="0"
-                  style="-fx-background-color: #e3f2fd; -fx-padding: 20; -fx-background-radius: 10;">
-                <Label text="📦 My Orders" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <Label fx:id="myOrdersCountLabel" text="0"
-                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #1976d2;">
+            <VBox GridPane.columnIndex="0" styleClass="stat-card, stat-card-blue" spacing="8">
+                <Label text="📦 My Orders" styleClass="stat-card-title"/>
+                <Label fx:id="myOrdersCountLabel" text="0" styleClass="stat-card-value">
                     <padding><Insets top="10"/></padding>
                 </Label>
-                <Label text="Total orders created" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                <Label text="Total orders created" styleClass="stat-card-subtitle"/>
             </VBox>
 
             <!-- Deliveries Card -->
-            <VBox GridPane.columnIndex="1"
-                  style="-fx-background-color: #e8f5e9; -fx-padding: 20; -fx-background-radius: 10;">
-                <Label text="🚚 Deliveries" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <Label fx:id="deliveriesCountLabel" text="0"
-                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #388e3c;">
+            <VBox GridPane.columnIndex="1" styleClass="stat-card, stat-card-green" spacing="8">
+                <Label text="🚚 Deliveries" styleClass="stat-card-title"/>
+                <Label fx:id="deliveriesCountLabel" text="0" styleClass="stat-card-value">
                     <padding><Insets top="10"/></padding>
                 </Label>
-                <Label text="Active deliveries" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                <Label text="Active deliveries" styleClass="stat-card-subtitle"/>
             </VBox>
 
             <!-- Earnings Card -->
-            <VBox GridPane.columnIndex="2"
-                  style="-fx-background-color: #fff3e0; -fx-padding: 20; -fx-background-radius: 10;">
-                <Label text="💰 Earnings" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <Label fx:id="earningsLabel" text="0.00"
-                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #f57c00;">
+            <VBox GridPane.columnIndex="2" styleClass="stat-card, stat-card-orange" spacing="8">
+                <Label text="💰 Earnings" styleClass="stat-card-title"/>
+                <Label fx:id="earningsLabel" text="৳0.00" styleClass="stat-card-value">
                     <padding><Insets top="10"/></padding>
                 </Label>
-                <Label text="Total earnings" style="-fx-font-size: 11px; -fx-text-fill: #666;"/>
+                <Label text="Total earnings" styleClass="stat-card-subtitle"/>
             </VBox>
         </GridPane>
     </VBox>
 
     <!-- Quick Actions Section -->
     <VBox spacing="15">
-        <Label text="Quick Actions" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Label text="Quick Actions" styleClass="section-title"/>
 
         <HBox spacing="15">
             <!-- Create Order Button -->
             <Button text="+ Create New Order"
                     onAction="#handleCreateOrder"
-                    style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px;
-                           -fx-padding: 15 30; -fx-background-radius: 8; -fx-cursor: hand;"
+                    styleClass="primary-button"
                     prefWidth="200"/>
 
             <!-- View Available Orders Button -->
             <Button text="🔍 Browse Available Orders"
                     onAction="#handleBrowseOrders"
-                    style="-fx-background-color: #388e3c; -fx-text-fill: white; -fx-font-size: 14px;
-                           -fx-padding: 15 30; -fx-background-radius: 8; -fx-cursor: hand;"
-                    prefWidth="200"/>
+                    styleClass="primary-button"
+                    style="-fx-background-color: linear-gradient(to bottom, #27ae60, #229954);"
+                    prefWidth="220"/>
 
             <!-- My Deliveries Button -->
             <Button text="📋 My Deliveries"
                     onAction="#handleMyDeliveries"
-                    style="-fx-background-color: #f57c00; -fx-text-fill: white; -fx-font-size: 14px;
-                           -fx-padding: 15 30; -fx-background-radius: 8; -fx-cursor: hand;"
+                    styleClass="primary-button"
+                    style="-fx-background-color: linear-gradient(to bottom, #f39c12, #e67e22);"
                     prefWidth="200"/>
         </HBox>
     </VBox>
 
     <!-- Recent Activity Section -->
     <VBox spacing="15" VBox.vgrow="ALWAYS">
-        <Label text="Recent Activity" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <Label text="Recent Activity" styleClass="section-title"/>
 
-        <ListView fx:id="recentActivityList"
-                  style="-fx-background-color: #f5f5f5; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-background-radius: 8;"
-                  prefHeight="200">
+        <ListView fx:id="recentActivityList" styleClass="table-view" prefHeight="200">
             <placeholder>
-                <Label text="No recent activity" style="-fx-text-fill: #999;"/>
+                <Label text="No recent activity" styleClass="placeholder-label"/>
             </placeholder>
         </ListView>
     </VBox>
 
     <!-- Footer Tips -->
-    <HBox style="-fx-padding: 15; -fx-background-color: #e3f2fd; -fx-background-radius: 8;">
+    <HBox styleClass="info-label" style="-fx-padding: 15;">
         <Label text="💡 Tip: Keep your profile updated and respond to deliveries quickly to build your reputation!"
-               style="-fx-font-size: 12px; -fx-text-fill: #1976d2;" wrapText="true"/>
+               wrapText="true"/>
     </HBox>
 
 </VBox>
