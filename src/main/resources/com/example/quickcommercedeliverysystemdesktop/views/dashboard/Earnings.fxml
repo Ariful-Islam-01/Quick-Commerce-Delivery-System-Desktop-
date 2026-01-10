@@ -130,15 +130,36 @@
                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 3);">
 
         <!-- History Header with Filter -->
-        <HBox alignment="CENTER_LEFT" spacing="15">
-            <Label text="📋 Earnings History" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label text="Period:" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
-            <ComboBox fx:id="periodFilter" prefWidth="150"
-                      style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6;"/>
-            <Label fx:id="recordsCountLabel" text="Showing 0 record(s)"
-                   style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
-        </HBox>
+        <VBox spacing="12">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="📋 Earnings History" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="recordsCountLabel" text="Showing 0 record(s)"
+                       style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 12; -fx-background-color: #f8f9fa; -fx-background-radius: 8;">
+                <Label text="Quick Filter:" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <ComboBox fx:id="periodFilter" prefWidth="140"
+                          style="-fx-background-radius: 6; -fx-border-color: #bdc3c7; -fx-border-radius: 6;"/>
+
+                <Separator orientation="VERTICAL" prefHeight="30"/>
+
+                <Label text="From Date:" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <DatePicker fx:id="fromDatePicker" prefWidth="140" promptText="Start Date"
+                            style="-fx-background-radius: 6;"/>
+
+                <Label text="To Date:" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                <DatePicker fx:id="toDatePicker" prefWidth="140" promptText="End Date"
+                            style="-fx-background-radius: 6;"/>
+
+                <Button text="🔍 Search" onAction="#handleDateSearch"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+
+                <Button text="🔄 Clear" onAction="#handleClearDateFilter"
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+            </HBox>
+        </VBox>
 
         <!-- Earnings History Table -->
         <TableView fx:id="earningsTable" minHeight="200" prefHeight="380"

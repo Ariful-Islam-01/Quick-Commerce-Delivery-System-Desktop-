@@ -15,6 +15,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class EarningsController {
@@ -43,6 +44,8 @@ public class EarningsController {
 
     // Filters
     @FXML private ComboBox<String> periodFilter;
+    @FXML private DatePicker fromDatePicker;
+    @FXML private DatePicker toDatePicker;
     @FXML private Label recordsCountLabel;
 
     private ObservableList<EarningRecord> allEarnings;
@@ -276,6 +279,79 @@ public class EarningsController {
     private void handleExportReport() {
         // Placeholder for export functionality
         showAlert("Export feature coming soon!", Alert.AlertType.INFORMATION);
+    }
+
+    @FXML
+    private void handleDateSearch() {
+        LocalDate fromDate = fromDatePicker.getValue();
+        LocalDate toDate = toDatePicker.getValue();
+
+        if (fromDate == null && toDate == null) {
+            showAlert("Please select at least one date to search.", Alert.AlertType.WARNING);
+            return;
+        }
+
+        // Validate date range
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            showAlert("'From Date' cannot be after 'To Date'.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Reset period filter to show custom date range
+        periodFilter.setValue("All Time");
+
+        // Apply date filter
+        applyDateFilter(fromDate, toDate);
+    }
+
+    @FXML
+    private void handleClearDateFilter() {
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+        periodFilter.setValue("All Time");
+        applyFilter();
+    }
+
+    private void applyDateFilter(LocalDate fromDate, LocalDate toDate) {
+        ObservableList<EarningRecord> filteredList = FXCollections.observableArrayList();
+
+        for (EarningRecord record : allEarnings) {
+            LocalDate recordDate = record.getEarnedAt().toLocalDate();
+            boolean include = true;
+
+            // Check from date
+            if (fromDate != null && recordDate.isBefore(fromDate)) {
+                include = false;
+            }
+
+            // Check to date
+            if (toDate != null && recordDate.isAfter(toDate)) {
+                include = false;
+            }
+
+            if (include) {
+                filteredList.add(record);
+            }
+        }
+
+        earningsTable.setItems(filteredList);
+        recordsCountLabel.setText("Showing " + filteredList.size() + " record(s)");
+
+        // Show success message
+        String dateRangeText;
+        if (fromDate != null && toDate != null) {
+            dateRangeText = "from " + fromDate + " to " + toDate;
+        } else if (fromDate != null) {
+            dateRangeText = "from " + fromDate + " onwards";
+        } else {
+            dateRangeText = "up to " + toDate;
+        }
+
+        if (filteredList.size() > 0) {
+            showAlert("Found " + filteredList.size() + " record(s) " + dateRangeText, Alert.AlertType.INFORMATION);
+        } else {
+            showAlert("No records found " + dateRangeText, Alert.AlertType.INFORMATION);
+        }
     }
 
     private void showAlert(String message, Alert.AlertType type) {
