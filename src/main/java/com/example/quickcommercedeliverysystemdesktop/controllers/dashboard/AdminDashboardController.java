@@ -3,21 +3,12 @@ package com.example.quickcommercedeliverysystemdesktop.controllers.dashboard;
 import com.example.quickcommercedeliverysystemdesktop.database.DeliveryDAO;
 import com.example.quickcommercedeliverysystemdesktop.database.OrderDAO;
 import com.example.quickcommercedeliverysystemdesktop.database.UserDAO;
-import com.example.quickcommercedeliverysystemdesktop.models.Order;
-import com.example.quickcommercedeliverysystemdesktop.models.User;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-
-import java.util.List;
 
 /**
  * Admin Dashboard Controller - Day 11
@@ -43,64 +34,17 @@ public class AdminDashboardController {
     @FXML private Label deliveredOrdersLabel;
     @FXML private Label cancelledOrdersLabel;
 
-    // Recent Users Table
-    @FXML private TableView<User> recentUsersTable;
-    @FXML private TableColumn<User, Integer> userIdColumn;
-    @FXML private TableColumn<User, String> userNameColumn;
-    @FXML private TableColumn<User, String> userEmailColumn;
-    @FXML private TableColumn<User, String> userPhoneColumn;
-
-    // Recent Orders Table
-    @FXML private TableView<Order> recentOrdersTable;
-    @FXML private TableColumn<Order, Integer> orderIdColumn;
-    @FXML private TableColumn<Order, String> productColumn;
-    @FXML private TableColumn<Order, String> customerColumn;
-    @FXML private TableColumn<Order, String> statusColumn;
-    @FXML private TableColumn<Order, String> feeColumn;
-
     // Statistics Chart
     @FXML private BarChart<String, Number> statsChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
 
-    private ObservableList<User> recentUsers;
-    private ObservableList<Order> recentOrders;
-
     @FXML
     public void initialize() {
-        setupTables();
         loadStatistics();
-        loadRecentData();
         setupChart();
     }
 
-    /**
-     * Setup table columns
-     */
-    private void setupTables() {
-        // Users Table
-        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userId"));
-        userNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        userEmailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-        userPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-
-        // Orders Table
-        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
-        productColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-        statusColumn.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus().getDisplayName())
-        );
-        feeColumn.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(String.format("$%.2f", cellData.getValue().getDeliveryFee()))
-        );
-
-        recentUsers = FXCollections.observableArrayList();
-        recentOrders = FXCollections.observableArrayList();
-
-        recentUsersTable.setItems(recentUsers);
-        recentOrdersTable.setItems(recentOrders);
-    }
 
     /**
      * Load all statistics
@@ -124,11 +68,11 @@ public class AdminDashboardController {
         totalDeliveriesLabel.setText(String.valueOf(totalDeliveries));
         todayDeliveriesLabel.setText("+" + todayDeliveries + " today");
 
-        // Earnings Statistics
+        // Earnings Statistics (Using Taka symbol)
         double totalEarnings = DeliveryDAO.getTotalEarnings();
         double todayEarnings = DeliveryDAO.getTodayEarnings();
-        totalEarningsLabel.setText(String.format("$%.2f", totalEarnings));
-        todayEarningsLabel.setText(String.format("+$%.2f today", todayEarnings));
+        totalEarningsLabel.setText(String.format("৳%.2f", totalEarnings));
+        todayEarningsLabel.setText(String.format("+৳%.2f today", todayEarnings));
 
         // Order Status Breakdown
         pendingOrdersLabel.setText(String.valueOf(OrderDAO.getOrderCountByStatus("PENDING")));
@@ -137,19 +81,6 @@ public class AdminDashboardController {
         onTheWayOrdersLabel.setText(String.valueOf(OrderDAO.getOrderCountByStatus("ON_THE_WAY")));
         deliveredOrdersLabel.setText(String.valueOf(OrderDAO.getOrderCountByStatus("DELIVERED")));
         cancelledOrdersLabel.setText(String.valueOf(OrderDAO.getOrderCountByStatus("CANCELLED")));
-    }
-
-    /**
-     * Load recent users and orders
-     */
-    private void loadRecentData() {
-        // Load recent users (top 10)
-        List<User> allUsers = UserDAO.getAllUsers();
-        recentUsers.setAll(allUsers.stream().limit(10).toList());
-
-        // Load recent orders (top 10)
-        List<Order> allOrders = OrderDAO.getAllOrders();
-        recentOrders.setAll(allOrders.stream().limit(10).toList());
     }
 
     /**
@@ -180,7 +111,6 @@ public class AdminDashboardController {
     @FXML
     private void handleRefresh() {
         loadStatistics();
-        loadRecentData();
         setupChart();
         System.out.println("Admin dashboard refreshed");
     }
