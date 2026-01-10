@@ -25,7 +25,7 @@
     <HBox spacing="15">
         <VBox styleClass="stat-card stat-card-green" HBox.hgrow="ALWAYS">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="20" right="20" bottom="10" left="20"/>
             </padding>
             <Label text="Total System Earnings" styleClass="stat-card-title"
                    style="-fx-font-size: 16px;"/>
@@ -36,23 +36,28 @@
     </HBox>
 
     <!-- Filter Section -->
-    <HBox spacing="15" styleClass="filter-section" alignment="CENTER_LEFT">
+    <VBox spacing="10" styleClass="filter-section">
         <padding>
-            <Insets top="10" right="15" bottom="10" left="15"/>
+            <Insets top="15" right="20" bottom="15" left="20"/>
         </padding>
 
-        <Label text="Delivery Person:" styleClass="filter-label"/>
-        <ComboBox fx:id="deliveryPersonComboBox" prefWidth="250" styleClass="filter-combo"/>
+        <!-- Filter Labels Row -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Delivery Person:" styleClass="filter-label" prefWidth="250"/>
+            <Label text="From Date:" styleClass="filter-label" prefWidth="180"/>
+            <Label text="To Date:" styleClass="filter-label" prefWidth="180"/>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
 
-        <Label text="From Date:" styleClass="filter-label"/>
-        <DatePicker fx:id="fromDatePicker" prefWidth="150"/>
-
-        <Label text="To Date:" styleClass="filter-label"/>
-        <DatePicker fx:id="toDatePicker" prefWidth="150"/>
-
-        <Button text="Apply Filters" onAction="#handleApplyFilters" styleClass="btn-primary"/>
-        <Button text="Clear" onAction="#handleClearFilters" styleClass="secondary-button"/>
-    </HBox>
+        <!-- Filter Controls Row -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <ComboBox fx:id="deliveryPersonComboBox" prefWidth="250" styleClass="filter-combo"/>
+            <DatePicker fx:id="fromDatePicker" prefWidth="180"/>
+            <DatePicker fx:id="toDatePicker" prefWidth="180"/>
+            <Button text="Filter" onAction="#handleApplyFilters" styleClass="btn-primary" prefWidth="100"/>
+            <Button text="Clear" onAction="#handleClearFilters" styleClass="secondary-button" prefWidth="80"/>
+        </HBox>
+    </VBox>
 
     <!-- Earnings Table -->
     <VBox VBox.vgrow="ALWAYS" styleClass="content-card">
@@ -62,13 +67,13 @@
 
         <TableView fx:id="earningsTable" VBox.vgrow="ALWAYS" styleClass="orders-table">
             <columns>
-                <TableColumn fx:id="earningIdColumn" text="ID" prefWidth="60"/>
-                <TableColumn fx:id="orderIdColumn" text="Order" prefWidth="80"/>
-                <TableColumn fx:id="deliveryPersonColumn" text="Delivery Person" prefWidth="180"/>
-                <TableColumn fx:id="customerColumn" text="Customer" prefWidth="150"/>
-                <TableColumn fx:id="productColumn" text="Product" prefWidth="180"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="100"/>
-                <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="160"/>
+                <TableColumn fx:id="earningIdColumn" text="ID" prefWidth="60" minWidth="50"/>
+                <TableColumn fx:id="orderIdColumn" text="Order" prefWidth="80" minWidth="70"/>
+                <TableColumn fx:id="deliveryPersonColumn" text="Delivery Person" prefWidth="200" minWidth="150"/>
+                <TableColumn fx:id="customerColumn" text="Customer" prefWidth="180" minWidth="130"/>
+                <TableColumn fx:id="productColumn" text="Product" prefWidth="220" minWidth="150"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="110" minWidth="90"/>
+                <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="180" minWidth="150"/>
             </columns>
             <placeholder>
                 <Label text="No earnings found" styleClass="placeholder-label"/>

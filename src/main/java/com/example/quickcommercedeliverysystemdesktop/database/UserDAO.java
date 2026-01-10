@@ -211,6 +211,28 @@ public class UserDAO {
     }
 
     /**
+     * Get all admin user IDs
+     * @return List of user IDs who are admins
+     */
+    public static java.util.List<Integer> getAdminUserIds() {
+        java.util.List<Integer> adminIds = new java.util.ArrayList<>();
+        String sql = "SELECT user_id FROM Users WHERE is_admin = 1";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                adminIds.add(rs.getInt("user_id"));
+            }
+            System.out.println("Found " + adminIds.size() + " admin user(s)");
+        } catch (Exception ex) {
+            System.err.println("Get admin IDs error: " + ex.getMessage());
+        }
+        return adminIds;
+    }
+
+    /**
      * Get total user count
      */
     public static int getTotalUserCount() {

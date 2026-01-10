@@ -275,6 +275,19 @@ public class DeliveryDAO {
                         orderId
                     );
 
+                    // Notify all admins about successful delivery
+                    java.util.List<Integer> adminIds = UserDAO.getAdminUserIds();
+                    String deliveryPersonName = getUserNameById(deliveryPersonId);
+                    for (Integer adminId : adminIds) {
+                        NotificationDAO.createNotification(
+                            adminId,
+                            "Order Delivered Successfully",
+                            "Order #" + orderId + " delivered by " + deliveryPersonName,
+                            "SUCCESS",
+                            orderId
+                        );
+                    }
+
                     return true;
                 }
 
@@ -530,6 +543,29 @@ public class DeliveryDAO {
         }
 
         return -1;
+    }
+
+    /**
+     * Helper method to get user name by ID
+     */
+    private static String getUserNameById(int userId) {
+        String sql = "SELECT name FROM Users WHERE user_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting user name: " + e.getMessage());
+        }
+
+        return "Unknown User";
     }
 
     /**

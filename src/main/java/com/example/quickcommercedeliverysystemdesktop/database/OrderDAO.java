@@ -42,7 +42,7 @@ public class OrderDAO {
             if (generatedKeys.next()) {
                 int orderId = generatedKeys.getInt(1);
 
-                // Create notification for the user
+                // Create notification for the user who created the order
                 NotificationDAO.createNotification(
                     order.getCreatedByUserId(),
                     "Order Created",
@@ -50,6 +50,21 @@ public class OrderDAO {
                     "ORDER_UPDATE",
                     orderId
                 );
+
+                // Notify all admins about the new order
+                java.util.List<Integer> adminIds = UserDAO.getAdminUserIds();
+                for (Integer adminId : adminIds) {
+                    // Don't send duplicate notification if admin is the order creator
+                    if (!adminId.equals(order.getCreatedByUserId())) {
+                        NotificationDAO.createNotification(
+                            adminId,
+                            "New Order in System",
+                            "Order #" + orderId + " created: " + order.getProductName() + " - " + order.getDeliveryLocation(),
+                            "INFO",
+                            orderId
+                        );
+                    }
+                }
             }
 
             return true;
