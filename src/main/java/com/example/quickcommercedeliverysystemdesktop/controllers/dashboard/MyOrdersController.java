@@ -384,11 +384,29 @@ public class MyOrdersController {
     }
 
     private void editOrder(Order order) {
-        // TODO: Open edit dialog or navigate to edit page
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Edit Order");
-        alert.setContentText("Edit functionality will be implemented in next phase.");
-        alert.showAndWait();
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/com/example/quickcommercedeliverysystemdesktop/views/dialogs/EditOrder.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+
+            com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.EditOrderController controller =
+                loader.getController();
+            controller.setOrder(order);
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setTitle("Edit Order - #" + order.getOrderId());
+            stage.setScene(new javafx.scene.Scene(root, 600, 650));
+            stage.showAndWait();
+
+            // Refresh orders after dialog closes
+            loadOrders();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Failed to load edit order dialog: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
 
     private void cancelOrder(Order order) {

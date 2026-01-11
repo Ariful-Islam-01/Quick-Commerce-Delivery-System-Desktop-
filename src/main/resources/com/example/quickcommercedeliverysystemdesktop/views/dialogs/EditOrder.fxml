@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.quickcommercedeliverysystemdesktop.controllers.dialogs.EditOrderController"
+            prefWidth="600" prefHeight="650"
+            style="-fx-background-color: #f5f7fa;">
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true"
+                    style="-fx-background: #f5f7fa; -fx-background-color: #f5f7fa;">
+            <VBox spacing="20" style="-fx-padding: 25;">
+
+                <!-- Header -->
+                <VBox spacing="8">
+                    <Label text="Edit Order" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <Label fx:id="orderIdLabel" text="Order #" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+                    <Separator style="-fx-background-color: #e0e6ed;"/>
+                </VBox>
+
+                <!-- Category -->
+                <VBox spacing="8">
+                    <Label text="Category *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <ComboBox fx:id="categoryComboBox" maxWidth="Infinity"
+                             style="-fx-font-size: 13px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5px;"/>
+                </VBox>
+
+                <!-- Product Name -->
+                <VBox spacing="8">
+                    <Label text="Product Name *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <ComboBox fx:id="productNameComboBox" editable="true" maxWidth="Infinity"
+                             promptText="Select or type product name"
+                             style="-fx-font-size: 13px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5px;"/>
+                </VBox>
+
+                <!-- Description -->
+                <VBox spacing="8">
+                    <Label text="Description *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <TextArea fx:id="descriptionArea" promptText="Describe the item to be delivered..."
+                             prefRowCount="3" wrapText="true"
+                             style="-fx-font-size: 13px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5px;"/>
+                </VBox>
+
+                <!-- Delivery Location -->
+                <VBox spacing="8">
+                    <Label text="Delivery Location *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <TextField fx:id="deliveryLocationField" promptText="Full address (Street, City, ZIP)"
+                              style="-fx-font-size: 13px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5px;"/>
+                </VBox>
+
+                <!-- Delivery Date -->
+                <VBox spacing="8">
+                    <Label text="Delivery Date *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <DatePicker fx:id="deliveryDatePicker" promptText="Select delivery date" maxWidth="Infinity"
+                               style="-fx-font-size: 13px; -fx-background-color: white;"/>
+                </VBox>
+
+                <!-- Time Range -->
+                <HBox spacing="15">
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Time From *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                        <ComboBox fx:id="timeFromComboBox" promptText="Start time" maxWidth="Infinity"
+                                 style="-fx-font-size: 13px; -fx-background-color: white;"/>
+                    </VBox>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Time To *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                        <ComboBox fx:id="timeToComboBox" promptText="End time" maxWidth="Infinity"
+                                 style="-fx-font-size: 13px; -fx-background-color: white;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Delivery Fee -->
+                <VBox spacing="8">
+                    <Label text="Delivery Fee (৳) *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <TextField fx:id="deliveryFeeField" promptText="0.00"
+                              style="-fx-font-size: 13px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-radius: 5px;"/>
+                </VBox>
+
+                <!-- Message Label -->
+                <Label fx:id="messageLabel" wrapText="true"
+                      style="-fx-font-size: 13px; -fx-padding: 10; -fx-background-radius: 5px;"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- Footer Buttons -->
+    <bottom>
+        <HBox spacing="15" alignment="CENTER_RIGHT"
+             style="-fx-padding: 20; -fx-background-color: white; -fx-border-color: #e0e6ed; -fx-border-width: 2 0 0 0;">
+            <Button text="Cancel" onAction="#handleCancel"
+                   style="-fx-background-color: white; -fx-text-fill: #7f8c8d; -fx-border-color: #bdc3c7; -fx-border-width: 2px; -fx-font-size: 14px; -fx-font-weight: 600; -fx-padding: 10 30; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-cursor: hand;"
+                   prefWidth="120"/>
+            <Button text="Save" onAction="#handleSave"
+                   style="-fx-background-color: linear-gradient(to bottom, #2b7a78, #1f5e5c); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 30; -fx-background-radius: 6px; -fx-cursor: hand;"
+                   prefWidth="150"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
+
